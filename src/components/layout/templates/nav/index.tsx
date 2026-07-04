@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { ShoppingCart, Menu, X, ChevronDown, LogIn, Search } from "lucide-react"
+import { ShoppingCart, Menu, X, ChevronDown, LogIn, Search, Dna } from "lucide-react"
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -60,13 +60,13 @@ export default function Nav() {
             </button>
 
             {/* Centered Logo on mobile */}
-            <Link href="/" className="flex items-center gap-1.5 flex-shrink-0 absolute left-1/2 -translate-x-1/2">
-              <div className="w-7.5 h-7.5 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-650 flex items-center justify-center shadow-sm">
-                <span className="text-white font-extrabold text-[11px]">RL</span>
+            <Link href="/" className="flex items-center gap-2 flex-shrink-0 absolute left-1/2 -translate-x-1/2">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md border border-white/20">
+                <Dna className="w-5.5 h-5.5 text-white animate-pulse" style={{ animationDuration: "4s" }} />
               </div>
-              <div className="text-left">
-                <span className="block text-[13px] font-black text-gray-900 leading-tight">RL Australia</span>
-                <span className="block text-[7.5px] text-emerald-600 font-extrabold uppercase tracking-[0.08em] leading-tight">Peptide Research</span>
+              <div className="text-left leading-none">
+                <span className="block text-[15px] font-black text-gray-900 tracking-tight uppercase">RL Australia</span>
+                <span className="block text-[8px] text-emerald-600 font-extrabold uppercase tracking-[0.15em] mt-0.5">Peptide Research</span>
               </div>
             </Link>
 
@@ -81,15 +81,15 @@ export default function Nav() {
           </div>
 
           {/* Desktop Layout (hidden on mobile) */}
-          <div className="hidden lg:flex items-center justify-between h-16">
+          <div className="hidden lg:flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
-                <span className="text-white font-bold text-xs">RL</span>
+            <Link href="/" className="flex items-center gap-3 flex-shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md border border-white/20">
+                <Dna className="w-6.5 h-6.5 text-white animate-pulse" style={{ animationDuration: "4s" }} />
               </div>
-              <div>
-                <span className="block text-[15px] font-bold text-gray-900 leading-tight">RL Australia</span>
-                <span className="block text-[9px] text-emerald-600 font-semibold uppercase tracking-[0.12em] leading-tight">Peptide Research</span>
+              <div className="text-left leading-none">
+                <span className="block text-[19px] font-black text-gray-900 tracking-tight uppercase">RL Australia</span>
+                <span className="block text-[10px] text-emerald-600 font-extrabold uppercase tracking-[0.18em] mt-1">Peptide Research</span>
               </div>
             </Link>
 

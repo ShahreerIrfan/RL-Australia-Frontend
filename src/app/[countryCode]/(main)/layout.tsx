@@ -2,6 +2,7 @@ import { Metadata } from "next"
 import { getBaseURL } from "@lib/util/env"
 import Nav from "@components/layout/templates/nav"
 import Footer from "@components/layout/templates/footer"
+import AnnouncementBar from "@components/home/announcement-bar"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 export default function PageLayout(props: { children: React.ReactNode }) {
   return (
     <>
+      <AnnouncementBar />
       <Nav />
       {props.children}
       <Footer />

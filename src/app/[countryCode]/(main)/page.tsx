@@ -1,5 +1,4 @@
 import React from "react"
-import AnnouncementBar from "@components/home/announcement-bar"
 import HeroSection from "@components/home/hero-section"
 import StackBuilderPreview from "@components/home/stack-builder-preview"
 import CategoryShowcase from "@components/home/category-showcase"
@@ -13,8 +12,6 @@ import NewsletterSection from "@components/home/newsletter-section"
 export default function Homepage() {
   return (
     <div className="min-h-screen">
-      {/* Announcement bar — free shipping, lab tested, secure checkout signals */}
-      <AnnouncementBar />
 
       {/* Hero — Stack Builder as PRIMARY conversion CTA, with background image */}
       <HeroSection />
