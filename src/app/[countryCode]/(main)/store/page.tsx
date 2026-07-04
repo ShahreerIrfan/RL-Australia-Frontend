@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import StoreTemplate from "@modules/store/templates"
+import { SortOptions } from "@components/store/components/refinement-list/sort-products"
+import StoreTemplate from "@components/store/templates"
 
 export const metadata: Metadata = {
   title: "Store",

@@ -1,0 +1,9 @@
+node_modules
+.next
+.env
+.env.test
+.git
+.github
+.vscode
+yarn.lock
+package-lock.json

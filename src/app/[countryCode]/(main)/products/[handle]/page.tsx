@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { listProducts } from "@lib/data/products"
 import { getRegion, listRegions } from "@lib/data/regions"
-import ProductTemplate from "@modules/products/templates"
+import ProductTemplate from "@components/products/templates"
 import { HttpTypes } from "@medusajs/types"
 
 type Props = {

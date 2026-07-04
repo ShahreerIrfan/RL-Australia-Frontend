@@ -12,6 +12,7 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+  output: "standalone",
   reactStrictMode: true,
   logging: {
     fetches: {
@@ -32,6 +33,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
         hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
       },
       {
@@ -44,12 +49,12 @@ const nextConfig = {
       },
       ...(S3_HOSTNAME && S3_PATHNAME
         ? [
-            {
-              protocol: "https",
-              hostname: S3_HOSTNAME,
-              pathname: S3_PATHNAME,
-            },
-          ]
+          {
+            protocol: "https",
+            hostname: S3_HOSTNAME,
+            pathname: S3_PATHNAME,
+          },
+        ]
         : []),
     ],
   },
