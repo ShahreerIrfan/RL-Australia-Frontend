@@ -22,7 +22,10 @@ type ProductActionsProps = {
 const optionsAsKeymap = (
   variantOptions: HttpTypes.StoreProductVariant["options"]
 ) => {
-  return variantOptions?.reduce((acc: Record<string, string>, varopt: any) => {
+  if (!Array.isArray(variantOptions)) {
+    return {}
+  }
+  return variantOptions.reduce((acc: Record<string, string>, varopt: any) => {
     acc[varopt.option_id] = varopt.value
     return acc
   }, {})
