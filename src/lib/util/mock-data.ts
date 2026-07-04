@@ -44,43 +44,55 @@ export const mockCategories = [
 export const mockProducts = [
   {
     id: "prod_tshirt",
-    title: "Medusa T-Shirt",
-    handle: "t-shirt",
-    description: "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
-    thumbnail: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
+    title: "BPC-157 5mg Vial",
+    handle: "bpc-157",
+    description: "BPC-157 is a premium research-grade peptide pentadecane. Formulated as a freeze-dried lyophilized powder for laboratory research, providing tissue regeneration and recovery-boosting properties. Purity: 99.8%+ verified by independent HPLC.",
+    thumbnail: "/assets/peptide-vial.png",
     images: [
-      { url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png" },
-      { url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-back.png" }
+      { url: "/assets/peptide-vial.png" }
     ],
     status: "published",
-    weight: 400,
+    weight: 10,
     options: [
-      { id: "opt_size", title: "Size", values: ["S", "M", "L", "XL"] }
+      { id: "opt_vial_pack", title: "Pack Size", values: ["Single Vial", "5-Pack", "10-Pack"] }
     ],
     variants: [
       {
         id: "var_tshirt_s",
-        sku: "SHIRT-S-BLACK",
-        title: "S / Black",
-        inventory_quantity: 10,
-        options: { Size: "S" },
+        sku: "BPC157-1VIAL",
+        title: "Single Vial",
+        inventory_quantity: 100,
+        options: [{ option_id: "opt_vial_pack", value: "Single Vial" }],
         calculated_price: {
-          calculated_amount: 15,
-          original_amount: 15,
-          currency_code: "usd",
+          calculated_amount: 79,
+          original_amount: 79,
+          currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
       },
       {
         id: "var_tshirt_m",
-        sku: "SHIRT-M-BLACK",
-        title: "M / Black",
-        inventory_quantity: 10,
-        options: { Size: "M" },
+        sku: "BPC157-5PACK",
+        title: "5-Pack",
+        inventory_quantity: 50,
+        options: [{ option_id: "opt_vial_pack", value: "5-Pack" }],
         calculated_price: {
-          calculated_amount: 15,
-          original_amount: 15,
-          currency_code: "usd",
+          calculated_amount: 349,
+          original_amount: 349,
+          currency_code: "aud",
+          calculated_price: { price_list_type: null }
+        }
+      },
+      {
+        id: "var_tshirt_l",
+        sku: "BPC157-10PACK",
+        title: "10-Pack",
+        inventory_quantity: 25,
+        options: [{ option_id: "opt_vial_pack", value: "10-Pack" }],
+        calculated_price: {
+          calculated_amount: 599,
+          original_amount: 599,
+          currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
       }
@@ -88,29 +100,42 @@ export const mockProducts = [
   },
   {
     id: "prod_sweatshirt",
-    title: "Medusa Sweatshirt",
-    handle: "sweatshirt",
-    description: "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
-    thumbnail: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
+    title: "TB-500 5mg Vial",
+    handle: "tb-500",
+    description: "TB-500 (Thymosin Beta-4) is a synthetic peptide known for promoting healing, cellular migration, and growth of new blood vessels. Formulated as a high-purity freeze-dried lyophilized powder for laboratory research.",
+    thumbnail: "/assets/peptide-vial.png",
     images: [
-      { url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png" }
+      { url: "/assets/peptide-vial.png" }
     ],
     status: "published",
-    weight: 400,
+    weight: 10,
     options: [
-      { id: "opt_size", title: "Size", values: ["S", "M", "L", "XL"] }
+      { id: "opt_vial_pack", title: "Pack Size", values: ["Single Vial", "5-Pack", "10-Pack"] }
     ],
     variants: [
       {
         id: "var_sweatshirt_s",
-        sku: "SWEATSHIRT-S",
-        title: "S",
-        inventory_quantity: 10,
-        options: { Size: "S" },
+        sku: "TB500-1VIAL",
+        title: "Single Vial",
+        inventory_quantity: 100,
+        options: [{ option_id: "opt_vial_pack", value: "Single Vial" }],
         calculated_price: {
-          calculated_amount: 25,
-          original_amount: 25,
-          currency_code: "usd",
+          calculated_amount: 89,
+          original_amount: 89,
+          currency_code: "aud",
+          calculated_price: { price_list_type: null }
+        }
+      },
+      {
+        id: "var_sweatshirt_m",
+        sku: "TB500-5PACK",
+        title: "5-Pack",
+        inventory_quantity: 50,
+        options: [{ option_id: "opt_vial_pack", value: "5-Pack" }],
+        calculated_price: {
+          calculated_amount: 399,
+          original_amount: 399,
+          currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
       }
@@ -118,29 +143,29 @@ export const mockProducts = [
   },
   {
     id: "prod_sweatpants",
-    title: "Medusa Sweatpants",
-    handle: "sweatpants",
-    description: "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
-    thumbnail: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
+    title: "GHK-Cu 50mg Vial",
+    handle: "ghk-cu",
+    description: "GHK-Cu is a high-concentration copper tripeptide compound studied for its cellular renewal, skin remodeling, and anti-aging research applications. Lyophilized powder.",
+    thumbnail: "/assets/peptide-vial.png",
     images: [
-      { url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png" }
+      { url: "/assets/peptide-vial.png" }
     ],
     status: "published",
-    weight: 400,
+    weight: 10,
     options: [
-      { id: "opt_size", title: "Size", values: ["S", "M", "L", "XL"] }
+      { id: "opt_vial_pack", title: "Pack Size", values: ["Single Vial", "5-Pack"] }
     ],
     variants: [
       {
         id: "var_sweatpants_s",
-        sku: "SWEATPANTS-S",
-        title: "S",
-        inventory_quantity: 10,
-        options: { Size: "S" },
+        sku: "GHKCU-1VIAL",
+        title: "Single Vial",
+        inventory_quantity: 100,
+        options: [{ option_id: "opt_vial_pack", value: "Single Vial" }],
         calculated_price: {
-          calculated_amount: 30,
-          original_amount: 30,
-          currency_code: "usd",
+          calculated_amount: 99,
+          original_amount: 99,
+          currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
       }
