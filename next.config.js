@@ -13,6 +13,12 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
  */
 const nextConfig = {
   output: "standalone",
+  env: {
+    NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "pk_test",
+    NEXT_PUBLIC_DEFAULT_REGION:
+      process.env.NEXT_PUBLIC_DEFAULT_REGION || "au",
+  },
   reactStrictMode: true,
   logging: {
     fetches: {
