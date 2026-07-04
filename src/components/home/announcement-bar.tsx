@@ -5,7 +5,7 @@ import { Truck, Shield, FlaskConical, Clock } from "lucide-react"
 
 export default function AnnouncementBar() {
   return (
-    <section className="bg-gray-900 border-b border-gray-800">
+    <section className="bg-gray-950 border-b border-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
         <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-1 text-[11px] sm:text-xs text-gray-300 font-medium">
           <span className="flex items-center gap-1.5">

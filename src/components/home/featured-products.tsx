@@ -202,75 +202,79 @@ export default function FeaturedProducts() {
         </div>
 
         {/* Product grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4.5">
           {filteredProducts.map((product) => (
             <Link
               key={product.id}
               href={`/products/${product.id}`}
-              className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all duration-200"
+              className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:border-gray-200/80 hover:-translate-y-1 transition-all duration-300 flex flex-col"
             >
               {/* Image area */}
-              <div className="relative p-3 pb-1">
+              <div className="relative p-3 pb-2 bg-gradient-to-b from-gray-50 to-white/40 border-b border-gray-100 flex items-center justify-center h-28 sm:h-36 lg:h-40 overflow-hidden flex-shrink-0">
                 {product.originalPrice && (
-                  <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded z-10">
+                  <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-md z-10 shadow-sm">
                     Save ${(product.originalPrice - product.price).toFixed(0)}
                   </span>
                 )}
-                <span className="absolute top-2 right-2 text-[9px] sm:text-[10px] font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded z-10">
+                <span className="absolute top-2 right-2 text-[9px] sm:text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-md z-10">
                   {product.category}
                 </span>
 
-                <div className="flex items-center justify-center h-24 sm:h-32 lg:h-36 my-1">
+                <div className="flex items-center justify-center h-full w-full p-2">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
                   />
                 </div>
               </div>
 
               {/* Info */}
-              <div className="px-3 pb-3">
-                <h3 className="text-[11px] sm:text-xs font-semibold text-gray-800 leading-snug mb-0.5 line-clamp-1">
-                  {product.name}
-                </h3>
-                {/* Dosage/mg display — clear and simple per Peptide Paradise reference */}
-                <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium mb-1.5">
-                  {product.dosage}
-                </p>
+              <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between">
+                <div>
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-800 leading-tight mb-1 group-hover:text-emerald-700 transition-colors line-clamp-1">
+                    {product.name}
+                  </h3>
+                  {/* Dosage/mg display — clear and simple per Peptide Paradise reference */}
+                  <p className="text-[10px] sm:text-xs text-gray-500 font-semibold mb-2">
+                    {product.dosage}
+                  </p>
 
-                <div className="flex items-center gap-1 mb-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
-                          i < Math.floor(product.rating)
-                            ? "text-amber-400 fill-amber-400"
-                            : "text-gray-200 fill-gray-200"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-[9px] sm:text-[10px] text-gray-400">
-                    ({product.reviews})
-                  </span>
-                </div>
-
-                <div className="flex items-baseline gap-1.5 mb-2.5">
-                  <span className="text-sm sm:text-base font-bold text-gray-900">
-                    ${product.price.toFixed(2)}
-                  </span>
-                  {product.originalPrice && (
-                    <span className="text-[10px] sm:text-xs text-gray-400 line-through">
-                      ${product.originalPrice.toFixed(2)}
+                  <div className="flex items-center gap-1 mb-2.5">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
+                            i < Math.floor(product.rating)
+                              ? "text-amber-400 fill-amber-400"
+                              : "text-gray-200 fill-gray-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[9px] sm:text-[10px] text-gray-400 font-semibold">
+                      ({product.reviews})
                     </span>
-                  )}
+                  </div>
                 </div>
 
-                <div className="w-full flex items-center justify-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white text-[11px] sm:text-xs font-medium py-2 sm:py-2.5 rounded-lg transition-colors">
-                  <ShoppingCart className="w-3.5 h-3.5" />
-                  View Product
+                <div>
+                  <div className="flex items-baseline gap-1.5 mb-3">
+                    <span className="text-sm sm:text-base font-extrabold text-gray-900">
+                      ${product.price.toFixed(2)}
+                    </span>
+                    {product.originalPrice && (
+                      <span className="text-[10px] sm:text-xs text-gray-400 line-through">
+                        ${product.originalPrice.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="w-full flex items-center justify-center gap-1.5 bg-gray-900 group-hover:bg-emerald-600 active:scale-[0.98] text-white text-xs font-semibold py-2.5 rounded-xl transition-all duration-300">
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                    View Product
+                  </div>
                 </div>
               </div>
             </Link>
