@@ -2,13 +2,13 @@
 
 import React from "react"
 import Link from "next/link"
-import { Dna, Brain, Pill, Sparkles, Package, Layers } from "lucide-react"
+import { FlaskConical, Brain, Pill, Activity, ShoppingBag, Layers } from "lucide-react"
 
 const categories = [
   {
     title: "Peptides",
     description: "Research-grade peptides with COA",
-    icon: Dna,
+    icon: FlaskConical,
     href: "/store?category=peptides",
     bgClass: "bg-sky-50 text-sky-600",
   },
@@ -29,14 +29,14 @@ const categories = [
   {
     title: "Gummies & Functional Foods",
     description: "Tasty, convenient formats",
-    icon: Sparkles,
+    icon: Activity,
     href: "/store?category=gummies",
     bgClass: "bg-amber-50 text-amber-600",
   },
   {
     title: "Add-ons & Accessories",
     description: "Low-cost essentials",
-    icon: Package,
+    icon: ShoppingBag,
     href: "/store?category=add-ons",
     bgClass: "bg-rose-50 text-rose-600",
   },
@@ -54,10 +54,10 @@ export default function CategoryShowcase() {
     <section className="py-12 sm:py-16 bg-white border-y border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Shop by Category
           </h2>
-          <p className="text-sm text-gray-500 max-w-md mx-auto">
+          <p className="text-sm sm:text-base text-gray-500 max-w-md mx-auto">
             Everything you need for recovery, performance, and longevity — all in one place.
           </p>
         </div>
@@ -69,17 +69,17 @@ export default function CategoryShowcase() {
               <Link
                 key={cat.title}
                 href={cat.href}
-                className="group block bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 text-center transition-all duration-300 hover:shadow-md hover:border-emerald-500/20 hover:-translate-y-0.5"
+                className="group block bg-white rounded-2xl border border-gray-200/80 p-5 text-center shadow-md hover:shadow-lg hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex items-center justify-center mb-3">
                   <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl ${cat.bgClass} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
                     <Icon className="w-5 h-5" />
                   </div>
                 </div>
-                <h3 className="text-xs sm:text-sm font-bold text-gray-800 mb-1 group-hover:text-emerald-700 transition-colors">
+                <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-1 group-hover:text-emerald-700 transition-colors">
                   {cat.title}
                 </h3>
-                <p className="text-[10px] sm:text-xs text-gray-500 leading-snug">
+                <p className="text-xs sm:text-sm text-gray-550 leading-snug">
                   {cat.description}
                 </p>
               </Link>

@@ -52,7 +52,7 @@ export default function GuidesPreview() {
             <Link
               key={i}
               href="/resources"
-              className="group bg-gray-50 hover:bg-white border border-gray-100 hover:border-gray-200 rounded-xl p-5 transition-all hover:shadow-sm"
+              className="group bg-white hover:bg-gray-50/50 border border-gray-200/80 rounded-2xl p-5 shadow-md hover:shadow-lg hover:border-sky-500/30 hover:-translate-y-0.5 transition-all duration-300"
             >
               <span className="inline-block text-[10px] sm:text-xs font-semibold text-sky-600 bg-sky-50 px-2 py-0.5 rounded mb-3">
                 {guide.category}

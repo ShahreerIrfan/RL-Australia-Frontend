@@ -232,11 +232,11 @@ export default function FeaturedProducts() {
               {/* Info */}
               <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between">
                 <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-gray-800 leading-tight mb-1 group-hover:text-emerald-700 transition-colors line-clamp-1">
+                  <h3 className="text-sm sm:text-base font-extrabold text-gray-800 leading-tight mb-1 group-hover:text-emerald-700 transition-colors line-clamp-1">
                     {product.name}
                   </h3>
                   {/* Dosage/mg display — clear and simple per Peptide Paradise reference */}
-                  <p className="text-[10px] sm:text-xs text-gray-500 font-semibold mb-2">
+                  <p className="text-xs sm:text-sm text-gray-500 font-bold mb-2">
                     {product.dosage}
                   </p>
 
@@ -253,7 +253,7 @@ export default function FeaturedProducts() {
                         />
                       ))}
                     </div>
-                    <span className="text-[9px] sm:text-[10px] text-gray-400 font-semibold">
+                    <span className="text-xs sm:text-sm text-gray-400 font-bold">
                       ({product.reviews})
                     </span>
                   </div>
@@ -261,17 +261,17 @@ export default function FeaturedProducts() {
 
                 <div>
                   <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-sm sm:text-base font-extrabold text-gray-900">
+                    <span className="text-base sm:text-lg font-black text-gray-900">
                       ${product.price.toFixed(2)}
                     </span>
                     {product.originalPrice && (
-                      <span className="text-[10px] sm:text-xs text-gray-400 line-through">
+                      <span className="text-xs sm:text-sm text-gray-400 line-through">
                         ${product.originalPrice.toFixed(2)}
                       </span>
                     )}
                   </div>
 
-                  <div className="w-full flex items-center justify-center gap-1.5 bg-gray-900 group-hover:bg-emerald-600 active:scale-[0.98] text-white text-xs font-semibold py-2.5 rounded-xl transition-all duration-300">
+                  <div className="w-full flex items-center justify-center gap-1.5 bg-gray-900 group-hover:bg-emerald-600 active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold py-2.5 rounded-xl transition-all duration-300">
                     <ShoppingCart className="w-3.5 h-3.5" />
                     View Product
                   </div>

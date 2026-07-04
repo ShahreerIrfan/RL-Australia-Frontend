@@ -46,8 +46,8 @@ export default function Footer() {
 
         {/* Disclaimer */}
         <div className="bg-white rounded-lg border border-gray-100 px-4 py-3 mb-6">
-          <p className="text-[10px] sm:text-[11px] text-gray-400 leading-relaxed">
-            <strong className="text-gray-500">Disclaimer:</strong> All products are for laboratory and research use only. Not for human consumption.
+          <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
+            <strong className="text-gray-600 font-bold">Disclaimer:</strong> All products are for laboratory and research use only. Not for human consumption.
             Purchasers must be 18+ and agree to use products solely for legitimate research purposes.
           </p>
         </div>

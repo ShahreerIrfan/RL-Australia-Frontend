@@ -135,15 +135,6 @@ export default function Nav() {
                 Sign Up
               </Link>
 
-              {/* Mobile Search Toggle */}
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-emerald-700 transition-all mr-1"
-                aria-label="Toggle search"
-              >
-                <Search className="w-4.5 h-4.5" />
-              </button>
-
               {/* Cart */}
               <Link
                 href="/cart"
@@ -156,26 +147,17 @@ export default function Nav() {
             </div>
           </div>
 
-          {/* Mobile Search Form (Slide down dropdown) */}
-          {isSearchOpen && (
-            <div className="py-2.5 pb-3 border-t border-gray-100 flex items-center gap-2 md:hidden">
-              <div className="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
-                <Search className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search peptides..."
-                  className="flex-1 bg-transparent text-xs outline-none ml-2 text-gray-700 placeholder:text-gray-400"
-                  autoFocus
-                />
-              </div>
-              <button
-                onClick={() => setIsSearchOpen(false)}
-                className="text-xs font-semibold text-gray-500 hover:text-gray-700 px-1"
-              >
-                Cancel
-              </button>
+          {/* Row 2: Mobile Search Form (Always Visible) */}
+          <div className="pb-3 md:hidden">
+            <div className="w-full flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+              <Search className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search peptides, nootropics, supplements..."
+                className="flex-1 bg-transparent text-xs outline-none ml-2 text-gray-700 placeholder:text-gray-400"
+              />
             </div>
-          )}
+          </div>
         </div>
       </header>
 
