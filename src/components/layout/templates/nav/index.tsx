@@ -49,28 +49,52 @@ export default function Nav() {
     <>
       <header className={`sticky top-0 z-50 bg-white transition-shadow duration-200 ${scrolled ? "shadow-md" : "shadow-sm"} border-b border-gray-100`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            {/* Mobile menu button */}
+          {/* Mobile Layout Row 1: Hamburger (left), Logo (center), Cart (right) */}
+          <div className="flex lg:hidden items-center justify-between h-14 relative">
+            {/* Hamburger button */}
             <button
-              className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-650 hover:bg-gray-50 transition-colors"
               onClick={() => setDrawerOpen(true)}
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-5.5 h-5.5" />
             </button>
 
+            {/* Centered Logo on mobile */}
+            <Link href="/" className="flex items-center gap-1.5 flex-shrink-0 absolute left-1/2 -translate-x-1/2">
+              <div className="w-7.5 h-7.5 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-650 flex items-center justify-center shadow-sm">
+                <span className="text-white font-extrabold text-[11px]">RL</span>
+              </div>
+              <div className="text-left">
+                <span className="block text-[13px] font-black text-gray-900 leading-tight">RL Australia</span>
+                <span className="block text-[7.5px] text-emerald-600 font-extrabold uppercase tracking-[0.08em] leading-tight">Peptide Research</span>
+              </div>
+            </Link>
+
+            {/* Cart button */}
+            <Link
+              href="/cart"
+              className="relative flex items-center justify-center bg-[#047857] hover:bg-[#065f46] text-white w-9 h-9 rounded-lg transition-colors"
+            >
+              <ShoppingCart className="w-4.5 h-4.5" />
+              <span className="absolute -top-1 -right-1 bg-emerald-300 text-emerald-900 text-[9px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">0</span>
+            </Link>
+          </div>
+
+          {/* Desktop Layout (hidden on mobile) */}
+          <div className="hidden lg:flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
                 <span className="text-white font-bold text-xs">RL</span>
               </div>
-              <div className="hidden sm:block">
+              <div>
                 <span className="block text-[15px] font-bold text-gray-900 leading-tight">RL Australia</span>
                 <span className="block text-[9px] text-emerald-600 font-semibold uppercase tracking-[0.12em] leading-tight">Peptide Research</span>
               </div>
             </Link>
 
             {/* Desktop nav links */}
-            <nav className="hidden lg:flex items-center gap-0.5">
+            <nav className="flex items-center gap-0.5">
               {navLinks.map((link) => (
                 <div
                   key={link.label}
@@ -108,7 +132,7 @@ export default function Nav() {
               ))}
             </nav>
 
-            {/* Right side */}
+            {/* Right side controls */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Desktop search form */}
               <div className="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 w-44 lg:w-52 hover:border-emerald-300 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
@@ -120,7 +144,7 @@ export default function Nav() {
                 />
               </div>
 
-              {/* Login / Sign Up (desktop) */}
+              {/* Login / Sign Up */}
               <Link
                 href="/login"
                 className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-emerald-700 border border-gray-200 hover:border-emerald-200 hover:bg-emerald-50/40 px-3 py-2 rounded-lg transition-all"
@@ -147,15 +171,17 @@ export default function Nav() {
             </div>
           </div>
 
-          {/* Row 2: Mobile Search Form (Always Visible) */}
+          {/* Row 2: Mobile Search Form (Styled matching reference image with brand color button) */}
           <div className="pb-3 md:hidden">
-            <div className="w-full flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
-              <Search className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+            <div className="w-full flex items-center bg-gray-50 border border-gray-200 rounded-xl pl-3.5 pr-1 py-1 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-100 transition-all relative">
               <input
                 type="text"
-                placeholder="Search peptides, nootropics, supplements..."
-                className="flex-1 bg-transparent text-xs outline-none ml-2 text-gray-700 placeholder:text-gray-400"
+                placeholder="Search..."
+                className="flex-1 bg-transparent text-sm outline-none text-gray-800 placeholder:text-gray-400 py-1.5"
               />
+              <button className="flex items-center justify-center bg-[#047857] active:bg-[#065f46] hover:bg-[#065f46] text-white w-9 h-9 rounded-lg transition-colors shadow-sm ml-2">
+                <Search className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
