@@ -185,15 +185,15 @@ export default function FeaturedProducts() {
         </div>
 
         {/* Category filter tabs */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex overflow-x-auto whitespace-nowrap gap-2 pb-3 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {filterTabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all flex-shrink-0 ${
                 activeTab === tab
-                  ? "bg-gray-900 text-white"
-                  : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                  ? "bg-gray-900 text-white shadow-sm"
+                  : "bg-white border border-gray-200 text-gray-600 hover:border-gray-350"
               }`}
             >
               {tab}

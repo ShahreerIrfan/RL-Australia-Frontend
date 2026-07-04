@@ -61,14 +61,17 @@ export default function TrustSection() {
           {trustElements.map((item, i) => {
             const Icon = item.icon
             return (
-              <div key={i} className="text-center">
+              <div
+                key={i}
+                className="bg-white border border-gray-150 rounded-2xl p-4 sm:p-5 text-center shadow-sm hover:shadow-md hover:border-gray-200/80 transition-all duration-300 flex flex-col items-center justify-start"
+              >
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center mx-auto mb-3">
                   <Icon className="w-5 h-5 text-gray-700" />
                 </div>
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-800 mb-0.5">
+                <h3 className="text-xs sm:text-sm font-bold text-gray-800 mb-1 leading-snug">
                   {item.title}
                 </h3>
-                <p className="text-[10px] sm:text-xs text-gray-500">
+                <p className="text-[10px] sm:text-xs text-gray-500 leading-snug">
                   {item.desc}
                 </p>
               </div>

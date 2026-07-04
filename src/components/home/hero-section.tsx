@@ -6,26 +6,25 @@ import { ArrowRight, Sparkles } from "lucide-react"
 
 export default function HeroSection() {
   return (
-    <section className="relative w-full overflow-hidden min-h-[480px] sm:min-h-[540px] md:min-h-[580px] flex items-center">
+    <section className="relative w-full overflow-hidden min-h-[440px] sm:min-h-[500px] md:min-h-[580px] flex items-center">
       {/* Background image */}
       <div className="absolute inset-0 select-none">
         <img
           src="/assets/hero-background.png"
           alt=""
-          className="w-full h-full object-cover object-[78%_center] md:object-right"
+          className="w-full h-full object-cover object-[80%_center] md:object-right"
         />
-        {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-black/60 md:bg-black/45" />
+        {/* Dark overlay for readability (darker on mobile since there is no container card) */}
+        <div className="absolute inset-0 bg-black/65 md:bg-black/45" />
         {/* Subtle color gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-gray-950/85 via-gray-950/40 to-transparent hidden md:block" />
       </div>
 
       {/* Content */}
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-20 lg:py-24">
-        <div className="max-w-2xl bg-gray-950/65 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border border-white/10 md:border-none rounded-2xl p-5 sm:p-8 md:p-0 shadow-2xl md:shadow-none">
+      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 lg:py-24">
+        <div className="max-w-2xl">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 mb-5 backdrop-blur-sm">
-            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+          <div className="inline-flex items-center bg-white/10 border border-white/15 rounded-full px-3.5 py-1.5 mb-5 backdrop-blur-sm">
             <span className="text-[11px] sm:text-xs font-semibold text-white/95 tracking-wide">
               Peptides · Nootropics · Supplements · Functional Foods
             </span>
@@ -63,7 +62,7 @@ export default function HeroSection() {
           </div>
 
           {/* Quick trust signals */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] sm:text-xs text-white/75 border-t border-white/10 pt-4 md:border-none md:pt-0">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] sm:text-xs text-white/75 mt-6 md:mt-8">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               Third-Party Lab Tested

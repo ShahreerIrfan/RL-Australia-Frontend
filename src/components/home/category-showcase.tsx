@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { Dna, Brain, Pill, Sparkles, Package } from "lucide-react"
+import { Dna, Brain, Pill, Sparkles, Package, Layers } from "lucide-react"
 
 const categories = [
   {
@@ -40,6 +40,13 @@ const categories = [
     href: "/store?category=add-ons",
     bgClass: "bg-rose-50 text-rose-600",
   },
+  {
+    title: "Stacks & Bundles",
+    description: "Curated goal-based combinations",
+    icon: Layers,
+    href: "/store?category=stacks",
+    bgClass: "bg-indigo-50 text-indigo-650",
+  },
 ]
 
 export default function CategoryShowcase() {
@@ -55,7 +62,7 @@ export default function CategoryShowcase() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4.5">
           {categories.map((cat) => {
             const Icon = cat.icon
             return (
