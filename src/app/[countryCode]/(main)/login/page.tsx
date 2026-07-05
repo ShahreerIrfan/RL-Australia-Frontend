@@ -39,11 +39,15 @@ export default function LoginPage() {
             localStorage.setItem("auth_token", data.token)
             localStorage.setItem("user", JSON.stringify(data.user))
 
-            // Redirect based on role
+            // Set cookie for session persistence (infinite session, e.g. 20 years)
+            const maxAge = 60 * 60 * 24 * 365 * 20; // 20 years
+            document.cookie = `_medusa_jwt=${data.token}; path=/; max-age=${maxAge}; SameSite=Strict; ${window.location.protocol === "https:" ? "Secure" : ""}`
+
+            // Redirect based on role using window.location.href to force layout re-render
             if (data.user.role === "admin") {
-                router.push("/admin-dashboard")
+                window.location.href = "/admin-dashboard"
             } else {
-                router.push("/customer-dashboard")
+                window.location.href = "/customer-dashboard"
             }
         } catch (err: any) {
             setError("Unable to connect to server. Please try again.")

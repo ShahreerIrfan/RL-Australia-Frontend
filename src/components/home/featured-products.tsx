@@ -1,12 +1,13 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { Star, ArrowRight, ShoppingCart } from "lucide-react"
 
 interface Product {
   id: string
   name: string
+  handle: string
   dosage: string
   price: number
   originalPrice?: number
@@ -16,11 +17,12 @@ interface Product {
   reviews: number
 }
 
-const allProducts: Product[] = [
+const staticProducts: Product[] = [
   // Peptides
   {
     id: "1",
     name: "BPC-157",
+    handle: "bpc-157-5mg-vial",
     dosage: "5mg Vial",
     price: 49.95,
     originalPrice: 64.95,
@@ -32,6 +34,7 @@ const allProducts: Product[] = [
   {
     id: "2",
     name: "TB-500 (Thymosin Beta)",
+    handle: "tb-500-5mg-vial",
     dosage: "5mg Vial",
     price: 54.95,
     originalPrice: 69.95,
@@ -43,6 +46,7 @@ const allProducts: Product[] = [
   {
     id: "3",
     name: "GHK-Cu (Copper Peptide)",
+    handle: "ghk-cu-50mg-vial",
     dosage: "50mg Vial",
     price: 69.95,
     originalPrice: 89.95,
@@ -54,62 +58,70 @@ const allProducts: Product[] = [
   {
     id: "4",
     name: "CJC-1295 (No DAC)",
+    handle: "cjc-1295-2mg-vial",
     dosage: "2mg Vial",
     price: 44.95,
     originalPrice: 59.95,
     category: "Peptides",
     image: "/assets/products/asset 8.png",
     rating: 4.7,
-    reviews: 84,
+    reviews: 85,
   },
   // Nootropics
   {
     id: "5",
-    name: "Alpha-GPC",
-    dosage: "60 Capsules · 300mg",
-    price: 34.95,
+    name: "Semax (1%)",
+    handle: "semax-1-percent",
+    dosage: "Nasal Spray · 3ml",
+    price: 59.95,
+    originalPrice: 74.95,
     category: "Nootropics",
     image: "/assets/products/asset 9.png",
-    rating: 4.7,
-    reviews: 84,
+    rating: 4.8,
+    reviews: 54,
   },
   {
     id: "6",
-    name: "L-Theanine",
-    dosage: "60 Capsules · 200mg",
-    price: 24.95,
+    name: "Selank (0.15%)",
+    handle: "selank-nasal-spray",
+    dosage: "Nasal Spray · 5ml",
+    price: 64.95,
+    originalPrice: 79.95,
     category: "Nootropics",
-    image: "/assets/products/asset 12.png",
+    image: "/assets/products/asset 6.png",
     rating: 4.7,
-    reviews: 58,
+    reviews: 41,
   },
   // Supplements
   {
     id: "7",
-    name: "NMN (Longevity)",
-    dosage: "30 Capsules · 250mg",
-    price: 22.99,
-    originalPrice: 28.99,
+    name: "Tongkat Ali",
+    handle: "tongkat-ali-200mg",
+    dosage: "200:1 Extract · 60 Capsules",
+    price: 29.99,
+    originalPrice: 39.99,
     category: "Supplements",
-    image: "/assets/products/asset 11.png",
+    image: "/assets/products/asset 7.png",
     rating: 4.8,
-    reviews: 112,
+    reviews: 92,
   },
   {
     id: "8",
-    name: "Glycine",
-    dosage: "120 Capsules · 1000mg",
-    price: 17.99,
-    originalPrice: 21.99,
+    name: "Ashwagandha KSM-66",
+    handle: "ashwagandha-ksm66",
+    dosage: "600mg · 90 Capsules",
+    price: 24.99,
+    originalPrice: 34.99,
     category: "Supplements",
-    image: "/assets/products/asset 13.png",
-    rating: 4.5,
-    reviews: 91,
+    image: "/assets/products/asset 8.png",
+    rating: 4.9,
+    reviews: 116,
   },
-  // Gummies & Functional Foods
+  // Gummies
   {
     id: "9",
     name: "Protein + Creatine Gummies",
+    handle: "protein-creatine-gummies",
     dosage: "30 Gummies",
     price: 16.99,
     originalPrice: 19.99,
@@ -121,6 +133,7 @@ const allProducts: Product[] = [
   {
     id: "10",
     name: "CoQ10",
+    handle: "coq10",
     dosage: "60 Softgels · 100mg",
     price: 18.99,
     originalPrice: 23.99,
@@ -133,6 +146,7 @@ const allProducts: Product[] = [
   {
     id: "11",
     name: "Beef Liver Pills",
+    handle: "beef-liver-pills",
     dosage: "120 Capsules",
     price: 19.99,
     originalPrice: 24.99,
@@ -144,6 +158,7 @@ const allProducts: Product[] = [
   {
     id: "12",
     name: "L. Reuteri (Probiotic)",
+    handle: "l-reuteri",
     dosage: "30 Capsules",
     price: 20.99,
     originalPrice: 25.99,
@@ -158,55 +173,92 @@ const filterTabs = ["All", "Peptides", "Nootropics", "Supplements", "Gummies", "
 
 export default function FeaturedProducts() {
   const [activeTab, setActiveTab] = useState("All")
+  const [allProducts, setAllProducts] = useState<Product[]>(staticProducts)
+
+  // Fetch live products from database
+  useEffect(() => {
+    const fetchLiveProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:9000/store/products", { cache: "no-store" })
+        if (res.ok) {
+          const data = await res.json()
+          const dbProducts: Product[] = (data.products || []).map((p: any) => ({
+            id: p.id,
+            name: p.title || p.name,
+            handle: p.handle || p.slug,
+            dosage: p.dosage || p.short_description || "",
+            price: p.variants?.[0]?.calculated_price?.calculated_amount || 0,
+            originalPrice: p.variants?.[0]?.calculated_price?.original_amount || undefined,
+            category: p.category?.name || "Peptides",
+            image: p.thumbnail || "/assets/products/asset 6.png",
+            rating: 4.8,
+            reviews: Math.floor(Math.random() * 100) + 20,
+          }))
+          if (dbProducts.length > 0) {
+            // Merge: database products first, then static fallback
+            setAllProducts([...dbProducts, ...staticProducts])
+          }
+        }
+      } catch {
+        // Keep static fallback on network error
+      }
+    }
+    fetchLiveProducts()
+  }, [])
 
   const filteredProducts =
     activeTab === "All"
       ? allProducts
       : allProducts.filter((p) => p.category === activeTab)
 
+  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault()
+    e.stopPropagation()
+    window.dispatchEvent(new CustomEvent("add-to-cart", {
+      detail: { productId: product.id, quantity: 1 }
+    }))
+  }
+
   return (
-    <section className="py-12 sm:py-16 bg-gray-50/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-              Popular Products
-            </h2>
-            <p className="text-sm text-gray-500 mt-0.5">
-              Top picks across all categories
-            </p>
-          </div>
-          <Link
-            href="/store"
-            className="text-xs sm:text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+    <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Section Header */}
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full mb-3">
+          <Star className="w-3 h-3 fill-emerald-500" />
+          Popular Research Compounds
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
+          Featured Products
+        </h2>
+        <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
+          Explore our curated selection of premium peptides, nootropics, and supplements
+        </p>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap justify-center gap-2 mb-8">
+        {filterTabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
+              activeTab === tab
+                ? "bg-emerald-600 text-white shadow-md"
+                : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-150"
+            }`}
           >
-            View Full Catalog <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+            {tab}
+          </button>
+        ))}
+      </div>
 
-        {/* Category filter tabs */}
-        <div className="flex overflow-x-auto whitespace-nowrap gap-2 pb-3 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {filterTabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all flex-shrink-0 ${
-                activeTab === tab
-                  ? "bg-gray-900 text-white shadow-sm"
-                  : "bg-white border border-gray-200 text-gray-600 hover:border-gray-350"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Product grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4.5">
+      {/* Products Grid */}
+      <div className="relative">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {filteredProducts.map((product) => (
             <Link
               key={product.id}
-              href={`/products/${product.id}`}
+              href={`/products/${product.handle}`}
               className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:border-gray-200/80 hover:-translate-y-1 transition-all duration-300 flex flex-col"
             >
               {/* Image area */}
@@ -235,7 +287,6 @@ export default function FeaturedProducts() {
                   <h3 className="text-sm sm:text-base font-extrabold text-gray-800 leading-tight mb-1 group-hover:text-emerald-700 transition-colors line-clamp-1">
                     {product.name}
                   </h3>
-                  {/* Dosage/mg display — clear and simple per Peptide Paradise reference */}
                   <p className="text-xs sm:text-sm text-gray-500 font-bold mb-2">
                     {product.dosage}
                   </p>
@@ -271,10 +322,13 @@ export default function FeaturedProducts() {
                     )}
                   </div>
 
-                  <div className="w-full flex items-center justify-center gap-1.5 bg-gray-900 group-hover:bg-emerald-600 active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold py-2.5 rounded-xl transition-all duration-300">
+                  <button
+                    onClick={(e) => handleAddToCart(e, product)}
+                    className="w-full flex items-center justify-center gap-1.5 bg-gray-900 group-hover:bg-emerald-600 active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold py-2.5 rounded-xl transition-all duration-300"
+                  >
                     <ShoppingCart className="w-3.5 h-3.5" />
-                    View Product
-                  </div>
+                    Add to Cart
+                  </button>
                 </div>
               </div>
             </Link>

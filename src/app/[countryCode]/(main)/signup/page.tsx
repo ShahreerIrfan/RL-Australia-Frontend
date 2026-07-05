@@ -45,9 +45,18 @@ export default function SignupPage() {
             if (data.token) {
                 localStorage.setItem("auth_token", data.token)
                 localStorage.setItem("user", JSON.stringify(data.user))
-                setTimeout(() => router.push("/customer-dashboard"), 1500)
+                
+                // Set cookie for session persistence (infinite session, e.g. 20 years)
+                const maxAge = 60 * 60 * 24 * 365 * 20; // 20 years
+                document.cookie = `_medusa_jwt=${data.token}; path=/; max-age=${maxAge}; SameSite=Strict; ${window.location.protocol === "https:" ? "Secure" : ""}`
+
+                setTimeout(() => {
+                    window.location.href = "/customer-dashboard"
+                }, 1500)
             } else {
-                setTimeout(() => router.push("/login"), 2000)
+                setTimeout(() => {
+                    window.location.href = "/login"
+                }, 2000)
             }
         } catch (err: any) {
             setError("Unable to connect to server. Please try again.")

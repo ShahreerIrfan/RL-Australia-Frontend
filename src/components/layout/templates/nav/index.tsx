@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { ShoppingCart, Menu, X, ChevronDown, LogIn, Search, Dna, User, LogOut, LayoutDashboard } from "lucide-react"
+import CartDrawer from "@components/layout/components/cart-drawer"
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -36,12 +37,36 @@ export default function Nav({ customer }: NavProps) {
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
-    window.addEventListener("scroll", onScroll)
-    return () => window.removeEventListener("scroll", onScroll)
+    const handleScroll = () => setScrolled(window.scrollY > 10)
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  // Fetch cart count on mount and on cart updates
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      try {
+        const cartId = typeof window !== "undefined" ? localStorage.getItem("rl_cart_id") : null
+        if (!cartId) return
+        const res = await fetch(`http://localhost:9000/store/carts/${cartId}`, { cache: "no-store" })
+        if (res.ok) {
+          const data = await res.json()
+          const count = data.cart?.items?.reduce((s: number, i: any) => s + i.quantity, 0) || 0
+          setCartCount(count)
+        }
+      } catch {}
+    }
+    fetchCartCount()
+    window.addEventListener("cart-updated", fetchCartCount)
+    return () => window.removeEventListener("cart-updated", fetchCartCount)
+  }, [])
+
+  const openCartDrawer = () => {
+    window.dispatchEvent(new Event("open-cart-drawer"))
+  }
 
   // Prevent body scroll when drawer open
   useEffect(() => {
@@ -76,13 +101,13 @@ export default function Nav({ customer }: NavProps) {
             </Link>
 
             {/* Cart button */}
-            <Link
-              href="/cart"
+            <button
+              onClick={openCartDrawer}
               className="relative flex items-center justify-center bg-[#047857] hover:bg-[#065f46] text-white w-9 h-9 rounded-lg transition-colors"
             >
               <ShoppingCart className="w-4.5 h-4.5" />
-              <span className="absolute -top-1 -right-1 bg-emerald-300 text-emerald-900 text-[9px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">0</span>
-            </Link>
+              <span className="absolute -top-1 -right-1 bg-emerald-300 text-emerald-900 text-[9px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">{cartCount}</span>
+            </button>
           </div>
 
           {/* Desktop Layout (hidden on mobile) */}
@@ -154,25 +179,26 @@ export default function Nav({ customer }: NavProps) {
                 <div className="relative">
                   <button
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                    className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-700 hover:text-emerald-700 hover:bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg transition-all select-none shadow-sm cursor-pointer"
+                    className="hidden lg:flex items-center gap-2 text-xs font-medium text-gray-700 select-none cursor-pointer hover:opacity-90"
                   >
-                    <User className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="max-w-[90px] truncate">{customer.first_name || customer.email}</span>
+                    <div className="w-9 h-9 rounded-full bg-pink-100 flex items-center justify-center text-pink-500 flex-shrink-0 shadow-sm border border-pink-200">
+                      <User className="w-5 h-5" />
+                    </div>
+                    <div className="flex flex-col text-left leading-tight">
+                      <span className="text-[10px] text-gray-400 font-normal">Welcome</span>
+                      <span className="text-xs font-bold text-gray-800 max-w-[90px] truncate">{customer.first_name || "User"}</span>
+                    </div>
                   </button>
 
                   {profileDropdownOpen && (
-                    <div className="absolute right-0 mt-2.5 w-52 bg-white border border-gray-150 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                      <div className="px-4 py-2 border-b border-gray-100 mb-1.5 text-left">
-                        <p className="text-xs font-bold text-gray-800 truncate">{customer.first_name} {customer.last_name}</p>
-                        <p className="text-[10px] text-gray-400 truncate mt-0.5">{customer.email}</p>
-                      </div>
+                    <div className="absolute right-0 mt-2.5 w-48 bg-white border border-gray-150 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                       <Link
-                        href={customer.role === "admin" ? "/admin" : "/account"}
+                        href={customer.role === "admin" ? "/admin-dashboard" : "/customer-dashboard"}
                         onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-emerald-800 transition-colors w-full text-left"
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-emerald-800 transition-colors w-full text-left"
                       >
-                        <LayoutDashboard className="w-3.5 h-3.5 text-gray-400" />
-                        {customer.role === "admin" ? "Admin Dashboard" : "My Dashboard"}
+                        <LayoutDashboard className="w-4 h-4 text-gray-450" />
+                        Dashboard
                       </Link>
                       <button
                         onClick={async () => {
@@ -182,10 +208,10 @@ export default function Nav({ customer }: NavProps) {
                           const countryCode = pathParts[1] || "us"
                           await signout(countryCode)
                         }}
-                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50/40 hover:text-red-700 transition-colors w-full text-left border-t border-gray-100 mt-1.5 cursor-pointer"
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-650 hover:bg-red-50/40 hover:text-red-700 transition-colors w-full text-left border-t border-gray-100 mt-1 cursor-pointer"
                       >
-                        <LogOut className="w-3.5 h-3.5" />
-                        Sign Out
+                        <LogOut className="w-4 h-4 text-red-500" />
+                        Logout
                       </button>
                     </div>
                   )}
@@ -209,14 +235,14 @@ export default function Nav({ customer }: NavProps) {
               )}
 
               {/* Cart */}
-              <Link
-                href="/cart"
+              <button
+                onClick={openCartDrawer}
                 className="relative flex items-center gap-1.5 bg-[#047857] hover:bg-[#065f46] text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors"
               >
                 <ShoppingCart className="w-4 h-4" />
                 <span className="hidden sm:inline">Cart</span>
-                <span className="bg-emerald-300 text-emerald-900 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
-              </Link>
+                <span className="bg-emerald-300 text-emerald-900 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
+              </button>
             </div>
           </div>
 
@@ -318,20 +344,21 @@ export default function Nav({ customer }: NavProps) {
           {customer ? (
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2.5 px-2 py-1.5 mb-2 bg-gray-50/70 border border-gray-100 rounded-xl">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                  <User className="w-4 h-4 text-emerald-600" />
+                <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0 text-pink-500 border border-pink-200">
+                  <User className="w-4.5 h-4.5" />
                 </div>
                 <div className="flex flex-col text-left overflow-hidden">
-                  <span className="text-xs font-bold text-gray-800 truncate">{customer.first_name || "Profile"} {customer.last_name || ""}</span>
-                  <span className="text-[10px] text-gray-400 truncate">{customer.email}</span>
+                  <span className="text-[10px] text-gray-400">Welcome</span>
+                  <span className="text-xs font-bold text-gray-800 truncate">{customer.first_name || "Profile"}</span>
                 </div>
               </div>
               <Link
-                href={customer.role === "admin" ? "/admin" : "/account"}
-                className="block w-full text-center text-sm font-medium text-gray-700 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                href={customer.role === "admin" ? "/admin-dashboard" : "/customer-dashboard"}
+                className="flex items-center justify-center gap-2 w-full text-center text-sm font-semibold text-gray-700 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
                 onClick={() => setDrawerOpen(false)}
               >
-                {customer.role === "admin" ? "Admin Dashboard" : "My Dashboard"}
+                <LayoutDashboard className="w-4 h-4 text-gray-450" />
+                Dashboard
               </Link>
               <button
                 onClick={async () => {
@@ -341,9 +368,10 @@ export default function Nav({ customer }: NavProps) {
                   const countryCode = pathParts[1] || "us"
                   await signout(countryCode)
                 }}
-                className="block w-full text-center text-sm font-medium text-red-600 border border-red-150 py-2.5 rounded-lg hover:bg-red-50/40 transition-colors"
+                className="flex items-center justify-center gap-2 w-full text-center text-sm font-semibold text-red-600 border border-red-150 py-2.5 rounded-lg hover:bg-red-50/40 transition-colors"
               >
-                Sign Out
+                <LogOut className="w-4 h-4 text-red-500" />
+                Logout
               </button>
             </div>
           ) : (
@@ -366,6 +394,9 @@ export default function Nav({ customer }: NavProps) {
           )}
         </div>
       </div>
+
+      {/* Cart Sidebar Drawer */}
+      <CartDrawer />
     </>
   )
 }
