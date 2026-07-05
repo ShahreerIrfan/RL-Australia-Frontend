@@ -132,12 +132,19 @@ async function getCountryCode(
  * Middleware to handle region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  const token = request.cookies.get("_medusa_jwt")?.value
+  const isAuthPage = pathname === "/login" || pathname === "/signup"
+
+  if (token && isAuthPage) {
+    return NextResponse.redirect(new URL("/account", request.url), 307)
+  }
+
   const cacheIdCookie = request.cookies.get("_medusa_cache_id")
   const cacheId = cacheIdCookie?.value || crypto.randomUUID()
   const regionMap = await getRegionMap(cacheId)
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
-  const pathname = request.nextUrl.pathname
   const firstSegment = pathname.split("/")[1]?.toLowerCase()
   const isCountryCodeInUrl = countryCode && firstSegment === countryCode.toLowerCase()
 

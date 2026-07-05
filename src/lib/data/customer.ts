@@ -16,30 +16,21 @@ import {
 } from "./cookies"
 
 export const retrieveCustomer =
-  async (): Promise<HttpTypes.StoreCustomer | null> => {
+  async (): Promise<any | null> => {
     const authHeaders = await getAuthHeaders()
 
-    if (!authHeaders) return null
+    if (!authHeaders || !authHeaders.authorization) return null
 
     const headers = {
       ...authHeaders,
     }
 
-    const next = {
-      ...(await getCacheOptions("customers")),
-    }
-
     return await sdk.client
-      .fetch<{ customer: HttpTypes.StoreCustomer }>(`/store/customers/me`, {
+      .fetch<{ user: any }>(`/store/auth/me`, {
         method: "GET",
-        query: {
-          fields: "*orders",
-        },
         headers,
-        next,
-        cache: "force-cache",
       })
-      .then(({ customer }) => customer)
+      .then(({ user }) => user)
       .catch(() => null)
   }
 
@@ -61,46 +52,37 @@ export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
 
 export async function signup(_currentState: unknown, formData: FormData) {
   const password = formData.get("password") as string
-  const customerForm = {
-    email: formData.get("email") as string,
-    first_name: formData.get("first_name") as string,
-    last_name: formData.get("last_name") as string,
-    phone: formData.get("phone") as string,
-  }
+  const email = formData.get("email") as string
+  const first_name = formData.get("first_name") as string
+  const last_name = formData.get("last_name") as string
+  const phone = formData.get("phone") as string
 
   try {
-    const token = await sdk.auth.register("customer", "emailpass", {
-      email: customerForm.email,
-      password: password,
+    const response = await sdk.client.fetch<any>("/store/auth/register", {
+      method: "POST",
+      body: {
+        email,
+        password,
+        first_name,
+        last_name,
+        phone,
+      },
     })
 
-    await setAuthToken(token as string)
-
-    const headers = {
-      ...(await getAuthHeaders()),
+    if (!response || !response.success || !response.token) {
+      throw new Error(response.message || "Registration failed")
     }
 
-    const { customer: createdCustomer } = await sdk.store.customer.create(
-      customerForm,
-      {},
-      headers
-    )
-
-    const loginToken = await sdk.auth.login("customer", "emailpass", {
-      email: customerForm.email,
-      password,
-    })
-
-    await setAuthToken(loginToken as string)
+    await setAuthToken(response.token)
 
     const customerCacheTag = await getCacheTag("customers")
     revalidateTag(customerCacheTag)
 
     await transferCart()
 
-    return createdCustomer
+    return response.user
   } catch (error: any) {
-    return error.toString()
+    return error.message || error.toString()
   }
 }
 

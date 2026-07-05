@@ -11,11 +11,15 @@ export const metadata: Metadata = {
     "Australia's trusted supplier of high-purity research peptides. Third-party tested, COA verified, and shipped discreetly Australia-wide.",
 }
 
-export default function PageLayout(props: { children: React.ReactNode }) {
+import { retrieveCustomer } from "@lib/data/customer"
+
+export default async function PageLayout(props: { children: React.ReactNode }) {
+  const customer = await retrieveCustomer().catch(() => null)
+
   return (
     <>
       <AnnouncementBar />
-      <Nav />
+      <Nav customer={customer} />
       {props.children}
       <Footer />
     </>

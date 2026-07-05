@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { ShoppingCart, Menu, X, ChevronDown, LogIn, Search, Dna } from "lucide-react"
+import { ShoppingCart, Menu, X, ChevronDown, LogIn, Search, Dna, User, LogOut, LayoutDashboard } from "lucide-react"
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -25,12 +25,17 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ]
 
-export default function Nav() {
+type NavProps = {
+  customer?: any
+}
+
+export default function Nav({ customer }: NavProps) {
   const [scrolled, setScrolled] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [dropdown, setDropdown] = useState<string | null>(null)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<string | null>(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -144,20 +149,64 @@ export default function Nav() {
                 />
               </div>
 
-              {/* Login / Sign Up */}
-              <Link
-                href="/login"
-                className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-emerald-700 border border-gray-200 hover:border-emerald-200 hover:bg-emerald-50/40 px-3 py-2 rounded-lg transition-all"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg transition-colors"
-              >
-                Sign Up
-              </Link>
+              {/* Login / Sign Up or Profile Dropdown */}
+              {customer ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                    className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-700 hover:text-emerald-700 hover:bg-gray-50 border border-gray-200 px-3 py-2 rounded-lg transition-all select-none shadow-sm cursor-pointer"
+                  >
+                    <User className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="max-w-[90px] truncate">{customer.first_name || customer.email}</span>
+                  </button>
+
+                  {profileDropdownOpen && (
+                    <div className="absolute right-0 mt-2.5 w-52 bg-white border border-gray-150 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                      <div className="px-4 py-2 border-b border-gray-100 mb-1.5 text-left">
+                        <p className="text-xs font-bold text-gray-800 truncate">{customer.first_name} {customer.last_name}</p>
+                        <p className="text-[10px] text-gray-400 truncate mt-0.5">{customer.email}</p>
+                      </div>
+                      <Link
+                        href={customer.role === "admin" ? "/admin" : "/account"}
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-emerald-800 transition-colors w-full text-left"
+                      >
+                        <LayoutDashboard className="w-3.5 h-3.5 text-gray-400" />
+                        {customer.role === "admin" ? "Admin Dashboard" : "My Dashboard"}
+                      </Link>
+                      <button
+                        onClick={async () => {
+                          setProfileDropdownOpen(false)
+                          const { signout } = await import("@lib/data/customer")
+                          const pathParts = window.location.pathname.split("/")
+                          const countryCode = pathParts[1] || "us"
+                          await signout(countryCode)
+                        }}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50/40 hover:text-red-700 transition-colors w-full text-left border-t border-gray-100 mt-1.5 cursor-pointer"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-emerald-700 border border-gray-200 hover:border-emerald-200 hover:bg-emerald-50/40 px-3 py-2 rounded-lg transition-all"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
 
               {/* Cart */}
               <Link
@@ -264,22 +313,57 @@ export default function Nav() {
           </nav>
         </div>
 
-        {/* Drawer footer — Login / Sign Up */}
-        <div className="px-4 py-4 border-t border-gray-100 space-y-2">
-          <Link
-            href="/login"
-            className="block w-full text-center text-sm font-medium text-gray-700 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
-            onClick={() => setDrawerOpen(false)}
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="block w-full text-center text-sm font-medium text-white bg-[#047857] py-2.5 rounded-lg hover:bg-[#065f46] transition-colors"
-            onClick={() => setDrawerOpen(false)}
-          >
-            Sign Up
-          </Link>
+        {/* Drawer footer — Login / Sign Up or Profile Actions */}
+        <div className="px-4 py-4 border-t border-gray-100">
+          {customer ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2.5 px-2 py-1.5 mb-2 bg-gray-50/70 border border-gray-100 rounded-xl">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <User className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div className="flex flex-col text-left overflow-hidden">
+                  <span className="text-xs font-bold text-gray-800 truncate">{customer.first_name || "Profile"} {customer.last_name || ""}</span>
+                  <span className="text-[10px] text-gray-400 truncate">{customer.email}</span>
+                </div>
+              </div>
+              <Link
+                href={customer.role === "admin" ? "/admin" : "/account"}
+                className="block w-full text-center text-sm font-medium text-gray-700 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={() => setDrawerOpen(false)}
+              >
+                {customer.role === "admin" ? "Admin Dashboard" : "My Dashboard"}
+              </Link>
+              <button
+                onClick={async () => {
+                  setDrawerOpen(false)
+                  const { signout } = await import("@lib/data/customer")
+                  const pathParts = window.location.pathname.split("/")
+                  const countryCode = pathParts[1] || "us"
+                  await signout(countryCode)
+                }}
+                className="block w-full text-center text-sm font-medium text-red-600 border border-red-150 py-2.5 rounded-lg hover:bg-red-50/40 transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Link
+                href="/login"
+                className="block w-full text-center text-sm font-medium text-gray-700 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={() => setDrawerOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="block w-full text-center text-sm font-medium text-white bg-[#047857] py-2.5 rounded-lg hover:bg-[#065f46] transition-colors"
+                onClick={() => setDrawerOpen(false)}
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </>
