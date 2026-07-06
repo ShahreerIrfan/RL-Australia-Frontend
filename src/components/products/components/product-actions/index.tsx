@@ -225,7 +225,7 @@ export default function ProductActions({
                     <div
                       key={v.id || idx}
                       onClick={() => !outOfStock && selectVariant(idx)}
-                      className={`group flex items-center justify-between p-4.5 rounded-2xl border-2 transition-all cursor-pointer select-none relative overflow-hidden ${
+                      className={`group flex items-center justify-between py-6 px-6 sm:px-7 rounded-2xl border-2 transition-all cursor-pointer select-none relative overflow-hidden ${
                         outOfStock
                           ? "opacity-60 bg-gray-50 border-slate-200 cursor-not-allowed"
                           : isSelected
@@ -234,7 +234,7 @@ export default function ProductActions({
                       }`}
                     >
                       {/* Left: Custom Radio Circle + Details */}
-                      <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                      <div className="flex items-center gap-4.5 flex-1 min-w-0">
                         {/* Custom Radio Button */}
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
                           outOfStock
@@ -250,10 +250,15 @@ export default function ProductActions({
 
                         {/* Title and details */}
                         <div className="min-w-0">
-                          <h4 className={`text-sm sm:text-base font-black uppercase tracking-wide truncate ${
+                          <h4 className={`text-sm sm:text-base font-black uppercase tracking-wide truncate flex items-center flex-wrap gap-2 ${
                             isSelected ? "text-sky-700" : "text-gray-900"
                           }`}>
-                            {v.title}
+                            <span>{v.title}</span>
+                            {v.weight && (
+                              <span className="px-2 py-0.5 text-[9px] font-black bg-slate-100 text-slate-550 rounded-md border border-slate-200 normal-case tracking-normal">
+                                {v.weight}
+                              </span>
+                            )}
                           </h4>
                           {/* Stock / Sku Sub-label */}
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap">

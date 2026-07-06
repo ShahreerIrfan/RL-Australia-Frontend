@@ -295,7 +295,8 @@ export default function AdminDashboard() {
         price: v.calculated_price?.calculated_amount?.toString() || "",
         original_price: v.calculated_price?.original_amount?.toString() || "",
         sku: v.sku || "",
-        stock_quantity: v.inventory_quantity?.toString() || "0"
+        stock_quantity: v.inventory_quantity?.toString() || "0",
+        weight: v.weight || ""
       })) || []
     })
     setActiveMenu("AddEditProduct")
@@ -1464,7 +1465,8 @@ export default function AdminDashboard() {
                           price: "",
                           original_price: "",
                           sku: "",
-                          stock_quantity: "100"
+                          stock_quantity: "100",
+                          weight: ""
                         }
                         setProductForm((prev: any) => ({
                           ...prev,
@@ -1481,9 +1483,9 @@ export default function AdminDashboard() {
                   {(productForm.variants && productForm.variants.length > 0) ? (
                     <div className="space-y-4">
                       {productForm.variants.map((variant: any, index: number) => (
-                        <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-gray-50 border border-gray-150 relative">
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-6 gap-3 p-4 rounded-xl bg-gray-50 border border-gray-150 relative">
                           <div>
-                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Option Name (e.g. 5 Gram)</label>
+                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Option Name (e.g. Single Vial)</label>
                             <input
                               type="text"
                               required
@@ -1494,7 +1496,21 @@ export default function AdminDashboard() {
                                 setProductForm((prev: any) => ({ ...prev, variants: newVariants }))
                               }}
                               className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-sky-500"
-                              placeholder="e.g. 5 Gram"
+                              placeholder="e.g. Single Vial"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Weight / Unit (e.g. 5g)</label>
+                            <input
+                              type="text"
+                              value={variant.weight || ""}
+                              onChange={(e) => {
+                                const newVariants = [...productForm.variants]
+                                newVariants[index].weight = e.target.value
+                                setProductForm((prev: any) => ({ ...prev, variants: newVariants }))
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-sky-500"
+                              placeholder="e.g. 5g, 10g, 120 Capsules"
                             />
                           </div>
                           <div>
