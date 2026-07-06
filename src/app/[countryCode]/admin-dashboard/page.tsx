@@ -273,7 +273,7 @@ export default function AdminDashboard() {
       const url = editingProduct 
         ? `${BACKEND_URL}/admin/products/${editingProduct.id}`
         : `${BACKEND_URL}/admin/products`
-      const method = editingProduct ? "PUT" : "POST"
+      const method = "POST"
 
       const res = await adminFetch(url, {
         method,
@@ -336,7 +336,7 @@ export default function AdminDashboard() {
       const url = editingCategory
         ? `${BACKEND_URL}/admin/product-categories/${editingCategory.id}`
         : `${BACKEND_URL}/admin/product-categories`
-      const method = editingCategory ? "PUT" : "POST"
+      const method = "POST"
       const payload = {
         name: categoryForm.name,
         handle: categoryForm.slug || undefined,
