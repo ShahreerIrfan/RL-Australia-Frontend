@@ -38,12 +38,31 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [currentTime, setCurrentTime] = useState("")
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [activeMenu, setActiveMenu] = useState("Dashboard")
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    Overview: true,
-    CatalogContent: true,
-    CartStack: true,
-    MarketingReports: false
+  const [activeMenu, setActiveMenu] = useState(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search)
+      return searchParams.get("tab") || "Dashboard"
+    }
+    return "Dashboard"
+  })
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
+    let isCatalogOpen = true
+    let isProductsOpen = true
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search)
+      const tab = searchParams.get("tab")
+      if (tab && tab !== "All Products" && tab !== "Categories") {
+        isCatalogOpen = false
+        isProductsOpen = false
+      }
+    }
+    return {
+      Overview: true,
+      CatalogContent: isCatalogOpen,
+      ProductsSub: isProductsOpen,
+      CartStack: true,
+      MarketingReports: false
+    }
   })
 
   // Product & Category CRUD states
@@ -127,23 +146,6 @@ export default function AdminDashboard() {
     }
   }, [activeMenu])
 
-  // Load initial activeMenu from URL on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const searchParams = new URLSearchParams(window.location.search)
-      const tab = searchParams.get("tab")
-      if (tab) {
-        setActiveMenu(tab)
-        if (tab === "All Products" || tab === "Categories") {
-          setExpandedSections(prev => ({
-            ...prev,
-            CatalogContent: true,
-            ProductsSub: true
-          }))
-        }
-      }
-    }
-  }, [])
 
   const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -1181,7 +1183,7 @@ export default function AdminDashboard() {
 
         {/* Inline Product Add/Edit View (replaces modal) */}
         {activeMenu === "AddEditProduct" && (
-          <main className="flex-1 overflow-y-auto p-8 max-w-5xl mx-auto w-full text-left">
+          <main className="flex-1 overflow-y-auto p-8 w-full text-left">
             {/* Back to Products breadcrumb */}
             <button 
               onClick={() => { setActiveMenu("All Products"); fetchProducts() }}
