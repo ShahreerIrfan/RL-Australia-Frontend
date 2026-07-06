@@ -40,8 +40,20 @@ export default function ProductActions({
   const searchParams = useSearchParams()
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0)
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
+
+  // Sync selectedVariantIndex if query parameter has v_id
+  useEffect(() => {
+    const vId = searchParams?.get("v_id")
+    if (vId && product.variants) {
+      const idx = product.variants.findIndex((v) => v.id === vId)
+      if (idx !== -1 && idx !== selectedVariantIndex) {
+        setSelectedVariantIndex(idx)
+      }
+    }
+  }, [searchParams, product.variants])
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -56,11 +68,17 @@ export default function ProductActions({
       return
     }
 
-    return product.variants.find((v) => {
-      const variantOptions = optionsAsKeymap(v.options)
-      return isEqual(variantOptions, options)
-    })
-  }, [product.variants, options])
+    // If it has medusa options, use options matching
+    if (product.options && product.options.length > 0) {
+      return product.variants.find((v) => {
+        const variantOptions = optionsAsKeymap(v.options)
+        return isEqual(variantOptions, options)
+      })
+    }
+
+    // Otherwise fall back to selected index
+    return product.variants[selectedVariantIndex] || product.variants[0]
+  }, [product.variants, options, selectedVariantIndex, product.options])
 
   // update the options when a variant is selected
   const setOptionValue = (optionId: string, value: string) => {
@@ -70,13 +88,26 @@ export default function ProductActions({
     }))
   }
 
+  const selectVariant = (index: number) => {
+    setSelectedVariantIndex(index)
+    const variant = product.variants?.[index]
+    if (variant?.id) {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set("v_id", variant.id)
+      router.replace(pathname + "?" + params.toString())
+    }
+  }
+
   //check if the selected options produce a valid variant
   const isValidVariant = useMemo(() => {
-    return product.variants?.some((v) => {
-      const variantOptions = optionsAsKeymap(v.options)
-      return isEqual(variantOptions, options)
-    })
-  }, [product.variants, options])
+    if (product.options && product.options.length > 0) {
+      return product.variants?.some((v) => {
+        const variantOptions = optionsAsKeymap(v.options)
+        return isEqual(variantOptions, options)
+      })
+    }
+    return !!selectedVariant
+  }, [product.variants, options, product.options, selectedVariant])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -142,7 +173,8 @@ export default function ProductActions({
     <>
       <div className="flex flex-col gap-y-2" ref={actionsRef}>
         <div>
-          {(product.variants?.length ?? 0) > 1 && (
+          {/* Medusa standard options selector */}
+          {product.options && product.options.length > 0 && (product.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-4">
               {(product.options || []).map((option, index) => {
                 return (
@@ -158,6 +190,35 @@ export default function ProductActions({
                   </div>
                 )
               })}
+              <Divider />
+            </div>
+          )}
+
+          {/* Custom products direct variant selector pills */}
+          {(!product.options || product.options.length === 0) && (product.variants?.length ?? 0) > 1 && (
+            <div className="flex flex-col gap-y-3 mb-6 text-left">
+              <span className="text-xs sm:text-sm font-extrabold text-gray-700 uppercase tracking-wider block">
+                Select Option / Gram:
+              </span>
+              <div className="flex flex-wrap gap-2.5">
+                {product.variants!.map((v, idx) => {
+                  const isSelected = selectedVariant?.id === v.id
+                  return (
+                    <button
+                      key={v.id || idx}
+                      type="button"
+                      onClick={() => selectVariant(idx)}
+                      className={`px-4 py-2.5 text-xs sm:text-sm font-black rounded-xl border-2 transition-all uppercase tracking-wide cursor-pointer ${
+                        isSelected
+                          ? "bg-sky-50 border-sky-500 text-sky-700 shadow-sm"
+                          : "bg-white border-slate-200 text-slate-700 hover:border-slate-350"
+                      }`}
+                    >
+                      {v.title}
+                    </button>
+                  )
+                })}
+              </div>
               <Divider />
             </div>
           )}

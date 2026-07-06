@@ -329,13 +329,11 @@ export default function FeaturedProducts() {
                     )}
                   </div>
 
-                  <button
-                    onClick={(e) => handleAddToCart(e, product)}
+                  <div
                     className="w-full flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold py-2.5 rounded transition-all duration-300 uppercase tracking-wider shadow-sm border-b-2 border-sky-850"
                   >
-                    <ShoppingCart className="w-4 h-4" />
-                    Add to Cart
-                  </button>
+                    View Product
+                  </div>
                 </div>
               </div>
             </Link>

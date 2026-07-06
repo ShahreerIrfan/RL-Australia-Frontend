@@ -96,7 +96,8 @@ export default function AdminDashboard() {
     molecular_formula: "",
     is_active: true,
     is_featured: false,
-    image_gallery: []
+    image_gallery: [],
+    variants: []
   })
 
   const fetchProducts = async () => {
@@ -261,7 +262,8 @@ export default function AdminDashboard() {
       molecular_formula: "",
       is_active: true,
       is_featured: false,
-      image_gallery: []
+      image_gallery: [],
+      variants: []
     })
     setActiveMenu("AddEditProduct")
   }
@@ -286,7 +288,15 @@ export default function AdminDashboard() {
       molecular_formula: product.molecular_formula || "",
       is_active: product.status === "published",
       is_featured: product.is_featured === true,
-      image_gallery: product.image_gallery || []
+      image_gallery: product.image_gallery || [],
+      variants: product.variants?.map((v: any) => ({
+        id: v.id,
+        title: v.title,
+        price: v.calculated_price?.calculated_amount?.toString() || "",
+        original_price: v.calculated_price?.original_amount?.toString() || "",
+        sku: v.sku || "",
+        stock_quantity: v.inventory_quantity?.toString() || "0"
+      })) || []
     })
     setActiveMenu("AddEditProduct")
   }
@@ -1432,6 +1442,161 @@ export default function AdminDashboard() {
                       </label>
                     </div>
                   </div>
+                </div>
+
+                {/* 5. Custom Quantity Options & Tiered Pricing Card */}
+                <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
+                        <Package className="w-4.5 h-4.5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-gray-900">Quantity Tiers & Packaging Options</h3>
+                        <p className="text-[10px] text-gray-450 font-medium -mt-0.5">Configure custom gram quantities and their respective prices</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newVariant = {
+                          title: "",
+                          price: "",
+                          original_price: "",
+                          sku: "",
+                          stock_quantity: "100"
+                        }
+                        setProductForm((prev: any) => ({
+                          ...prev,
+                          variants: [...(prev.variants || []), newVariant]
+                        }))
+                      }}
+                      className="flex items-center gap-1 bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 text-[10px] font-bold rounded-lg transition-colors shadow-sm"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add Option
+                    </button>
+                  </div>
+
+                  {(productForm.variants && productForm.variants.length > 0) ? (
+                    <div className="space-y-4">
+                      {productForm.variants.map((variant: any, index: number) => (
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-gray-50 border border-gray-150 relative">
+                          <div>
+                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Option Name (e.g. 5 Gram)</label>
+                            <input
+                              type="text"
+                              required
+                              value={variant.title}
+                              onChange={(e) => {
+                                const newVariants = [...productForm.variants]
+                                newVariants[index].title = e.target.value
+                                setProductForm((prev: any) => ({ ...prev, variants: newVariants }))
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-sky-500"
+                              placeholder="e.g. 5 Gram"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Price ($) *</label>
+                            <input
+                              type="number"
+                              required
+                              min="0"
+                              step="0.01"
+                              value={variant.price}
+                              onChange={(e) => {
+                                const newVariants = [...productForm.variants]
+                                newVariants[index].price = e.target.value
+                                
+                                // Auto update first variant details to main fields for compatibility
+                                const updatedForm: any = { ...productForm, variants: newVariants }
+                                if (index === 0) {
+                                  updatedForm.price = e.target.value
+                                }
+                                setProductForm(updatedForm)
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-sky-500"
+                              placeholder="e.g. 49.95"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Compare Price ($)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={variant.original_price}
+                              onChange={(e) => {
+                                const newVariants = [...productForm.variants]
+                                newVariants[index].original_price = e.target.value
+                                const updatedForm: any = { ...productForm, variants: newVariants }
+                                if (index === 0) {
+                                  updatedForm.original_price = e.target.value
+                                }
+                                setProductForm(updatedForm)
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-sky-500"
+                              placeholder="e.g. 64.95"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">SKU</label>
+                            <input
+                              type="text"
+                              value={variant.sku}
+                              onChange={(e) => {
+                                const newVariants = [...productForm.variants]
+                                newVariants[index].sku = e.target.value
+                                const updatedForm: any = { ...productForm, variants: newVariants }
+                                if (index === 0) {
+                                  updatedForm.sku = e.target.value
+                                }
+                                setProductForm(updatedForm)
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-sky-500"
+                              placeholder="e.g. SKU-5G"
+                            />
+                          </div>
+                          <div className="flex items-end gap-2">
+                            <div className="flex-1">
+                              <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Stock</label>
+                              <input
+                                type="number"
+                                min="0"
+                                value={variant.stock_quantity}
+                                onChange={(e) => {
+                                  const newVariants = [...productForm.variants]
+                                  newVariants[index].stock_quantity = e.target.value
+                                  const updatedForm: any = { ...productForm, variants: newVariants }
+                                  if (index === 0) {
+                                    updatedForm.stock_quantity = e.target.value
+                                  }
+                                  setProductForm(updatedForm)
+                                }}
+                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-sky-500"
+                                placeholder="100"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newVariants = (productForm.variants || []).filter((_: any, idx: number) => idx !== index)
+                                setProductForm((prev: any) => ({ ...prev, variants: newVariants }))
+                              }}
+                              className="bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-100 hover:text-rose-700 w-8 h-8 rounded-lg flex items-center justify-center transition-colors flex-shrink-0"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="border border-dashed border-gray-200 rounded-xl p-6 text-center text-gray-400 text-xs font-semibold">
+                      No custom quantity variants defined yet. Clicking "Add Option" lets you define custom packaging sizes (e.g. 5g, 10g). If none are defined, the system defaults to the top-level product price/sku above.
+                    </div>
+                  )}
                 </div>
 
                 {/* 5. Primary Image Card */}
