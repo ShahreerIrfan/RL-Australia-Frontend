@@ -12,6 +12,16 @@ import {
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 
+const adminFetch = (url: string, init?: RequestInit) => {
+  const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null
+  const headers = {
+    "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "",
+    ...init?.headers,
+    ...(token ? { "Authorization": `Bearer ${token}` } : {})
+  }
+  return fetch(url, { ...init, headers })
+}
+
 interface UserData {
   id: string
   email: string
@@ -73,12 +83,7 @@ export default function AdminDashboard() {
   const fetchProducts = async () => {
     try {
       setProductsLoading(true)
-      const res = await fetch(`${BACKEND_URL}/store/products`, {
-        cache: "no-store",
-        headers: {
-          "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
-        }
-      })
+      const res = await adminFetch(`${BACKEND_URL}/store/products`, { cache: "no-store" })
       if (res.ok) {
         const data = await res.json()
         setProducts(data.products || [])
@@ -92,12 +97,7 @@ export default function AdminDashboard() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/store/categories`, {
-        cache: "no-store",
-        headers: {
-          "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
-        }
-      })
+      const res = await adminFetch(`${BACKEND_URL}/store/categories`, { cache: "no-store" })
       if (res.ok) {
         const data = await res.json()
         setCategories(data.categories || [])
@@ -128,7 +128,7 @@ export default function AdminDashboard() {
       reader.readAsDataURL(file)
       reader.onload = async () => {
         const base64Data = (reader.result as string).split(",")[1]
-        const res = await fetch(`${BACKEND_URL}/admin/upload`, {
+        const res = await adminFetch(`${BACKEND_URL}/admin/upload`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
           reader.onload = async () => {
             try {
               const base64Data = (reader.result as string).split(",")[1]
-              const res = await fetch(`${BACKEND_URL}/admin/upload`, {
+              const res = await adminFetch(`${BACKEND_URL}/admin/upload`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
         : `${BACKEND_URL}/admin/products`
       const method = editingProduct ? "PUT" : "POST"
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productForm)
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
     if (!confirm("Are you sure you want to delete this product?")) return
 
     try {
-      const res = await fetch(`${BACKEND_URL}/admin/products/${id}`, {
+      const res = await adminFetch(`${BACKEND_URL}/admin/products/${id}`, {
         method: "DELETE"
       })
       if (res.ok) {
@@ -337,7 +337,7 @@ export default function AdminDashboard() {
         ? `${BACKEND_URL}/admin/categories/${editingCategory.id}`
         : `${BACKEND_URL}/admin/categories`
       const method = editingCategory ? "PUT" : "POST"
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(categoryForm)
@@ -358,7 +358,7 @@ export default function AdminDashboard() {
   const handleDeleteCategory = async (id: string) => {
     if (!confirm("Are you sure you want to delete this category?")) return
     try {
-      const res = await fetch(`${BACKEND_URL}/admin/categories/${id}`, { method: "DELETE" })
+      const res = await adminFetch(`${BACKEND_URL}/admin/categories/${id}`, { method: "DELETE" })
       if (res.ok) {
         fetchCategories()
       } else {
