@@ -2,36 +2,34 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 export default function HeroSection() {
   return (
-    <section className="relative w-full overflow-hidden min-h-[440px] sm:min-h-[500px] md:min-h-[580px] flex items-center">
-      {/* Background image */}
-      <div className="absolute inset-0 select-none">
+    <section className="relative w-full overflow-hidden min-h-[440px] sm:min-h-[500px] md:min-h-[620px] flex items-center bg-gray-950">
+      {/* Background image overlay */}
+      <div className="absolute inset-0 select-none opacity-40">
         <img
           src="/assets/hero-background.png"
           alt=""
           className="w-full h-full object-cover object-[80%_center] md:object-right"
         />
-        {/* Dark overlay for readability (darker on mobile since there is no container card) */}
-        <div className="absolute inset-0 bg-black/65 md:bg-black/45" />
-        {/* Subtle color gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-950/85 via-gray-950/40 to-transparent hidden md:block" />
       </div>
+      {/* Dark gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-950/90 via-gray-950/60 to-transparent" />
 
-      {/* Content */}
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-20 z-10">
+      {/* Content wrapper */}
+      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24 z-10">
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left - Content */}
           <div className="lg:col-span-6 text-left">
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-4">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-5">
               Lab Tested Supplements
               <br />
               You Can <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent underline decoration-teal-400 decoration-wavy decoration-3">TRUST</span>
             </h1>
 
-            <p className="text-sm sm:text-lg text-white/85 leading-relaxed mb-8 max-w-lg">
+            <p className="text-base sm:text-xl text-white/90 leading-relaxed mb-10 max-w-lg">
               Not sure where to start? Let us simplify the process for you, and help you find the perfect products for your goals.
             </p>
 
@@ -39,32 +37,32 @@ export default function HeroSection() {
               {/* Primary CTA - Take the Quiz */}
               <Link
                 href="/stack-builder"
-                className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 active:scale-[0.98] text-white px-7 py-3.5 rounded-full text-sm font-extrabold transition-all shadow-lg shadow-teal-500/25 uppercase tracking-wider"
+                className="inline-flex items-center gap-2.5 bg-teal-500 hover:bg-teal-400 active:scale-[0.98] text-white px-8 py-4 rounded-full text-base font-extrabold transition-all shadow-lg shadow-teal-500/25 uppercase tracking-wider"
               >
                 Take the Quiz!
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-5 h-5" />
               </Link>
               {/* Secondary CTA - Browse Catalog */}
               <Link
                 href="/store"
-                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 active:scale-[0.98] border border-white/25 text-white px-7 py-3.5 rounded-full text-sm font-bold backdrop-blur-sm transition-all uppercase tracking-wider"
+                className="inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/20 active:scale-[0.98] border border-white/25 text-white px-8 py-4 rounded-full text-base font-bold backdrop-blur-sm transition-all uppercase tracking-wider"
               >
                 Browse Catalog
               </Link>
             </div>
 
             {/* Quick trust signals */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 text-xs text-white/75 mt-10 border-t border-white/10 pt-6">
-              <span className="flex items-center gap-1.5 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80 mt-12 border-t border-white/10 pt-8">
+              <span className="flex items-center gap-2 font-semibold">
+                <span className="w-2 h-2 rounded-full bg-teal-400" />
                 Third-Party Lab Tested
               </span>
-              <span className="flex items-center gap-1.5 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+              <span className="flex items-center gap-2 font-semibold">
+                <span className="w-2 h-2 rounded-full bg-teal-400" />
                 Free Shipping Over $200
               </span>
-              <span className="flex items-center gap-1.5 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+              <span className="flex items-center gap-2 font-semibold">
+                <span className="w-2 h-2 rounded-full bg-teal-400" />
                 COA With Every Product
               </span>
             </div>

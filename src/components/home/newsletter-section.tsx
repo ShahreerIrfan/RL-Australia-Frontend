@@ -60,24 +60,24 @@ export default function NewsletterSection() {
         
         {/* Title */}
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest text-white">
+          <h2 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-widest text-white">
             Frequently Asked Questions
           </h2>
         </div>
 
         {/* FAQs 2-Column Grid */}
-        <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 max-w-5xl mx-auto mb-10 text-left">
+        <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 max-w-7xl mx-auto mb-10 text-left">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index
             return (
               <div key={index} className="border-b border-gray-700/60 pb-4">
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full flex items-center justify-between py-3 text-left focus:outline-none"
+                  className="w-full flex items-center justify-between py-4 text-left focus:outline-none"
                 >
                   <div className="flex items-center gap-3.5">
                     <span className="text-teal-400 font-black text-sm">{faq.num}</span>
-                    <span className="text-sm sm:text-base font-extrabold text-white tracking-wide">
+                    <span className="text-base sm:text-lg font-extrabold text-white tracking-wide">
                       {faq.question}
                     </span>
                   </div>
@@ -88,7 +88,7 @@ export default function NewsletterSection() {
                   )}
                 </button>
                 {isOpen && (
-                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed pl-8 mt-2 transition-all duration-300">
+                  <p className="text-sm sm:text-base text-gray-300 leading-relaxed pl-8 mt-2 transition-all duration-300">
                     {faq.answer}
                   </p>
                 )}
@@ -101,19 +101,19 @@ export default function NewsletterSection() {
         <div className="text-center mb-16">
           <Link
             href="/faqs"
-            className="inline-block border border-white hover:bg-white hover:text-[#1c2229] text-white font-extrabold text-xs px-6 py-2.5 rounded transition-all uppercase tracking-wider"
+            className="inline-block border border-white hover:bg-white hover:text-[#1c2229] text-white font-extrabold text-sm px-8 py-3.5 rounded transition-all uppercase tracking-wider"
           >
             More Questions?
           </Link>
         </div>
 
         {/* Newsletter Signup Form */}
-        <div className="border-t border-gray-700/50 pt-12 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="border-t border-gray-700/50 pt-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-center md:text-left">
-            <h3 className="text-lg font-black uppercase tracking-wider mb-1">
+            <h3 className="text-xl font-black uppercase tracking-wider mb-1">
               Sign Up For Our Newsletter
             </h3>
-            <p className="text-xs sm:text-sm text-gray-400 font-medium">
+            <p className="text-sm sm:text-base text-gray-400 font-medium">
               Receive special offers and updates!
             </p>
           </div>
@@ -122,9 +122,9 @@ export default function NewsletterSection() {
             <input
               type="email"
               placeholder="Email address"
-              className="flex-1 bg-white border-none rounded px-4 py-3 text-sm text-gray-900 focus:ring-2 focus:ring-teal-400 focus:outline-none placeholder:text-gray-400"
+              className="flex-1 bg-white border-none rounded px-4 py-3.5 text-sm text-gray-900 focus:ring-2 focus:ring-teal-400 focus:outline-none placeholder:text-gray-400"
             />
-            <button className="bg-[#00b2a9] hover:bg-[#00938c] text-white px-6 py-3 rounded text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-colors">
+            <button className="bg-[#00b2a9] hover:bg-[#00938c] text-white px-8 py-3.5 rounded text-sm sm:text-base font-extrabold uppercase tracking-wider transition-colors">
               Subscribe
             </button>
           </div>

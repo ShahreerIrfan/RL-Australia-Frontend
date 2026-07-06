@@ -33,10 +33,10 @@ export default function GuidesPreview() {
       {/* ============ NEED HELP MAKING THE RIGHT CHOICE? (GUIDES GRID) ============ */}
       <section className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-gray-150">
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 uppercase tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-gray-900 uppercase tracking-tight">
             Need Help Making The Right Choice?
           </h2>
-          <p className="text-sm sm:text-base text-gray-650 mt-2 max-w-2xl mx-auto font-medium">
+          <p className="text-base sm:text-lg text-gray-650 mt-3 max-w-2xl mx-auto font-medium">
             We know choosing the right product can be tough. Our in-depth buying guides break down the features, benefits, and best uses to help you make confident purchases.
           </p>
         </div>
@@ -153,11 +153,11 @@ export default function GuidesPreview() {
       {/* ============ ND INSIDER REWARDS ============ */}
       <section className="py-16 bg-gray-50 border-b border-gray-150">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white border border-gray-200/70 p-8 sm:p-12 rounded-2xl shadow-sm max-w-5xl mx-auto">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-2">
+          <div className="bg-white border border-gray-200/70 p-8 sm:p-12 rounded-2xl shadow-sm max-w-7xl mx-auto">
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-3">
               Unlock More With ND Insider Rewards
             </h2>
-            <p className="text-sm sm:text-base text-gray-500 max-w-2xl mx-auto mb-8 font-medium">
+            <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto mb-8 font-medium">
               Earn points every time you shop. Level up for VIP perks, cash back, and exclusive looks into our science and R&D efforts.
             </p>
 
@@ -174,33 +174,32 @@ export default function GuidesPreview() {
                   <div className={`w-12 h-12 rounded-full border-2 border-current flex items-center justify-center font-black text-lg mb-3 ${tier.color}`}>
                     N
                   </div>
-                  <span className="text-xs font-extrabold text-gray-800 leading-snug">
+                  <span className="text-sm font-extrabold text-gray-800 leading-snug">
                     {tier.name}
                   </span>
                 </div>
               ))}
             </div>
 
-            <button className="bg-[#1d2d3d] hover:bg-gray-850 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-md uppercase tracking-wider transition-colors shadow-sm">
+            <button className="bg-[#1d2d3d] hover:bg-gray-850 text-white font-extrabold text-base px-10 py-4 rounded-md uppercase tracking-wider transition-colors shadow-sm">
               Learn More
             </button>
           </div>
         </div>
       </section>
 
-      {/* ============ PODCAST BANNER ============ */}
       <section className="py-16 sm:py-20 bg-white border-b border-gray-150">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-[#f0f2f5] rounded-2xl overflow-hidden p-8 sm:p-12 shadow-sm grid md:grid-cols-2 gap-8 items-center border border-gray-200/50">
             {/* Left Column */}
             <div className="text-left">
-              <span className="text-xs font-extrabold text-teal-600 uppercase tracking-widest block mb-2">
+              <span className="text-sm font-extrabold text-teal-600 uppercase tracking-widest block mb-2">
                 In Search of Insight Podcast
               </span>
-              <h2 className="text-2xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight mb-4">
+              <h2 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-4">
                 Unlock Deeper Supplement Science
               </h2>
-              <p className="text-sm text-gray-550 leading-relaxed mb-8 max-w-md font-medium">
+              <p className="text-base text-gray-550 leading-relaxed mb-8 max-w-md font-medium">
                 Join our research teams as we dissect the biochemistry, dosing, and synergy profiles of advanced nootropics and peptides.
               </p>
 
@@ -214,7 +213,7 @@ export default function GuidesPreview() {
                 <Music className="w-5 h-5 text-gray-500 hover:text-teal-600 cursor-pointer transition-colors" />
               </div>
 
-              <button className="bg-[#1d2d3d] hover:bg-gray-850 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-md uppercase tracking-wider transition-colors shadow-sm">
+              <button className="bg-[#1d2d3d] hover:bg-gray-850 text-white font-extrabold text-base px-10 py-4 rounded-md uppercase tracking-wider transition-colors shadow-sm">
                 Listen Now
               </button>
             </div>
@@ -236,10 +235,10 @@ export default function GuidesPreview() {
       {/* ============ LEARNING / BLOG ============ */}
       <section className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 uppercase tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-gray-900 uppercase tracking-tight">
             Learning
           </h2>
-          <p className="text-sm text-gray-500 mt-2 font-medium">
+          <p className="text-base text-gray-500 mt-3 font-medium">
             Stay up to date with the latest peptide breakthroughs and supplement reviews
           </p>
         </div>
@@ -255,19 +254,19 @@ export default function GuidesPreview() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <div className="p-4 text-left">
-                  <span className="text-[10px] font-bold text-gray-400 block mb-2 uppercase">
+                <div className="p-5 text-left">
+                  <span className="text-[11px] font-bold text-gray-400 block mb-2 uppercase">
                     {post.date}
                   </span>
-                  <h4 className="text-sm font-extrabold text-gray-900 group-hover:text-teal-600 transition-colors line-clamp-2 leading-snug">
+                  <h4 className="text-base font-extrabold text-gray-900 group-hover:text-teal-600 transition-colors line-clamp-2 leading-snug">
                     {post.title}
                   </h4>
                 </div>
               </div>
-              <div className="p-4 border-t border-gray-100 text-left">
+              <div className="p-5 border-t border-gray-100 text-left">
                 <Link
                   href="/resources"
-                  className="text-xs font-extrabold text-teal-600 hover:text-teal-700 flex items-center gap-1 uppercase tracking-wider"
+                  className="text-sm font-extrabold text-teal-600 hover:text-teal-700 flex items-center gap-1 uppercase tracking-wider"
                 >
                   Read More
                   <ArrowRight className="w-3.5 h-3.5" />
