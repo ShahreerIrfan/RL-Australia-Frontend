@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { BookOpen, ArrowRight, Download, Youtube, Music, Radio } from "lucide-react"
+import { BookOpen, ArrowRight, Download, Music, Radio } from "lucide-react"
 
 const blogPosts = [
   {
@@ -208,7 +208,9 @@ export default function GuidesPreview() {
               <div className="flex flex-wrap items-center gap-4 mb-8">
                 <span className="text-xs font-bold text-gray-400 uppercase mr-2">Listen On</span>
                 <Radio className="w-5 h-5 text-gray-500 hover:text-teal-600 cursor-pointer transition-colors" />
-                <Youtube className="w-5 h-5 text-gray-500 hover:text-teal-600 cursor-pointer transition-colors" />
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-gray-500 hover:text-teal-600 cursor-pointer transition-colors" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.108C19.52 3.5 12 3.5 12 3.5s-7.52 0-9.388.555A3.002 3.002 0 0 0 .502 6.163C0 8.03 0 12 0 12s0 3.97.502 5.837a3.003 3.003 0 0 0 2.11 2.108C4.48 20.5 12 20.5 12 20.5s7.52 0 9.388-.555a3.002 3.002 0 0 0 2.11-2.108C24 15.97 24 12 24 12s0-3.97-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
                 <Music className="w-5 h-5 text-gray-500 hover:text-teal-600 cursor-pointer transition-colors" />
               </div>
 
