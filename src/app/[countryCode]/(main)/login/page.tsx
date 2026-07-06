@@ -23,7 +23,10 @@ export default function LoginPage() {
         try {
             const res = await fetch(`${BACKEND_URL}/store/auth/login`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
+                },
                 body: JSON.stringify({ email, password }),
             })
 
