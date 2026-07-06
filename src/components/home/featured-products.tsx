@@ -268,8 +268,8 @@ export default function FeaturedProducts() {
               href={`/products/${product.handle}`}
               className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:border-gray-200/80 hover:-translate-y-1 transition-all duration-300 flex flex-col"
             >
-              {/* Image area */}
-              <div className="relative p-3 pb-2 bg-gradient-to-b from-gray-50 to-white/40 border-b border-gray-100 flex items-center justify-center h-28 sm:h-36 lg:h-40 overflow-hidden flex-shrink-0">
+              {/* Image area - Taller, padded-free edge-to-edge landscape support */}
+              <div className="relative bg-gradient-to-b from-gray-50 to-white/40 border-b border-gray-100 flex items-center justify-center h-36 sm:h-48 lg:h-52 overflow-hidden flex-shrink-0">
                 {product.originalPrice && (
                   <span className="absolute top-2 left-2 bg-[#c5a059] text-white text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded z-10 shadow-sm uppercase tracking-wide">
                     Save ${(product.originalPrice - product.price).toFixed(0)}
@@ -279,11 +279,11 @@ export default function FeaturedProducts() {
                   {product.category}
                 </span>
 
-                <div className="flex items-center justify-center h-full w-full p-2">
+                <div className="h-full w-full">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
                   />
                 </div>
               </div>
