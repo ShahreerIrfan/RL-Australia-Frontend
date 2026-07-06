@@ -260,7 +260,7 @@ export default function ProductActions({
                                   ? "bg-sky-100/50 text-sky-700 border-sky-200"
                                   : "bg-slate-100 text-slate-600 border-slate-200"
                               }`}>
-                                {v.weight}
+                                {/^\d+(\.\d+)?$/.test(v.weight.trim()) ? `${v.weight} Gram` : v.weight}
                               </span>
                             )}
                           </h4>
