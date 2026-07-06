@@ -118,6 +118,33 @@ export default function AdminDashboard() {
     }
   }, [activeMenu])
 
+  // Synchronize activeMenu with URL query parameter on change
+  useEffect(() => {
+    if (typeof window !== "undefined" && activeMenu) {
+      const url = new URL(window.location.href)
+      url.searchParams.set("tab", activeMenu)
+      window.history.replaceState(null, "", url.toString())
+    }
+  }, [activeMenu])
+
+  // Load initial activeMenu from URL on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search)
+      const tab = searchParams.get("tab")
+      if (tab) {
+        setActiveMenu(tab)
+        if (tab === "All Products" || tab === "Categories") {
+          setExpandedSections(prev => ({
+            ...prev,
+            CatalogContent: true,
+            ProductsSub: true
+          }))
+        }
+      }
+    }
+  }, [])
+
   const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
