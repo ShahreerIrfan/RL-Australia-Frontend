@@ -1446,53 +1446,40 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col md:flex-row gap-4 items-center">
-                    <div className="flex-1 w-full text-left">
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Primary Image URL</label>
-                      <input 
-                        type="text"
-                        value={productForm.image_url}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, image_url: e.target.value }))}
-                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="http://example.com/image.png"
-                      />
-                    </div>
+                  <div className="flex flex-row items-center gap-6 text-left">
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      id="modal-primary-image-upload"
+                      className="hidden"
+                      onChange={handleImageFileChange}
+                    />
+                    <label 
+                      htmlFor="modal-primary-image-upload"
+                      className="w-36 h-28 border-2 border-dashed border-gray-250 hover:border-[#047857] rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-gray-50 group bg-white shadow-sm flex-shrink-0"
+                    >
+                      <Upload className="w-5 h-5 text-gray-400 group-hover:text-[#047857] mb-1.5 transition-colors" />
+                      <span className="text-[10px] font-bold text-gray-500 group-hover:text-[#047857] transition-colors">
+                        {uploading ? "Uploading..." : "Upload Image"}
+                      </span>
+                    </label>
 
-                    <div className="w-full md:w-auto flex items-center gap-4">
-                      <input 
-                        type="file"
-                        accept="image/*"
-                        id="modal-primary-image-upload"
-                        className="hidden"
-                        onChange={handleImageFileChange}
-                      />
-                      <label 
-                        htmlFor="modal-primary-image-upload"
-                        className="w-full md:w-36 h-28 border-2 border-dashed border-gray-250 hover:border-[#047857] rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-gray-50 group bg-white shadow-sm"
-                      >
-                        <Upload className="w-5 h-5 text-gray-400 group-hover:text-[#047857] mb-1.5 transition-colors" />
-                        <span className="text-[10px] font-bold text-gray-500 group-hover:text-[#047857] transition-colors">
-                          {uploading ? "Uploading..." : "Upload Image"}
-                        </span>
-                      </label>
-
-                      {productForm.image_url && (
-                        <div className="relative w-28 h-28 border border-gray-150 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 bg-white">
-                          <img 
-                            src={productForm.image_url} 
-                            alt="Primary Preview" 
-                            className="w-full h-full object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setProductForm((prev: any) => ({ ...prev, image_url: "" }))}
-                            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-lg bg-black/60 hover:bg-black/85 flex items-center justify-center text-white transition-colors"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    {productForm.image_url && (
+                      <div className="relative w-28 h-28 border border-gray-150 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 bg-white group">
+                        <img 
+                          src={productForm.image_url} 
+                          alt="Primary Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setProductForm((prev: any) => ({ ...prev, image_url: "" }))}
+                          className="absolute top-1.5 right-1.5 w-6 h-6 rounded-lg bg-black/60 hover:bg-black/85 flex items-center justify-center text-white transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
