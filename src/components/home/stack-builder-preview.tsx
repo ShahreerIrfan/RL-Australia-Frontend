@@ -45,7 +45,7 @@ export default function StackBuilderPreview() {
           <div className="mt-8">
             <Link
               href="/stack-builder"
-              className="inline-flex items-center bg-gradient-to-r from-sky-600 to-sky-750 hover:from-sky-700 hover:to-sky-850 active:scale-[0.98] text-white font-extrabold text-base px-10 py-4 rounded-xl uppercase tracking-wider transition-all shadow-lg shadow-sky-600/25 border-b-4 border-sky-850"
+              className="inline-flex items-center bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white font-extrabold text-base px-12 py-4.5 rounded-xl uppercase tracking-wider transition-all shadow-lg shadow-sky-600/30 border-b-4 border-sky-850"
             >
               Take The Quiz!
             </Link>
@@ -73,25 +73,30 @@ export default function StackBuilderPreview() {
         </div>
 
         {/* 16 Goals Grid - 4 Column Layout on Mobile */}
-        <div className="grid grid-cols-4 gap-2.5 sm:gap-5 max-w-7xl mx-auto">
-          {goals.map((goal) => {
+        <div className="grid grid-cols-4 gap-3 sm:gap-5 max-w-7xl mx-auto">
+          {goals.map((goal, index) => {
             const Icon = goal.icon
+            const isEven = index % 2 === 0
+            const hoverBorderClass = isEven ? "hover:border-sky-500" : "hover:border-[#c5a059]"
+            const hoverIconBgClass = isEven ? "group-hover:bg-sky-600 group-hover:border-sky-600" : "group-hover:bg-[#c5a059] group-hover:border-[#c5a059]"
+            const hoverTextClass = isEven ? "group-hover:text-sky-600" : "group-hover:text-[#c5a059]"
+
             return (
               <Link
                 key={goal.slug}
                 href={`/stack-builder?goal=${goal.slug}`}
-                className="group flex flex-col items-center justify-center bg-white rounded-2xl border border-gray-200/70 p-3 sm:p-7 shadow-sm hover:shadow-xl hover:border-sky-400 hover:-translate-y-1.5 transition-all duration-300 text-center relative overflow-hidden min-h-[110px] sm:min-h-[160px]"
+                className={`group flex flex-col items-center justify-center bg-white rounded-2xl border-2 border-slate-200 p-3.5 sm:p-7 shadow-sm hover:shadow-xl ${hoverBorderClass} hover:-translate-y-1.5 transition-all duration-300 text-center relative overflow-hidden min-h-[110px] sm:min-h-[160px]`}
               >
                 {/* Background soft glow outline on hover */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-sky-50/10 to-amber-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                 {/* Circular Icon Container */}
-                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 group-hover:text-sky-600 group-hover:bg-sky-50 group-hover:border-sky-200 group-hover:scale-110 transition-all duration-300 shadow-sm mb-3 sm:mb-4 flex-shrink-0">
+                <div className={`w-11 h-11 sm:w-16 sm:h-16 rounded-2xl bg-slate-50 border-2 border-slate-200 flex items-center justify-center text-slate-700 group-hover:text-white ${hoverIconBgClass} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-sm mb-3 sm:mb-4 flex-shrink-0`}>
                   <Icon className="w-5.5 h-5.5 sm:w-8 sm:h-8 stroke-[1.75]" />
                 </div>
 
                 {/* Responsive Label */}
-                <span className="text-[10px] sm:text-xs md:text-sm font-black text-gray-800 group-hover:text-sky-600 transition-colors uppercase tracking-wider leading-tight break-words max-w-full px-1">
+                <span className={`text-[10px] sm:text-xs md:text-sm font-black text-gray-800 ${hoverTextClass} transition-colors uppercase tracking-wider leading-tight break-words max-w-full px-1`}>
                   {goal.label}
                 </span>
               </Link>
