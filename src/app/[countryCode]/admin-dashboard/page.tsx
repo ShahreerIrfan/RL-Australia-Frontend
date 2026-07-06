@@ -10,6 +10,8 @@ import {
   LayoutGrid, Pencil, Trash2, Eye, Plus, Upload
 } from "lucide-react"
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+
 interface UserData {
   id: string
   email: string
@@ -71,7 +73,7 @@ export default function AdminDashboard() {
   const fetchProducts = async () => {
     try {
       setProductsLoading(true)
-      const res = await fetch("http://localhost:9000/store/products", { cache: "no-store" })
+      const res = await fetch(`${BACKEND_URL}/store/products`, { cache: "no-store" })
       if (res.ok) {
         const data = await res.json()
         setProducts(data.products || [])
@@ -85,7 +87,7 @@ export default function AdminDashboard() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:9000/store/categories", { cache: "no-store" })
+      const res = await fetch(`${BACKEND_URL}/store/categories`, { cache: "no-store" })
       if (res.ok) {
         const data = await res.json()
         setCategories(data.categories || [])
@@ -116,7 +118,7 @@ export default function AdminDashboard() {
       reader.readAsDataURL(file)
       reader.onload = async () => {
         const base64Data = (reader.result as string).split(",")[1]
-        const res = await fetch("http://localhost:9000/admin/upload", {
+        const res = await fetch(`${BACKEND_URL}/admin/upload`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -159,7 +161,7 @@ export default function AdminDashboard() {
           reader.onload = async () => {
             try {
               const base64Data = (reader.result as string).split(",")[1]
-              const res = await fetch("http://localhost:9000/admin/upload", {
+              const res = await fetch(`${BACKEND_URL}/admin/upload`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -259,8 +261,8 @@ export default function AdminDashboard() {
 
     try {
       const url = editingProduct 
-        ? `http://localhost:9000/admin/products/${editingProduct.id}`
-        : "http://localhost:9000/admin/products"
+        ? `${BACKEND_URL}/admin/products/${editingProduct.id}`
+        : `${BACKEND_URL}/admin/products`
       const method = editingProduct ? "PUT" : "POST"
 
       const res = await fetch(url, {
@@ -286,7 +288,7 @@ export default function AdminDashboard() {
     if (!confirm("Are you sure you want to delete this product?")) return
 
     try {
-      const res = await fetch(`http://localhost:9000/admin/products/${id}`, {
+      const res = await fetch(`${BACKEND_URL}/admin/products/${id}`, {
         method: "DELETE"
       })
       if (res.ok) {
@@ -322,8 +324,8 @@ export default function AdminDashboard() {
     if (!categoryForm.name) { alert("Category name is required."); return }
     try {
       const url = editingCategory
-        ? `http://localhost:9000/admin/categories/${editingCategory.id}`
-        : "http://localhost:9000/admin/categories"
+        ? `${BACKEND_URL}/admin/categories/${editingCategory.id}`
+        : `${BACKEND_URL}/admin/categories`
       const method = editingCategory ? "PUT" : "POST"
       const res = await fetch(url, {
         method,
@@ -346,7 +348,7 @@ export default function AdminDashboard() {
   const handleDeleteCategory = async (id: string) => {
     if (!confirm("Are you sure you want to delete this category?")) return
     try {
-      const res = await fetch(`http://localhost:9000/admin/categories/${id}`, { method: "DELETE" })
+      const res = await fetch(`${BACKEND_URL}/admin/categories/${id}`, { method: "DELETE" })
       if (res.ok) {
         fetchCategories()
       } else {
@@ -541,8 +543,8 @@ export default function AdminDashboard() {
                 </button>
                 {expandedSections.OrdersSub && (
                   <div className="pl-9 pr-2 py-1 space-y-1 border-l border-gray-100 ml-5 mt-0.5">
-                    <a href="http://localhost:9000/app/orders" target="_blank" rel="noopener noreferrer" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Order History</a>
-                    <a href="http://localhost:9000/app/returns" target="_blank" rel="noopener noreferrer" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Returns</a>
+                    <a href={`${BACKEND_URL}/app/orders`} target="_blank" rel="noopener noreferrer" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Order History</a>
+                    <a href={`${BACKEND_URL}/app/returns`} target="_blank" rel="noopener noreferrer" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Returns</a>
                   </div>
                 )}
 

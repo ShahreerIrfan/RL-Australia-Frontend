@@ -5,6 +5,8 @@ import Link from "next/link"
 import { ShoppingCart, Menu, X, ChevronDown, LogIn, Search, Dna, User, LogOut, LayoutDashboard } from "lucide-react"
 import CartDrawer from "@components/layout/components/cart-drawer"
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+
 const navLinks = [
   { label: "Home", href: "/" },
   {
@@ -51,7 +53,7 @@ export default function Nav({ customer }: NavProps) {
       try {
         const cartId = typeof window !== "undefined" ? localStorage.getItem("rl_cart_id") : null
         if (!cartId) return
-        const res = await fetch(`http://localhost:9000/store/carts/${cartId}`, { cache: "no-store" })
+        const res = await fetch(`${BACKEND_URL}/store/carts/${cartId}`, { cache: "no-store" })
         if (res.ok) {
           const data = await res.json()
           const count = data.cart?.items?.reduce((s: number, i: any) => s + i.quantity, 0) || 0

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { Star, ArrowRight, ShoppingCart } from "lucide-react"
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+
 interface Product {
   id: string
   name: string
@@ -179,7 +181,7 @@ export default function FeaturedProducts() {
   useEffect(() => {
     const fetchLiveProducts = async () => {
       try {
-        const res = await fetch("http://localhost:9000/store/products", { cache: "no-store" })
+        const res = await fetch(`${BACKEND_URL}/store/products`, { cache: "no-store" })
         if (res.ok) {
           const data = await res.json()
           const dbProducts: Product[] = (data.products || []).map((p: any) => ({

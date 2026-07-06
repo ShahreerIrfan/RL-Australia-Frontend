@@ -26,7 +26,7 @@ interface Cart {
   item_total: number
 }
 
-const CART_API = "http://localhost:9000"
+const CART_API = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 const FREE_SHIPPING_THRESHOLD = 150
 
 export default function CartDrawer() {
