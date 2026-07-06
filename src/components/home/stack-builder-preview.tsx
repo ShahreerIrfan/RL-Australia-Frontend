@@ -2,108 +2,96 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowRight, Target, Zap, Brain, Heart, Shield } from "lucide-react"
+import { 
+  Heart, Brain, Zap, Dumbbell, Target, ShieldAlert, Sparkles, Shield, 
+  Hourglass, Flame, Smile, Award, Activity, Moon, AlertCircle, ArrowRight
+} from "lucide-react"
 
 const goals = [
-  { icon: Heart, label: "Recovery", color: "bg-rose-50 text-rose-600 border-rose-100" },
-  { icon: Shield, label: "Anti-Inflammation", color: "bg-blue-50 text-blue-600 border-blue-100" },
-  { icon: Brain, label: "Cognitive Performance", color: "bg-purple-50 text-purple-600 border-purple-100" },
-  { icon: Zap, label: "Energy & Longevity", color: "bg-amber-50 text-amber-600 border-amber-100" },
-  { icon: Target, label: "Muscle Growth", color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
+  { icon: Heart, label: "Cardiovascular", slug: "cardiovascular" },
+  { icon: Brain, label: "Cognition", slug: "cognition" },
+  { icon: Zap, label: "Energy", slug: "energy" },
+  { icon: Dumbbell, label: "Fitness", slug: "fitness" },
+  { icon: Target, label: "Focus", slug: "focus" },
+  { icon: ShieldAlert, label: "Gut Health", slug: "gut-health" },
+  { icon: Sparkles, label: "Hormones", slug: "hormones" },
+  { icon: Shield, label: "Immune", slug: "immune" },
+  { icon: Hourglass, label: "Longevity", slug: "longevity" },
+  { icon: Flame, label: "Metabolism", slug: "metabolism" },
+  { icon: Smile, label: "Mood", slug: "mood" },
+  { icon: Award, label: "Motivation", slug: "motivation" },
+  { icon: Activity, label: "Pain", slug: "pain" },
+  { icon: Sparkles, label: "Skin Health", slug: "skin-health" },
+  { icon: Moon, label: "Sleep", slug: "sleep" },
+  { icon: AlertCircle, label: "Stress", slug: "stress" },
 ]
 
 export default function StackBuilderPreview() {
   return (
-    <section className="py-12 sm:py-16 bg-gradient-to-b from-white to-gray-50/50">
+    <section className="py-16 sm:py-20 bg-gray-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Left - Description */}
-          <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full mb-4">
-              <Target className="w-3.5 h-3.5" />
-              Stack Builder
-            </span>
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
-              Tell Us Your Goal.
-              <br />
-              We&apos;ll Build Your Stack.
-            </h2>
-            <p className="text-sm sm:text-base text-gray-500 leading-relaxed mb-6 max-w-md">
-              Select your goal and our recommendation engine suggests the
-              perfect combination of peptides, nootropics, and supplements.
-              Remove anything you don&apos;t want — it&apos;s fully customizable.
-            </p>
-
-            <div className="space-y-3 mb-6">
-              <div className="flex items-start gap-3">
-                <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 text-[10px] mt-0.5 font-bold">
-                  1
-                </span>
-                <p className="text-sm text-gray-600">
-                  Choose a goal: recovery, cognition, anti-aging, and more
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 text-[10px] mt-0.5 font-bold">
-                  2
-                </span>
-                <p className="text-sm text-gray-600">
-                  Get a curated stack recommendation tailored to you
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 text-[10px] mt-0.5 font-bold">
-                  3
-                </span>
-                <p className="text-sm text-gray-600">
-                  Customize freely — remove or swap any item before checkout
-                </p>
-              </div>
-            </div>
-
+        
+        {/* Section Title */}
+        <div className="text-center mb-12">
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-gray-900 tracking-tight uppercase">
+            Find Your Perfect Supplements
+          </h2>
+          <p className="text-sm sm:text-base text-gray-600 mt-2 max-w-xl mx-auto font-medium">
+            Not sure where to start? Take our quick quiz to match with supplements tailored to your goals.
+          </p>
+          <div className="mt-5">
             <Link
               href="/stack-builder"
-              className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-full text-sm font-semibold transition-colors"
+              className="inline-flex items-center bg-[#1d2d3d] hover:bg-gray-800 text-white font-extrabold text-sm px-8 py-3 rounded-md uppercase tracking-wider transition-colors shadow-sm"
             >
-              Start Building
-              <ArrowRight className="w-4 h-4" />
+              Take The Quiz!
             </Link>
           </div>
+        </div>
 
-          {/* Right - Goal picker preview */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
-            <p className="text-sm font-medium text-gray-700 mb-4">
-              What&apos;s your primary goal?
+        {/* Steps Flow (Step 1 & Step 2) */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12 text-center">
+          <div className="bg-white p-6 rounded-xl border border-gray-200/60 shadow-sm">
+            <h3 className="text-lg font-black text-gray-800 mb-1">
+              Step 1. Your Goal
+            </h3>
+            <p className="text-sm text-gray-500">
+              Start by selecting your wellness goal or main area of focus below.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {goals.map((goal) => {
-                const Icon = goal.icon
-                return (
-                  <Link
-                    key={goal.label}
-                    href="/stack-builder"
-                    className={`flex items-center gap-3 border rounded-xl px-4 py-3 hover:shadow-sm transition-all ${goal.color}`}
-                  >
-                    <Icon className="w-5 h-5 flex-shrink-0" />
-                    <span className="text-sm font-medium text-gray-800">
-                      {goal.label}
-                    </span>
-                  </Link>
-                )
-              })}
-            </div>
-            <p className="text-xs text-gray-400 mt-4 text-center">
-              Or{" "}
-              <Link
-                href="/stack-builder"
-                className="text-emerald-600 hover:underline font-medium"
-              >
-                build a custom stack from scratch
-              </Link>
+          </div>
+          <div className="bg-white p-6 rounded-xl border border-gray-200/60 shadow-sm">
+            <h3 className="text-lg font-black text-gray-800 mb-1">
+              Step 2. Personalize
+            </h3>
+            <p className="text-sm text-gray-500">
+              Filter by specific benefits, delivery method, or dietary preferences.
             </p>
           </div>
         </div>
+
+        {/* 16 Goals Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          {goals.map((goal) => {
+            const Icon = goal.icon
+            return (
+              <Link
+                key={goal.slug}
+                href={`/stack-builder?goal=${goal.slug}`}
+                className="group flex flex-col items-center justify-center bg-white rounded-lg border border-gray-200/80 p-6 shadow-sm hover:shadow-md hover:border-[#00b2a9]/50 transition-all duration-300 text-center"
+              >
+                <div className="w-12 h-12 flex items-center justify-center text-gray-700 group-hover:text-[#00b2a9] transition-colors mb-3">
+                  <Icon className="w-8 h-8 stroke-[1.5]" />
+                </div>
+                <span className="text-sm font-extrabold text-gray-900 group-hover:text-[#00b2a9] transition-colors">
+                  {goal.label}
+                </span>
+              </Link>
+            )
+          })}
+        </div>
+
       </div>
     </section>
   )
+})
 }

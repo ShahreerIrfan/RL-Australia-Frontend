@@ -79,16 +79,31 @@ export default function TrustSection() {
           })}
         </div>
 
-        {/* CTA to COA library */}
-        <div className="text-center mt-8 sm:mt-10">
-          <Link
-            href="/lab-testing"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-200 rounded-full px-5 py-2.5 hover:border-gray-300 transition-colors"
-          >
-            <FileCheck className="w-4 h-4" />
-            View Our Lab Testing & COA Library
-          </Link>
+        {/* Wide Banner - MEET OUR THIRD PARTY LABS */}
+        <div className="relative mt-12 sm:mt-16 rounded-2xl overflow-hidden h-[300px] flex items-center justify-center text-center shadow-lg border border-gray-100">
+          <img
+            src="/assets/asset 121.jpeg"
+            alt="Third Party Labs"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/55 backdrop-blur-[1px]" />
+          
+          <div className="relative z-10 px-4 sm:px-6 max-w-2xl">
+            <h3 className="text-2xl sm:text-4xl font-extrabold text-white uppercase tracking-tight mb-2">
+              Meet Our Third-Party Labs
+            </h3>
+            <p className="text-sm sm:text-base text-gray-200 mb-6 font-medium">
+              Learn how we&apos;re doing more lab testing than anyone else in the industry
+            </p>
+            <Link
+              href="/lab-testing"
+              className="inline-flex items-center bg-white hover:bg-gray-100 text-gray-900 font-extrabold text-xs sm:text-sm px-8 py-3 rounded-md uppercase tracking-wider transition-colors shadow-sm"
+            >
+              Explore Now
+            </Link>
+          </div>
         </div>
+
       </div>
     </section>
   )

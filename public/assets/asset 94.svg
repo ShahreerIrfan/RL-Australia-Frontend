@@ -1,0 +1,7 @@
+<svg class="fera-review-reply-triangle" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <mask id="path-1-inside-1_2533_410165" fill="white">
+            <path d="M0 9.92871L9.92871 -2.45768e-08L19.8574 9.92871L9.92871 19.8574L0 9.92871Z"/>
+        </mask>
+        <path d="M0 9.92871L9.92871 -2.45768e-08L19.8574 9.92871L9.92871 19.8574L0 9.92871Z" fill="#FAFAFA" class="fera-review-reply-triangle-inside"/>
+        <path d="M9.92871 -2.45768e-08L10.6358 -0.707107L9.92871 -1.41421L9.2216 -0.707107L9.92871 -2.45768e-08ZM0.707107 10.6358L10.6358 0.707107L9.2216 -0.707107L-0.707107 9.2216L0.707107 10.6358ZM9.2216 0.707107L19.1503 10.6358L20.5645 9.2216L10.6358 -0.707107L9.2216 0.707107Z" fill="#F2F2F2" mask="url(#path-1-inside-1_2533_410165)" class="fera-review-reply-triangle-outside"/>
+    </svg>

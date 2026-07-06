@@ -1,0 +1,23 @@
+<svg data-fera-component="prevBtn" data-fera-action="showPrev" class="fera-media-nav-caret-icon--left fera-media-nav-caret-icon fera-media-nav-btn fera--clickable" width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_mediaNavBtn_20)">
+        <g filter="url(#filter0_d_mediaNavBtn_20)">
+            <path d="M68 48C68 36.9543 59.0457 28 48 28C36.9543 28 28 36.9543 28 48C28 59.0457 36.9543 68 48 68C59.0457 68 68 59.0457 68 48Z" fill="black" fill-opacity="0.3"/>
+            <path class="fera-icon-caret-line" d="M50.25 53.25L45 48L50.25 42.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+    </g>
+    <defs>
+        <filter id="filter0_d_mediaNavBtn_20" x="0" y="4" width="96" height="96" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+            <feOffset dy="4"/>
+            <feGaussianBlur stdDeviation="14"/>
+            <feComposite in2="hardAlpha" operator="out"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"/>
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_mediaNavBtn_20"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_mediaNavBtn_20" result="shape"/>
+        </filter>
+        <clipPath id="clip0_mediaNavBtn_20">
+            <rect width="96" height="96" fill="white"/>
+        </clipPath>
+    </defs>
+</svg>

@@ -331,9 +331,9 @@ export default function FeaturedProducts() {
 
                   <button
                     onClick={(e) => handleAddToCart(e, product)}
-                    className="w-full flex items-center justify-center gap-1.5 bg-gray-900 group-hover:bg-emerald-600 active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold py-2.5 rounded-xl transition-all duration-300"
+                    className="w-full flex items-center justify-center gap-2 bg-[#00b2a9] hover:bg-[#00938c] active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold py-2.5 rounded transition-all duration-300 uppercase tracking-wider"
                   >
-                    <ShoppingCart className="w-3.5 h-3.5" />
+                    <ShoppingCart className="w-4 h-4" />
                     Add to Cart
                   </button>
                 </div>
