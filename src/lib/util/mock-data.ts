@@ -53,6 +53,10 @@ export const mockProducts = [
     ],
     status: "published",
     weight: 10,
+    dosage: "5mg Vial",
+    purity: "99.8%+",
+    molecular_weight: "1419.5 g/mol",
+    molecular_formula: "C62H98N16O22",
     options: [
       { id: "opt_vial_pack", title: "Pack Size", values: ["Single Vial", "5-Pack", "10-Pack"] }
     ],
@@ -109,6 +113,10 @@ export const mockProducts = [
     ],
     status: "published",
     weight: 10,
+    dosage: "5mg Vial",
+    purity: "99.5%+",
+    molecular_weight: "4963.5 g/mol",
+    molecular_formula: "C212H350N56O78S",
     options: [
       { id: "opt_vial_pack", title: "Pack Size", values: ["Single Vial", "5-Pack", "10-Pack"] }
     ],
@@ -152,6 +160,10 @@ export const mockProducts = [
     ],
     status: "published",
     weight: 10,
+    dosage: "50mg Vial",
+    purity: "99.2%+",
+    molecular_weight: "340.38 g/mol",
+    molecular_formula: "C14H24CuN6O4",
     options: [
       { id: "opt_vial_pack", title: "Pack Size", values: ["Single Vial", "5-Pack"] }
     ],
