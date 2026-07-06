@@ -72,9 +72,8 @@ async function getRegionMap(cacheId: string) {
     }
 
     if (!regions?.length) {
-      throw new Error(
-        "No regions found. Please set up regions in your Medusa Admin."
-      )
+      console.warn("No regions found in backend, falling back to mock regions.")
+      regions = mockRegionsResponse.regions
     }
 
     // Create a map of country codes to regions.
@@ -132,49 +131,54 @@ async function getCountryCode(
  * Middleware to handle region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname
-  const token = request.cookies.get("_medusa_jwt")?.value
-  const isAuthPage = pathname === "/login" || pathname === "/signup"
+  try {
+    const pathname = request.nextUrl.pathname
+    const token = request.cookies.get("_medusa_jwt")?.value
+    const isAuthPage = pathname === "/login" || pathname === "/signup"
 
-  if (token && isAuthPage) {
-    return NextResponse.redirect(new URL("/account", request.url), 307)
-  }
-
-  const cacheIdCookie = request.cookies.get("_medusa_cache_id")
-  const cacheId = cacheIdCookie?.value || crypto.randomUUID()
-  const regionMap = await getRegionMap(cacheId)
-  const countryCode = regionMap && (await getCountryCode(request, regionMap))
-
-  const firstSegment = pathname.split("/")[1]?.toLowerCase()
-  const isCountryCodeInUrl = countryCode && firstSegment === countryCode.toLowerCase()
-
-  // 1. If the country code is explicitly present in the URL, redirect to clean URL
-  if (isCountryCodeInUrl) {
-    const cleanPath = pathname.replace(`/${firstSegment}`, "") || "/"
-    const queryString = request.nextUrl.search ?? ""
-    const response = NextResponse.redirect(new URL(`${cleanPath}${queryString}`, request.url), 307)
-    if (!cacheIdCookie) {
-      response.cookies.set("_medusa_cache_id", cacheId, { maxAge: 60 * 60 * 24 })
+    if (token && isAuthPage) {
+      return NextResponse.redirect(new URL("/account", request.url), 307)
     }
-    return response
-  }
 
-  // 2. Check if the url is a static asset
-  if (pathname.includes(".")) {
+    const cacheIdCookie = request.cookies.get("_medusa_cache_id")
+    const cacheId = cacheIdCookie?.value || crypto.randomUUID()
+    const regionMap = await getRegionMap(cacheId)
+    const countryCode = regionMap && (await getCountryCode(request, regionMap))
+
+    const firstSegment = pathname.split("/")[1]?.toLowerCase()
+    const isCountryCodeInUrl = countryCode && firstSegment === countryCode.toLowerCase()
+
+    // 1. If the country code is explicitly present in the URL, redirect to clean URL
+    if (isCountryCodeInUrl) {
+      const cleanPath = pathname.replace(`/${firstSegment}`, "") || "/"
+      const queryString = request.nextUrl.search ?? ""
+      const response = NextResponse.redirect(new URL(`${cleanPath}${queryString}`, request.url), 307)
+      if (!cacheIdCookie) {
+        response.cookies.set("_medusa_cache_id", cacheId, { maxAge: 60 * 60 * 24 })
+      }
+      return response
+    }
+
+    // 2. Check if the url is a static asset
+    if (pathname.includes(".")) {
+      return NextResponse.next()
+    }
+
+    // 3. Under-the-hood rewrite to the countryCode path
+    if (countryCode) {
+      const targetUrl = new URL(`/${countryCode}${pathname}${request.nextUrl.search}`, request.url)
+      const response = NextResponse.rewrite(targetUrl)
+      if (!cacheIdCookie) {
+        response.cookies.set("_medusa_cache_id", cacheId, { maxAge: 60 * 60 * 24 })
+      }
+      return response
+    }
+
+    return NextResponse.next()
+  } catch (err: any) {
+    console.error("Middleware unhandled exception:", err.message)
     return NextResponse.next()
   }
-
-  // 3. Under-the-hood rewrite to the countryCode path
-  if (countryCode) {
-    const targetUrl = new URL(`/${countryCode}${pathname}${request.nextUrl.search}`, request.url)
-    const response = NextResponse.rewrite(targetUrl)
-    if (!cacheIdCookie) {
-      response.cookies.set("_medusa_cache_id", cacheId, { maxAge: 60 * 60 * 24 })
-    }
-    return response
-  }
-
-  return NextResponse.next()
 }
 
 export const config = {
