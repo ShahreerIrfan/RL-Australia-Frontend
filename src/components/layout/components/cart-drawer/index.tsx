@@ -29,6 +29,14 @@ interface Cart {
 const CART_API = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 const FREE_SHIPPING_THRESHOLD = 150
 
+const cartFetch = (url: string, init?: RequestInit) => {
+  const headers = {
+    ...init?.headers,
+    "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
+  }
+  return fetch(url, { ...init, headers })
+}
+
 export default function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false)
   const [cart, setCart] = useState<Cart | null>(null)
@@ -50,7 +58,7 @@ export default function CartDrawer() {
     const cartId = getCartId()
     if (!cartId) return
     try {
-      const res = await fetch(`${CART_API}/store/carts/${cartId}`, { cache: "no-store" })
+      const res = await cartFetch(`${CART_API}/store/carts/${cartId}`, { cache: "no-store" })
       if (res.ok) {
         const data = await res.json()
         setCart(data.cart)
@@ -61,7 +69,7 @@ export default function CartDrawer() {
   }, [])
 
   const createCart = async (): Promise<string> => {
-    const res = await fetch(`${CART_API}/store/carts`, {
+    const res = await cartFetch(`${CART_API}/store/carts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ region_id: "reg_au" })
@@ -79,7 +87,7 @@ export default function CartDrawer() {
       if (!cartId) {
         cartId = await createCart()
       }
-      const res = await fetch(`${CART_API}/store/carts/${cartId}/line-items`, {
+      const res = await cartFetch(`${CART_API}/store/carts/${cartId}/line-items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ variant_id: productId, quantity })
@@ -102,9 +110,9 @@ export default function CartDrawer() {
     setUpdatingItem(lineId)
     try {
       if (quantity <= 0) {
-        await fetch(`${CART_API}/store/carts/${cartId}/line-items/${lineId}`, { method: "DELETE" })
+        await cartFetch(`${CART_API}/store/carts/${cartId}/line-items/${lineId}`, { method: "DELETE" })
       } else {
-        await fetch(`${CART_API}/store/carts/${cartId}/line-items/${lineId}`, {
+        await cartFetch(`${CART_API}/store/carts/${cartId}/line-items/${lineId}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ quantity })
@@ -123,7 +131,7 @@ export default function CartDrawer() {
     if (!cartId) return
     setUpdatingItem(lineId)
     try {
-      await fetch(`${CART_API}/store/carts/${cartId}/line-items/${lineId}`, { method: "DELETE" })
+      await cartFetch(`${CART_API}/store/carts/${cartId}/line-items/${lineId}`, { method: "DELETE" })
       await fetchCart()
     } catch (err) {
       console.error("Failed to remove item:", err)

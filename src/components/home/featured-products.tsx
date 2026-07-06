@@ -181,7 +181,12 @@ export default function FeaturedProducts() {
   useEffect(() => {
     const fetchLiveProducts = async () => {
       try {
-        const res = await fetch(`${BACKEND_URL}/store/products`, { cache: "no-store" })
+        const res = await fetch(`${BACKEND_URL}/store/products`, {
+          cache: "no-store",
+          headers: {
+            "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
+          }
+        })
         if (res.ok) {
           const data = await res.json()
           const dbProducts: Product[] = (data.products || []).map((p: any) => ({

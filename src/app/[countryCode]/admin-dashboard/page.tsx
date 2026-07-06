@@ -73,7 +73,12 @@ export default function AdminDashboard() {
   const fetchProducts = async () => {
     try {
       setProductsLoading(true)
-      const res = await fetch(`${BACKEND_URL}/store/products`, { cache: "no-store" })
+      const res = await fetch(`${BACKEND_URL}/store/products`, {
+        cache: "no-store",
+        headers: {
+          "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
+        }
+      })
       if (res.ok) {
         const data = await res.json()
         setProducts(data.products || [])
@@ -87,7 +92,12 @@ export default function AdminDashboard() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/store/categories`, { cache: "no-store" })
+      const res = await fetch(`${BACKEND_URL}/store/categories`, {
+        cache: "no-store",
+        headers: {
+          "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
+        }
+      })
       if (res.ok) {
         const data = await res.json()
         setCategories(data.categories || [])
