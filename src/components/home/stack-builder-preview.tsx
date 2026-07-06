@@ -28,21 +28,24 @@ const goals = [
 
 export default function StackBuilderPreview() {
   return (
-    <section className="py-16 sm:py-20 bg-gray-50 border-b border-gray-100">
+    <section className="py-16 sm:py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50/50 border-b border-gray-150">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Title */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-gray-900 tracking-tight uppercase">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 bg-sky-50 border border-sky-100 text-sky-700 text-[10px] sm:text-xs font-black px-4 py-1.5 rounded-full mb-4 uppercase tracking-widest">
+            Interactive Stack Finder
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight uppercase">
             Find Your Perfect Supplements
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 mt-3 max-w-2xl mx-auto font-medium">
+          <p className="text-sm sm:text-lg text-gray-600 mt-4 max-w-2xl mx-auto font-medium leading-relaxed">
             Not sure where to start? Take our quick quiz to match with supplements tailored to your goals.
           </p>
-          <div className="mt-6">
+          <div className="mt-8">
             <Link
               href="/stack-builder"
-              className="inline-flex items-center bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-base px-10 py-4 rounded-md uppercase tracking-wider transition-colors shadow-md border-b-4 border-sky-800"
+              className="inline-flex items-center bg-gradient-to-r from-sky-600 to-sky-750 hover:from-sky-700 hover:to-sky-850 active:scale-[0.98] text-white font-extrabold text-base px-10 py-4 rounded-xl uppercase tracking-wider transition-all shadow-lg shadow-sky-600/25 border-b-4 border-sky-850"
             >
               Take The Quiz!
             </Link>
@@ -50,39 +53,45 @@ export default function StackBuilderPreview() {
         </div>
 
         {/* Steps Flow (Step 1 & Step 2) */}
-        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-7xl mx-auto mb-12 text-center">
-          <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-200/80 shadow-md">
-            <h3 className="text-lg sm:text-xl font-black text-gray-900 uppercase tracking-wide mb-2 flex items-center justify-center gap-2">
-              <span className="text-[#c5a059]">Step 1.</span> Your Goal
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-7xl mx-auto mb-16">
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border-t border-r border-b border-gray-250/70 border-l-4 border-l-sky-500 shadow-md hover:shadow-lg transition-shadow text-left">
+            <h3 className="text-base sm:text-lg font-black text-gray-900 uppercase tracking-wider mb-2">
+              <span className="text-sky-600">Step 1.</span> Choose Your Goal
             </h3>
-            <p className="text-sm sm:text-base text-gray-500 font-medium">
-              Start by selecting your wellness goal or main area of focus below.
+            <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed">
+              Start by selecting your wellness goal or main area of focus below to view recommended combinations.
             </p>
           </div>
-          <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-200/80 shadow-md">
-            <h3 className="text-lg sm:text-xl font-black text-gray-900 uppercase tracking-wide mb-2 flex items-center justify-center gap-2">
-              <span className="text-[#c5a059]">Step 2.</span> Personalize
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border-t border-r border-b border-gray-250/70 border-l-4 border-l-[#c5a059] shadow-md hover:shadow-lg transition-shadow text-left">
+            <h3 className="text-base sm:text-lg font-black text-gray-900 uppercase tracking-wider mb-2">
+              <span className="text-[#c5a059]">Step 2.</span> Personalize Stack
             </h3>
-            <p className="text-sm sm:text-base text-gray-500 font-medium">
-              Filter by specific benefits, delivery method, or dietary preferences.
+            <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed">
+              Filter by specific benefits, dosage options, delivery method, or dietary preferences.
             </p>
           </div>
         </div>
 
         {/* 16 Goals Grid - 4 Column Layout on Mobile */}
-        <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-7xl mx-auto">
+        <div className="grid grid-cols-4 gap-2.5 sm:gap-5 max-w-7xl mx-auto">
           {goals.map((goal) => {
             const Icon = goal.icon
             return (
               <Link
                 key={goal.slug}
                 href={`/stack-builder?goal=${goal.slug}`}
-                className="group flex flex-col items-center justify-center bg-white rounded-lg border border-gray-200/80 p-2 sm:p-6 shadow-sm hover:shadow-md hover:border-sky-500/50 transition-all duration-300 text-center"
+                className="group flex flex-col items-center justify-center bg-white rounded-2xl border border-gray-200/70 p-3 sm:p-7 shadow-sm hover:shadow-xl hover:border-sky-400 hover:-translate-y-1.5 transition-all duration-300 text-center relative overflow-hidden min-h-[110px] sm:min-h-[160px]"
               >
-                <div className="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center text-gray-700 group-hover:text-[#c5a059] transition-colors mb-2 sm:mb-3">
-                  <Icon className="w-5 h-5 sm:w-8 sm:h-8 stroke-[1.5]" />
+                {/* Background soft glow outline on hover */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-sky-50/10 to-amber-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                {/* Circular Icon Container */}
+                <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 group-hover:text-sky-600 group-hover:bg-sky-50 group-hover:border-sky-200 group-hover:scale-110 transition-all duration-300 shadow-sm mb-3 sm:mb-4 flex-shrink-0">
+                  <Icon className="w-5.5 h-5.5 sm:w-8 sm:h-8 stroke-[1.75]" />
                 </div>
-                <span className="text-[10px] sm:text-sm md:text-base font-extrabold text-gray-900 group-hover:text-[#c5a059] transition-colors line-clamp-1">
+
+                {/* Responsive Label */}
+                <span className="text-[10px] sm:text-xs md:text-sm font-black text-gray-800 group-hover:text-sky-600 transition-colors uppercase tracking-wider leading-tight break-words max-w-full px-1">
                   {goal.label}
                 </span>
               </Link>
