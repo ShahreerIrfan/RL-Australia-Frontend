@@ -202,8 +202,8 @@ export default function FeaturedProducts() {
             reviews: Math.floor(Math.random() * 100) + 20,
           }))
           if (dbProducts.length > 0) {
-            // Merge: database products first, then static fallback
-            setAllProducts([...dbProducts, ...staticProducts])
+            // Set to live database products only
+            setAllProducts(dbProducts)
           }
         }
       } catch {
