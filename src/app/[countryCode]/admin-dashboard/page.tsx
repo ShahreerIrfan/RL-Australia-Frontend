@@ -97,10 +97,10 @@ export default function AdminDashboard() {
 
   const fetchCategories = async () => {
     try {
-      const res = await adminFetch(`${BACKEND_URL}/store/categories`, { cache: "no-store" })
+      const res = await adminFetch(`${BACKEND_URL}/store/product-categories`, { cache: "no-store" })
       if (res.ok) {
         const data = await res.json()
-        setCategories(data.categories || [])
+        setCategories(data.product_categories || data.categories || [])
       }
     } catch (err) {
       console.error("Error fetching categories:", err)
@@ -334,13 +334,18 @@ export default function AdminDashboard() {
     if (!categoryForm.name) { alert("Category name is required."); return }
     try {
       const url = editingCategory
-        ? `${BACKEND_URL}/admin/categories/${editingCategory.id}`
-        : `${BACKEND_URL}/admin/categories`
+        ? `${BACKEND_URL}/admin/product-categories/${editingCategory.id}`
+        : `${BACKEND_URL}/admin/product-categories`
       const method = editingCategory ? "PUT" : "POST"
+      const payload = {
+        name: categoryForm.name,
+        handle: categoryForm.slug || undefined,
+        description: categoryForm.description || undefined
+      }
       const res = await adminFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(categoryForm)
+        body: JSON.stringify(payload)
       })
       if (res.ok) {
         setIsCategoryFormOpen(false)
@@ -358,7 +363,7 @@ export default function AdminDashboard() {
   const handleDeleteCategory = async (id: string) => {
     if (!confirm("Are you sure you want to delete this category?")) return
     try {
-      const res = await adminFetch(`${BACKEND_URL}/admin/categories/${id}`, { method: "DELETE" })
+      const res = await adminFetch(`${BACKEND_URL}/admin/product-categories/${id}`, { method: "DELETE" })
       if (res.ok) {
         fetchCategories()
       } else {
