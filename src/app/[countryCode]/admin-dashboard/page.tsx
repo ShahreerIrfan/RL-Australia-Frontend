@@ -97,7 +97,7 @@ export default function AdminDashboard() {
 
   const fetchCategories = async () => {
     try {
-      const res = await adminFetch(`${BACKEND_URL}/store/product-categories`, { cache: "no-store" })
+      const res = await adminFetch(`${BACKEND_URL}/admin/product-categories`, { cache: "no-store" })
       if (res.ok) {
         const data = await res.json()
         setCategories(data.product_categories || data.categories || [])
@@ -340,7 +340,8 @@ export default function AdminDashboard() {
       const payload = {
         name: categoryForm.name,
         handle: categoryForm.slug || undefined,
-        description: categoryForm.description || undefined
+        description: categoryForm.description || undefined,
+        is_active: true
       }
       const res = await adminFetch(url, {
         method,
