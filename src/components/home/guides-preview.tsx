@@ -140,7 +140,7 @@ export default function GuidesPreview() {
               <div className="mt-4 text-left">
                 <Link
                   href="/store"
-                  className="inline-block bg-[#00b2a9] hover:bg-[#00938c] text-white font-extrabold text-[10px] px-3.5 py-1.5 rounded uppercase tracking-wider transition-colors"
+                  className="inline-block bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-[10px] px-3.5 py-1.5 rounded uppercase tracking-wider transition-colors shadow-sm"
                 >
                   Explore Quality Supplements
                 </Link>
@@ -193,7 +193,7 @@ export default function GuidesPreview() {
           <div className="bg-[#f0f2f5] rounded-2xl overflow-hidden p-8 sm:p-12 shadow-sm grid md:grid-cols-2 gap-8 items-center border border-gray-200/50">
             {/* Left Column */}
             <div className="text-left">
-              <span className="text-sm font-extrabold text-teal-600 uppercase tracking-widest block mb-2">
+              <span className="text-sm font-extrabold text-[#c5a059] uppercase tracking-widest block mb-2">
                 In Search of Insight Podcast
               </span>
               <h2 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-4">
@@ -206,11 +206,11 @@ export default function GuidesPreview() {
               {/* Player platforms */}
               <div className="flex flex-wrap items-center gap-4 mb-8">
                 <span className="text-xs font-bold text-gray-400 uppercase mr-2">Listen On</span>
-                <Radio className="w-5 h-5 text-gray-500 hover:text-teal-600 cursor-pointer transition-colors" />
-                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-gray-500 hover:text-teal-600 cursor-pointer transition-colors" xmlns="http://www.w3.org/2000/svg">
+                <Radio className="w-5 h-5 text-gray-500 hover:text-sky-600 cursor-pointer transition-colors" />
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current text-gray-500 hover:text-sky-600 cursor-pointer transition-colors" xmlns="http://www.w3.org/2000/svg">
                   <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.108C19.52 3.5 12 3.5 12 3.5s-7.52 0-9.388.555A3.002 3.002 0 0 0 .502 6.163C0 8.03 0 12 0 12s0 3.97.502 5.837a3.003 3.003 0 0 0 2.11 2.108C4.48 20.5 12 20.5 12 20.5s7.52 0 9.388-.555a3.002 3.002 0 0 0 2.11-2.108C24 15.97 24 12 24 12s0-3.97-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                 </svg>
-                <Music className="w-5 h-5 text-gray-500 hover:text-teal-600 cursor-pointer transition-colors" />
+                <Music className="w-5 h-5 text-gray-500 hover:text-sky-600 cursor-pointer transition-colors" />
               </div>
 
               <button className="bg-[#1d2d3d] hover:bg-gray-850 text-white font-extrabold text-base px-10 py-4 rounded-md uppercase tracking-wider transition-colors shadow-sm">
@@ -258,7 +258,7 @@ export default function GuidesPreview() {
                   <span className="text-[11px] font-bold text-gray-400 block mb-2 uppercase">
                     {post.date}
                   </span>
-                  <h4 className="text-base font-extrabold text-gray-900 group-hover:text-teal-600 transition-colors line-clamp-2 leading-snug">
+                  <h4 className="text-base font-extrabold text-gray-900 group-hover:text-sky-600 transition-colors line-clamp-2 leading-snug">
                     {post.title}
                   </h4>
                 </div>
@@ -266,7 +266,7 @@ export default function GuidesPreview() {
               <div className="p-5 border-t border-gray-100 text-left">
                 <Link
                   href="/resources"
-                  className="text-sm font-extrabold text-teal-600 hover:text-teal-700 flex items-center gap-1 uppercase tracking-wider"
+                  className="text-sm font-extrabold text-sky-600 hover:text-sky-700 flex items-center gap-1 uppercase tracking-wider"
                 >
                   Read More
                   <ArrowRight className="w-3.5 h-3.5" />

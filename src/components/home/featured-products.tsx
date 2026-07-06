@@ -230,14 +230,14 @@ export default function FeaturedProducts() {
     <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Section Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full mb-3">
-          <Star className="w-3 h-3 fill-emerald-500" />
+        <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-150 text-[#c5a059] text-xs font-bold px-3 py-1 rounded-full mb-3">
+          <Star className="w-3 h-3 fill-amber-400" />
           Popular Research Compounds
         </div>
         <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
           Featured Products
         </h2>
-        <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
+        <p className="text-sm text-gray-550 mt-2 max-w-md mx-auto font-medium">
           Explore our curated selection of premium peptides, nootropics, and supplements
         </p>
       </div>
@@ -250,7 +250,7 @@ export default function FeaturedProducts() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
               activeTab === tab
-                ? "bg-emerald-600 text-white shadow-md"
+                ? "bg-sky-600 text-white shadow-md"
                 : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-150"
             }`}
           >
@@ -271,11 +271,11 @@ export default function FeaturedProducts() {
               {/* Image area */}
               <div className="relative p-3 pb-2 bg-gradient-to-b from-gray-50 to-white/40 border-b border-gray-100 flex items-center justify-center h-28 sm:h-36 lg:h-40 overflow-hidden flex-shrink-0">
                 {product.originalPrice && (
-                  <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-md z-10 shadow-sm">
+                  <span className="absolute top-2 left-2 bg-[#c5a059] text-white text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded z-10 shadow-sm uppercase tracking-wide">
                     Save ${(product.originalPrice - product.price).toFixed(0)}
                   </span>
                 )}
-                <span className="absolute top-2 right-2 text-[9px] sm:text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-md z-10">
+                <span className="absolute top-2 right-2 text-[9px] sm:text-[10px] font-extrabold text-sky-700 bg-sky-50 border border-sky-100 px-1.5 py-0.5 rounded z-10 uppercase tracking-wide">
                   {product.category}
                 </span>
 
@@ -291,7 +291,7 @@ export default function FeaturedProducts() {
               {/* Info */}
               <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between">
                 <div>
-                  <h3 className="text-sm sm:text-base font-extrabold text-gray-800 leading-tight mb-1 group-hover:text-emerald-700 transition-colors line-clamp-1">
+                  <h3 className="text-sm sm:text-base font-extrabold text-gray-800 leading-tight mb-1 group-hover:text-sky-600 transition-colors line-clamp-1">
                     {product.name}
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-500 font-bold mb-2">
@@ -331,7 +331,7 @@ export default function FeaturedProducts() {
 
                   <button
                     onClick={(e) => handleAddToCart(e, product)}
-                    className="w-full flex items-center justify-center gap-2 bg-[#00b2a9] hover:bg-[#00938c] active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold py-2.5 rounded transition-all duration-300 uppercase tracking-wider"
+                    className="w-full flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white text-xs sm:text-sm font-extrabold py-2.5 rounded transition-all duration-300 uppercase tracking-wider shadow-sm border-b-2 border-sky-850"
                   >
                     <ShoppingCart className="w-4 h-4" />
                     Add to Cart

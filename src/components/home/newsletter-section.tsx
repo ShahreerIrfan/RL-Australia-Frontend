@@ -76,13 +76,13 @@ export default function NewsletterSection() {
                   className="w-full flex items-center justify-between py-4 text-left focus:outline-none"
                 >
                   <div className="flex items-center gap-3.5">
-                    <span className="text-teal-400 font-black text-sm">{faq.num}</span>
+                    <span className="text-[#c5a059] font-black text-sm">{faq.num}</span>
                     <span className="text-base sm:text-lg font-extrabold text-white tracking-wide">
                       {faq.question}
                     </span>
                   </div>
                   {isOpen ? (
-                    <ChevronUp className="w-5 h-5 text-teal-400 flex-shrink-0" />
+                    <ChevronUp className="w-5 h-5 text-[#c5a059] flex-shrink-0" />
                   ) : (
                     <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
                   )}
@@ -122,9 +122,9 @@ export default function NewsletterSection() {
             <input
               type="email"
               placeholder="Email address"
-              className="flex-1 bg-white border-none rounded px-4 py-3.5 text-sm text-gray-900 focus:ring-2 focus:ring-teal-400 focus:outline-none placeholder:text-gray-400"
+              className="flex-1 bg-white border-none rounded px-4 py-3.5 text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none placeholder:text-gray-400"
             />
-            <button className="bg-[#00b2a9] hover:bg-[#00938c] text-white px-8 py-3.5 rounded text-sm sm:text-base font-extrabold uppercase tracking-wider transition-colors">
+            <button className="bg-sky-600 hover:bg-sky-700 text-white px-8 py-3.5 rounded text-sm sm:text-base font-extrabold uppercase tracking-wider transition-colors shadow-sm">
               Subscribe
             </button>
           </div>

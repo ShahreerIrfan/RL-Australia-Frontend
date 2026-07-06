@@ -26,7 +26,7 @@ export default function HeroSection() {
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-5">
               Lab Tested Supplements
               <br />
-              You Can <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent underline decoration-teal-400 decoration-wavy decoration-3">TRUST</span>
+              You Can <span className="bg-gradient-to-r from-sky-400 via-amber-300 to-[#c5a059] bg-clip-text text-transparent underline decoration-[#c5a059] decoration-wavy decoration-3">TRUST</span>
             </h1>
 
             <p className="text-base sm:text-xl text-white/90 leading-relaxed mb-10 max-w-lg">
@@ -37,7 +37,7 @@ export default function HeroSection() {
               {/* Primary CTA - Take the Quiz */}
               <Link
                 href="/stack-builder"
-                className="inline-flex items-center gap-2.5 bg-teal-500 hover:bg-teal-400 active:scale-[0.98] text-white px-8 py-4 rounded-full text-base font-extrabold transition-all shadow-lg shadow-teal-500/25 uppercase tracking-wider"
+                className="inline-flex items-center gap-2.5 bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white px-8 py-4 rounded-full text-base font-extrabold transition-all shadow-lg shadow-sky-600/25 uppercase tracking-wider"
               >
                 Take the Quiz!
                 <ArrowRight className="w-5 h-5" />
@@ -54,15 +54,15 @@ export default function HeroSection() {
             {/* Quick trust signals */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80 mt-12 border-t border-white/10 pt-8">
               <span className="flex items-center gap-2 font-semibold">
-                <span className="w-2 h-2 rounded-full bg-teal-400" />
+                <span className="w-2 h-2 rounded-full bg-[#c5a059]" />
                 Third-Party Lab Tested
               </span>
               <span className="flex items-center gap-2 font-semibold">
-                <span className="w-2 h-2 rounded-full bg-teal-400" />
+                <span className="w-2 h-2 rounded-full bg-[#c5a059]" />
                 Free Shipping Over $200
               </span>
               <span className="flex items-center gap-2 font-semibold">
-                <span className="w-2 h-2 rounded-full bg-teal-400" />
+                <span className="w-2 h-2 rounded-full bg-[#c5a059]" />
                 COA With Every Product
               </span>
             </div>

@@ -98,22 +98,22 @@ export default function Nav({ customer }: NavProps) {
 
             {/* Centered Logo on mobile */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0 absolute left-1/2 -translate-x-1/2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md border border-white/20">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-700 via-sky-555 to-[#c5a059] flex items-center justify-center shadow-md border border-white/20">
                 <Dna className="w-5.5 h-5.5 text-white animate-pulse" style={{ animationDuration: "4s" }} />
               </div>
               <div className="text-left leading-none">
                 <span className="block text-[15px] font-black text-gray-900 tracking-tight uppercase">RL Australia</span>
-                <span className="block text-[8px] text-emerald-600 font-extrabold uppercase tracking-[0.15em] mt-0.5">Peptide Research</span>
+                <span className="block text-[8px] text-[#c5a059] font-extrabold uppercase tracking-[0.15em] mt-0.5">Peptide Research</span>
               </div>
             </Link>
 
             {/* Cart button */}
             <button
               onClick={openCartDrawer}
-              className="relative flex items-center justify-center bg-[#047857] hover:bg-[#065f46] text-white w-9 h-9 rounded-lg transition-colors"
+              className="relative flex items-center justify-center bg-sky-600 hover:bg-sky-700 text-white w-9 h-9 rounded-lg transition-colors border-b border-sky-850"
             >
               <ShoppingCart className="w-4.5 h-4.5" />
-              <span className="absolute -top-1 -right-1 bg-emerald-300 text-emerald-900 text-[9px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">{cartCount}</span>
+              <span className="absolute -top-1 -right-1 bg-amber-300 text-amber-950 text-[9px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">{cartCount}</span>
             </button>
           </div>
 
@@ -121,12 +121,12 @@ export default function Nav({ customer }: NavProps) {
           <div className="hidden lg:flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md border border-white/20">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-700 via-sky-555 to-[#c5a059] flex items-center justify-center shadow-md border border-white/20">
                 <Dna className="w-6.5 h-6.5 text-white animate-pulse" style={{ animationDuration: "4s" }} />
               </div>
               <div className="text-left leading-none">
                 <span className="block text-[19px] font-black text-gray-900 tracking-tight uppercase">RL Australia</span>
-                <span className="block text-[10px] text-emerald-600 font-extrabold uppercase tracking-[0.18em] mt-1">Peptide Research</span>
+                <span className="block text-[10px] text-[#c5a059] font-extrabold uppercase tracking-[0.18em] mt-1">Peptide Research</span>
               </div>
             </Link>
 
@@ -142,7 +142,7 @@ export default function Nav({ customer }: NavProps) {
                   <Link
                     href={link.href}
                     className={`flex items-center gap-1 px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${dropdown === link.label
-                        ? "text-emerald-700 bg-emerald-50"
+                        ? "text-sky-705 bg-sky-50"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                       }`}
                   >
@@ -157,7 +157,7 @@ export default function Nav({ customer }: NavProps) {
                           <Link
                             key={sub.label}
                             href={sub.href}
-                            className="block px-4 py-2 text-sm text-gray-600 hover:text-emerald-700 hover:bg-emerald-50/50 transition-colors"
+                            className="block px-4 py-2 text-sm text-gray-600 hover:text-sky-750 hover:bg-sky-50/50 transition-colors"
                           >
                             {sub.label}
                           </Link>
@@ -172,7 +172,7 @@ export default function Nav({ customer }: NavProps) {
             {/* Right side controls */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Desktop search form */}
-              <div className="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 w-44 lg:w-52 hover:border-emerald-300 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+              <div className="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 w-44 lg:w-52 hover:border-sky-300 focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-100 transition-all">
                 <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 <input
                   type="text"
@@ -202,7 +202,7 @@ export default function Nav({ customer }: NavProps) {
                       <Link
                         href={customer.role === "admin" ? "/admin-dashboard" : "/customer-dashboard"}
                         onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-emerald-800 transition-colors w-full text-left"
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-800 transition-colors w-full text-left"
                       >
                         <LayoutDashboard className="w-4 h-4 text-gray-450" />
                         Dashboard
@@ -225,16 +225,16 @@ export default function Nav({ customer }: NavProps) {
                 </div>
               ) : (
                 <>
-                  <Link
+                   <Link
                     href="/login"
-                    className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-emerald-700 border border-gray-200 hover:border-emerald-200 hover:bg-emerald-50/40 px-3 py-2 rounded-lg transition-all"
+                    className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-sky-700 border border-gray-200 hover:border-sky-200 hover:bg-sky-50/40 px-3 py-2 rounded-lg transition-all"
                   >
                     <LogIn className="w-3.5 h-3.5" />
                     Login
                   </Link>
                   <Link
                     href="/signup"
-                    className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg transition-colors"
+                    className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-white bg-sky-600 hover:bg-sky-700 px-3 py-2 rounded-lg transition-colors"
                   >
                     Sign Up
                   </Link>
@@ -244,24 +244,24 @@ export default function Nav({ customer }: NavProps) {
               {/* Cart */}
               <button
                 onClick={openCartDrawer}
-                className="relative flex items-center gap-1.5 bg-[#047857] hover:bg-[#065f46] text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+                className="relative flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors border-b border-sky-850"
               >
                 <ShoppingCart className="w-4 h-4" />
                 <span className="hidden sm:inline">Cart</span>
-                <span className="bg-emerald-300 text-emerald-900 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
+                <span className="bg-amber-300 text-amber-955 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
               </button>
             </div>
           </div>
 
           {/* Row 2: Mobile Search Form (Styled matching reference image with brand color button) */}
           <div className="pb-3 md:hidden">
-            <div className="w-full flex items-center bg-gray-50 border border-gray-200 rounded-xl pl-3.5 pr-1 py-1 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-100 transition-all relative">
+            <div className="w-full flex items-center bg-gray-50 border border-gray-200 rounded-xl pl-3.5 pr-1 py-1 focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-100 transition-all relative">
               <input
                 type="text"
                 placeholder="Search..."
                 className="flex-1 bg-transparent text-sm outline-none text-gray-800 placeholder:text-gray-400 py-1.5"
               />
-              <button className="flex items-center justify-center bg-[#047857] active:bg-[#065f46] hover:bg-[#065f46] text-white w-9 h-9 rounded-lg transition-colors shadow-sm ml-2">
+              <button className="flex items-center justify-center bg-sky-600 active:bg-sky-700 hover:bg-sky-700 text-white w-9 h-9 rounded-lg transition-colors shadow-sm ml-2">
                 <Search className="w-4 h-4" />
               </button>
             </div>
@@ -282,7 +282,7 @@ export default function Nav({ customer }: NavProps) {
         {/* Drawer header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
           <Link href="/" className="flex items-center gap-2" onClick={() => setDrawerOpen(false)}>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-600 via-sky-500 to-[#c5a059] flex items-center justify-center">
               <span className="text-white font-bold text-xs">RL</span>
             </div>
             <span className="text-sm font-bold text-gray-900">RL Australia</span>
@@ -312,7 +312,7 @@ export default function Nav({ customer }: NavProps) {
                   <>
                     <button
                       onClick={() => setMobileSubmenuOpen(mobileSubmenuOpen === link.label ? null : link.label)}
-                      className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-emerald-700 hover:bg-emerald-50/50 rounded-lg transition-colors"
+                      className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-sky-700 hover:bg-sky-50/50 rounded-lg transition-colors"
                     >
                       {link.label}
                       <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${mobileSubmenuOpen === link.label ? "rotate-180" : ""}`} />
@@ -323,7 +323,7 @@ export default function Nav({ customer }: NavProps) {
                           <Link
                             key={sub.label}
                             href={sub.href}
-                            className="block px-3 py-2 text-sm text-gray-500 hover:text-emerald-700 hover:bg-emerald-50/30 rounded-lg transition-colors"
+                            className="block px-3 py-2 text-sm text-gray-500 hover:text-sky-700 hover:bg-sky-50/30 rounded-lg transition-colors"
                             onClick={() => setDrawerOpen(false)}
                           >
                             {sub.label}
@@ -335,7 +335,7 @@ export default function Nav({ customer }: NavProps) {
                 ) : (
                   <Link
                     href={link.href}
-                    className="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-emerald-700 hover:bg-emerald-50/50 rounded-lg transition-colors"
+                    className="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-sky-700 hover:bg-sky-50/50 rounded-lg transition-colors"
                     onClick={() => setDrawerOpen(false)}
                   >
                     {link.label}
@@ -392,7 +392,7 @@ export default function Nav({ customer }: NavProps) {
               </Link>
               <Link
                 href="/signup"
-                className="block w-full text-center text-sm font-medium text-white bg-[#047857] py-2.5 rounded-lg hover:bg-[#065f46] transition-colors"
+                className="block w-full text-center text-sm font-medium text-white bg-sky-600 py-2.5 rounded-lg hover:bg-sky-700 transition-colors"
                 onClick={() => setDrawerOpen(false)}
               >
                 Sign Up

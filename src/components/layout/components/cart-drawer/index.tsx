@@ -207,16 +207,16 @@ export default function CartDrawer() {
         {/* Free Shipping Progress */}
         {totalItems > 0 && (
           <div className="px-6 py-3 bg-gray-50/80 border-b border-gray-100">
-            <p className="text-xs text-gray-600 mb-2">
+            <p className="text-xs text-gray-600 mb-2 font-medium">
               {remaining > 0 ? (
-                <>Add <span className="font-bold text-emerald-600">${remaining.toFixed(2)}</span> more for <span className="font-bold text-emerald-600">free delivery</span></>
+                <>Add <span className="font-bold text-sky-600">${remaining.toFixed(2)}</span> more for <span className="font-bold text-sky-600">free delivery</span></>
               ) : (
-                <span className="font-bold text-emerald-600">🎉 You qualify for free delivery!</span>
+                <span className="font-bold text-sky-605">🎉 You qualify for free delivery!</span>
               )}
             </p>
             <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-sky-400 to-sky-600 rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -236,7 +236,7 @@ export default function CartDrawer() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="mt-2 text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+                className="mt-2 text-xs font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1"
               >
                 Continue Shopping <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -319,7 +319,7 @@ export default function CartDrawer() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Delivery</span>
-                <span className="text-xs font-semibold text-emerald-600">Calculated at checkout</span>
+                <span className="text-xs font-semibold text-sky-605">Calculated at checkout</span>
               </div>
               <div className="flex items-center justify-between text-base pt-2 border-t border-gray-100">
                 <span className="font-bold text-gray-900">Total</span>
@@ -328,10 +328,10 @@ export default function CartDrawer() {
             </div>
 
             {/* Checkout Button */}
-            <Link
+             <Link
               href="/cart"
               onClick={() => setIsOpen(false)}
-              className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-2xl text-sm font-bold transition-colors shadow-lg shadow-emerald-600/20"
+              className="w-full flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3.5 rounded-2xl text-sm font-bold transition-colors shadow-lg shadow-sky-600/20 border-b-2 border-sky-850"
             >
               <ShoppingBag className="w-4 h-4" />
               Proceed to Checkout

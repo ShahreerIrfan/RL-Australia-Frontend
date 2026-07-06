@@ -69,14 +69,14 @@ export default function CategoryShowcase() {
               <Link
                 key={cat.title}
                 href={cat.href}
-                className="group block bg-white rounded-2xl border border-gray-200/80 p-6 text-center shadow-md hover:shadow-lg hover:border-[#00b2a9]/50 hover:-translate-y-1 transition-all duration-300"
+                className="group block bg-white rounded-2xl border border-gray-200/80 p-6 text-center shadow-md hover:shadow-lg hover:border-sky-500/50 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex items-center justify-center mb-4">
                   <div className={`w-12 h-12 rounded-xl ${cat.bgClass} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
                     <Icon className="w-6 h-6" />
                   </div>
                 </div>
-                <h3 className="text-base sm:text-lg font-extrabold text-gray-800 mb-1 group-hover:text-[#00b2a9] transition-colors">
+                <h3 className="text-base sm:text-lg font-extrabold text-gray-800 mb-1 group-hover:text-sky-600 transition-colors">
                   {cat.title}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-500 leading-snug">

@@ -125,7 +125,7 @@ export default function TestimonialsSection() {
                 Reviews
               </h2>
               <div className="flex items-center gap-2.5 mt-1.5">
-                <div className="flex text-emerald-500 fill-emerald-500">
+                <div className="flex text-amber-500 fill-amber-500">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-5 h-5 fill-current" />
                   ))}
@@ -150,7 +150,7 @@ export default function TestimonialsSection() {
             <input
               type="text"
               placeholder="Search reviews..."
-              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+              className="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
             />
           </div>
 
@@ -175,7 +175,7 @@ export default function TestimonialsSection() {
 
                   {/* Stars and Date */}
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex text-emerald-500">
+                    <div className="flex text-amber-500">
                       {[...Array(r.rating)].map((_, idx) => (
                         <Star key={idx} className="w-3.5 h-3.5 fill-current" />
                       ))}
@@ -196,12 +196,12 @@ export default function TestimonialsSection() {
                 <div className="border-t border-gray-100 pt-3.5 mt-2">
                   <div className="flex items-center gap-1 text-sm font-bold text-gray-800">
                     <span>{r.author}</span>
-                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    <ShieldCheck className="w-4 h-4 text-sky-600" />
                   </div>
                   <div className="text-xs text-gray-400 font-medium">
                     {r.location}
                   </div>
-                  <div className="mt-2 text-xs text-teal-600 font-bold hover:underline">
+                  <div className="mt-2 text-xs text-sky-600 font-bold hover:underline">
                     View product: {r.product}
                   </div>
                 </div>
