@@ -21,6 +21,10 @@ const AccountNav = ({
   const { countryCode } = useParams() as { countryCode: string }
 
   const handleLogout = async () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("auth_token")
+      localStorage.removeItem("user")
+    }
     await signout(countryCode)
   }
 

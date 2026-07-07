@@ -37,6 +37,21 @@ export default function CustomerDashboard() {
         setLoading(false)
     }, [router])
 
+    // Listen for storage changes from other tabs to enforce immediate logout
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === "auth_token" || e.key === "user") {
+                const token = localStorage.getItem("auth_token")
+                const stored = localStorage.getItem("user")
+                if (!token || !stored) {
+                    window.location.href = "/login"
+                }
+            }
+        }
+        window.addEventListener("storage", handleStorageChange)
+        return () => window.removeEventListener("storage", handleStorageChange)
+    }, [])
+
     const handleLogout = () => {
         localStorage.removeItem("auth_token")
         localStorage.removeItem("user")

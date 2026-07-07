@@ -210,6 +210,10 @@ export default function Nav({ customer }: NavProps) {
                       <button
                         onClick={async () => {
                           setProfileDropdownOpen(false)
+                          if (typeof window !== "undefined") {
+                            localStorage.removeItem("auth_token")
+                            localStorage.removeItem("user")
+                          }
                           const { signout } = await import("@lib/data/customer")
                           const pathParts = window.location.pathname.split("/")
                           const countryCode = pathParts[1] || "us"
@@ -370,6 +374,10 @@ export default function Nav({ customer }: NavProps) {
               <button
                 onClick={async () => {
                   setDrawerOpen(false)
+                  if (typeof window !== "undefined") {
+                    localStorage.removeItem("auth_token")
+                    localStorage.removeItem("user")
+                  }
                   const { signout } = await import("@lib/data/customer")
                   const pathParts = window.location.pathname.split("/")
                   const countryCode = pathParts[1] || "us"
