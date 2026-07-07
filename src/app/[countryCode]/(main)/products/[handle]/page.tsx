@@ -5,8 +5,7 @@ import { getRegion, listRegions } from "@lib/data/regions"
 import ProductTemplate from "@components/products/templates"
 import { HttpTypes } from "@medusajs/types"
 
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+export const revalidate = 300 // Revalidate cached static pages every 5 minutes
 
 type Props = {
   params: Promise<{ countryCode: string; handle: string }>
