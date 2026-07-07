@@ -65,6 +65,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/bpc-157.png" }],
     status: "published",
     dosage: "5mg Vial",
+    category: { id: "cat_peptides", name: "Peptides", handle: "peptides" },
     categories: [{ id: "cat_peptides", name: "Peptides", handle: "peptides" }],
     variants: [
       {
@@ -91,6 +92,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 7.png" }],
     status: "published",
     dosage: "5mg Vial",
+    category: { id: "cat_peptides", name: "Peptides", handle: "peptides" },
     categories: [{ id: "cat_peptides", name: "Peptides", handle: "peptides" }],
     variants: [
       {
@@ -117,6 +119,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 10.png" }],
     status: "published",
     dosage: "50mg Vial",
+    category: { id: "cat_peptides", name: "Peptides", handle: "peptides" },
     categories: [{ id: "cat_peptides", name: "Peptides", handle: "peptides" }],
     variants: [
       {
@@ -143,6 +146,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 8.png" }],
     status: "published",
     dosage: "2mg Vial",
+    category: { id: "cat_peptides", name: "Peptides", handle: "peptides" },
     categories: [{ id: "cat_peptides", name: "Peptides", handle: "peptides" }],
     variants: [
       {
@@ -169,6 +173,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 9.png" }],
     status: "published",
     dosage: "Nasal Spray · 3ml",
+    category: { id: "cat_nootropics", name: "Nootropics", handle: "nootropics" },
     categories: [{ id: "cat_nootropics", name: "Nootropics", handle: "nootropics" }],
     variants: [
       {
@@ -195,6 +200,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 6.png" }],
     status: "published",
     dosage: "Nasal Spray · 5ml",
+    category: { id: "cat_nootropics", name: "Nootropics", handle: "nootropics" },
     categories: [{ id: "cat_nootropics", name: "Nootropics", handle: "nootropics" }],
     variants: [
       {
@@ -221,6 +227,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 7.png" }],
     status: "published",
     dosage: "200:1 Extract · 60 Capsules",
+    category: { id: "cat_supplements", name: "Supplements", handle: "supplements" },
     categories: [{ id: "cat_supplements", name: "Supplements", handle: "supplements" }],
     variants: [
       {
@@ -247,6 +254,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 8.png" }],
     status: "published",
     dosage: "600mg · 90 Capsules",
+    category: { id: "cat_supplements", name: "Supplements", handle: "supplements" },
     categories: [{ id: "cat_supplements", name: "Supplements", handle: "supplements" }],
     variants: [
       {
@@ -273,6 +281,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 6.png" }],
     status: "published",
     dosage: "30 Gummies",
+    category: { id: "cat_gummies", name: "Gummies", handle: "gummies" },
     categories: [{ id: "cat_gummies", name: "Gummies", handle: "gummies" }],
     variants: [
       {
@@ -299,6 +308,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 7.png" }],
     status: "published",
     dosage: "60 Softgels · 100mg",
+    category: { id: "cat_supplements", name: "Supplements", handle: "supplements" },
     categories: [{ id: "cat_supplements", name: "Supplements", handle: "supplements" }],
     variants: [
       {
@@ -325,6 +335,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 8.png" }],
     status: "published",
     dosage: "120 Capsules",
+    category: { id: "cat_addons", name: "Add-ons", handle: "add-ons" },
     categories: [{ id: "cat_addons", name: "Add-ons", handle: "add-ons" }],
     variants: [
       {
@@ -351,6 +362,7 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 9.png" }],
     status: "published",
     dosage: "30 Capsules",
+    category: { id: "cat_supplements", name: "Supplements", handle: "supplements" },
     categories: [{ id: "cat_supplements", name: "Supplements", handle: "supplements" }],
     variants: [
       {
