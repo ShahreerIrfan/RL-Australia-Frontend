@@ -389,20 +389,6 @@ export const mockProducts = [
           currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
-      },
-      {
-        id: "var_11_d",
-        sku: "BEEFLIVER-121",
-        title: "Double Vial",
-        weight: "10 Gram",
-        inventory_quantity: 100,
-        options: [],
-        calculated_price: {
-          calculated_amount: 37.00,
-          original_amount: 34.00,
-          currency_code: "aud",
-          calculated_price: { price_list_type: null }
-        }
       }
     ]
   },
