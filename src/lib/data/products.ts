@@ -134,3 +134,32 @@ export const listProductsWithSort = async ({
     queryParams,
   }
 }
+
+export const retrieveProduct = async (
+  id: string,
+  regionId?: string
+): Promise<{ product: HttpTypes.StoreProduct }> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("products")),
+  }
+
+  return sdk.client
+    .fetch<{ product: HttpTypes.StoreProduct }>(
+      `/store/products/${id}`,
+      {
+        method: "GET",
+        query: {
+          region_id: regionId,
+          fields:
+            "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,",
+        },
+        headers,
+        next,
+        cache: "force-cache",
+      }
+    )
+}

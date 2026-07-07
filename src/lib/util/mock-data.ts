@@ -404,6 +404,39 @@ export const getMockResponse = (input: string, init?: any): any => {
   }
 
   if (url.includes("/store/products")) {
+    // Check if there is a handle parameter in the URL or query object
+    let handle: string | null = null;
+    try {
+      const parsedUrl = new URL(url, "http://localhost");
+      handle = parsedUrl.searchParams.get("handle");
+    } catch {}
+
+    if (!handle && init?.query?.handle) {
+      handle = init.query.handle;
+    }
+
+    if (handle) {
+      const product = mockProducts.find(p => p.handle === handle) || mockProducts[0];
+      return { products: [product], count: 1, limit: 1, offset: 0 };
+    }
+
+    // Also check if there is an id parameter
+    let id: string | null = null;
+    try {
+      const parsedUrl = new URL(url, "http://localhost");
+      id = parsedUrl.searchParams.get("id");
+    } catch {}
+
+    if (!id && init?.query?.id) {
+      const queryId = init.query.id;
+      id = Array.isArray(queryId) ? queryId[0] : queryId;
+    }
+
+    if (id) {
+      const product = mockProducts.find(p => p.id === id) || mockProducts[0];
+      return { products: [product], count: 1, limit: 1, offset: 0 };
+    }
+
     return { products: mockProducts, count: mockProducts.length, limit: 100, offset: 0 };
   }
 
