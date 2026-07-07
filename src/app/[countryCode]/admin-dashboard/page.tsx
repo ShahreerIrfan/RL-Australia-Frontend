@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation"
 import { 
   LogOut, Package, Users, DollarSign, ShoppingCart, BarChart3, 
   ChevronDown, ChevronRight, Menu, X, Bell, Mail, Search, 
-  Maximize2, Moon, Clock, Star, Award, TrendingUp,
+  ExternalLink, Moon, Clock, Star, Award, TrendingUp,
   Percent, Settings, ClipboardList, BookOpen, Target, Activity, FileText,
   LayoutGrid, Pencil, Trash2, Eye, Plus, Upload
 } from "lucide-react"
@@ -661,10 +661,16 @@ export default function AdminDashboard() {
             <button className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-750">
               <Search className="w-4 h-4" />
             </button>
-            {/* Maximize */}
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-750 hidden sm:flex">
-              <Maximize2 className="w-4 h-4" />
-            </button>
+            {/* Visit Site */}
+            <a 
+              href="/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-750 hidden sm:flex"
+              title="Visit Site"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </a>
             {/* Mail */}
             <button className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-750 relative">
               <Mail className="w-4 h-4" />
