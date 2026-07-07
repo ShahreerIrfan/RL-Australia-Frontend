@@ -103,9 +103,12 @@ export default function CartDrawer() {
         const data = await res.json()
         setCart(data.cart)
         setIsOpen(true)
+      } else {
+        window.dispatchEvent(new Event("cart-updated"))
       }
     } catch (err) {
       console.error("Failed to add to cart:", err)
+      window.dispatchEvent(new Event("cart-updated"))
     } finally {
       setLoading(false)
     }
