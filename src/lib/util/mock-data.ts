@@ -175,14 +175,28 @@ export const mockProducts = [
     variants: [
       {
         id: "var_4_s",
-        sku: "CJC1295-1VIAL",
+        sku: "CJC1295-2MG",
         title: "Single Vial",
         weight: "5 Gram",
-        inventory_quantity: 100,
+        inventory_quantity: 200,
         options: [],
         calculated_price: {
           calculated_amount: 44.95,
           original_amount: 59.95,
+          currency_code: "aud",
+          calculated_price: { price_list_type: null }
+        }
+      },
+      {
+        id: "var_4_d",
+        sku: "CJC1295-2MH",
+        title: "Double Vial",
+        weight: "10 Gram",
+        inventory_quantity: 100,
+        options: [],
+        calculated_price: {
+          calculated_amount: 80.00,
+          original_amount: 70.00,
           currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
