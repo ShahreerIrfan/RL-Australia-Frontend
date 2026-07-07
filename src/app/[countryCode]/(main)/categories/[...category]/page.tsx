@@ -1,10 +1,9 @@
 import { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 
 import { getCategoryByHandle, listCategories } from "@lib/data/categories"
 import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
-import CategoryTemplate from "@components/categories/templates"
 import { SortOptions } from "@components/store/components/refinement-list/sort-products"
 
 type Props = {
@@ -68,18 +67,9 @@ export default async function CategoryPage(props: Props) {
   const params = await props.params
   const { sortBy, page } = searchParams
 
-  const productCategory = await getCategoryByHandle(params.category)
+  const categoryHandle = params.category[params.category.length - 1]
+  const pageParam = page ? `&page=${page}` : ""
+  const sortParam = sortBy ? `&sortBy=${sortBy}` : ""
 
-  if (!productCategory) {
-    notFound()
-  }
-
-  return (
-    <CategoryTemplate
-      category={productCategory}
-      sortBy={sortBy}
-      page={page}
-      countryCode={params.countryCode}
-    />
-  )
+  redirect(`/${params.countryCode}/store?category=${categoryHandle}${sortParam}${pageParam}`)
 }
