@@ -39,7 +39,7 @@ sdk.client.fetch = async <T>(
   }
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 1200)
+    const timeoutId = setTimeout(() => controller.abort(), 4000)
 
     const response = await originalFetch(input, {
       ...init,

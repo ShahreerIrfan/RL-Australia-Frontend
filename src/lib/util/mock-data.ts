@@ -55,17 +55,32 @@ export const mockProducts = [
     purity: "99.8%+",
     molecular_weight: "1419.5 g/mol",
     molecular_formula: "C62H98N16O22",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["Single Vial", "5-Pack"] }],
+    options: [],
     variants: [
       {
         id: "var_1_s",
         sku: "BPC157-1VIAL",
         title: "Single Vial",
+        weight: "5 Gram",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "Single Vial" }],
+        options: [],
         calculated_price: {
           calculated_amount: 49.95,
           original_amount: 64.95,
+          currency_code: "aud",
+          calculated_price: { price_list_type: null }
+        }
+      },
+      {
+        id: "var_1_m",
+        sku: "BPC157-5PACK",
+        title: "5-Pack",
+        weight: "25 Gram",
+        inventory_quantity: 50,
+        options: [],
+        calculated_price: {
+          calculated_amount: 199.95,
+          original_amount: 249.95,
           currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
@@ -84,17 +99,32 @@ export const mockProducts = [
     dosage: "5mg Vial",
     purity: "99.5%+",
     molecular_weight: "4963.5 g/mol",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["Single Vial"] }],
+    options: [],
     variants: [
       {
         id: "var_2_s",
         sku: "TB500-1VIAL",
         title: "Single Vial",
+        weight: "5 Gram",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "Single Vial" }],
+        options: [],
         calculated_price: {
           calculated_amount: 54.95,
           original_amount: 69.95,
+          currency_code: "aud",
+          calculated_price: { price_list_type: null }
+        }
+      },
+      {
+        id: "var_2_m",
+        sku: "TB500-5PACK",
+        title: "5-Pack",
+        weight: "25 Gram",
+        inventory_quantity: 50,
+        options: [],
+        calculated_price: {
+          calculated_amount: 219.95,
+          original_amount: 269.95,
           currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
@@ -112,14 +142,15 @@ export const mockProducts = [
     weight: 10,
     dosage: "50mg Vial",
     purity: "99.2%+",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["Single Vial"] }],
+    options: [],
     variants: [
       {
         id: "var_3_s",
         sku: "GHKCU-1VIAL",
         title: "Single Vial",
+        weight: "5 Gram",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "Single Vial" }],
+        options: [],
         calculated_price: {
           calculated_amount: 69.95,
           original_amount: 89.95,
@@ -140,14 +171,15 @@ export const mockProducts = [
     weight: 10,
     dosage: "2mg Vial",
     purity: "99.7%+",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["Single Vial"] }],
+    options: [],
     variants: [
       {
         id: "var_4_s",
         sku: "CJC1295-1VIAL",
         title: "Single Vial",
+        weight: "5 Gram",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "Single Vial" }],
+        options: [],
         calculated_price: {
           calculated_amount: 44.95,
           original_amount: 59.95,
@@ -166,14 +198,15 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 9.png" }],
     status: "published",
     dosage: "Nasal Spray · 3ml",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["Single Spray"] }],
+    options: [],
     variants: [
       {
         id: "var_5_s",
         sku: "SEMAX-1",
         title: "Single Spray",
+        weight: "3ml",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "Single Spray" }],
+        options: [],
         calculated_price: {
           calculated_amount: 59.95,
           original_amount: 74.95,
@@ -192,14 +225,15 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 6.png" }],
     status: "published",
     dosage: "Nasal Spray · 5ml",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["Single Spray"] }],
+    options: [],
     variants: [
       {
         id: "var_6_s",
         sku: "SELANK-015",
         title: "Single Spray",
+        weight: "5ml",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "Single Spray" }],
+        options: [],
         calculated_price: {
           calculated_amount: 64.95,
           original_amount: 79.95,
@@ -218,14 +252,15 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 7.png" }],
     status: "published",
     dosage: "200:1 Extract · 60 Capsules",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["60 Capsules"] }],
+    options: [],
     variants: [
       {
         id: "var_7_s",
         sku: "TONGKAT-200",
         title: "60 Capsules",
+        weight: "60 Capsules",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "60 Capsules" }],
+        options: [],
         calculated_price: {
           calculated_amount: 29.99,
           original_amount: 39.99,
@@ -244,14 +279,15 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 8.png" }],
     status: "published",
     dosage: "600mg · 90 Capsules",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["90 Capsules"] }],
+    options: [],
     variants: [
       {
         id: "var_8_s",
         sku: "ASHWA-KSM",
         title: "90 Capsules",
+        weight: "90 Capsules",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "90 Capsules" }],
+        options: [],
         calculated_price: {
           calculated_amount: 24.99,
           original_amount: 34.99,
@@ -270,14 +306,15 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 6.png" }],
     status: "published",
     dosage: "30 Gummies",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["30 Gummies"] }],
+    options: [],
     variants: [
       {
         id: "var_9_s",
         sku: "GUMMY-PC",
         title: "30 Gummies",
+        weight: "30 Gummies",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "30 Gummies" }],
+        options: [],
         calculated_price: {
           calculated_amount: 16.99,
           original_amount: 19.99,
@@ -296,14 +333,15 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 7.png" }],
     status: "published",
     dosage: "60 Softgels · 100mg",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["60 Softgels"] }],
+    options: [],
     variants: [
       {
         id: "var_10_s",
         sku: "COQ10-100",
         title: "60 Softgels",
+        weight: "60 Softgels",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "60 Softgels" }],
+        options: [],
         calculated_price: {
           calculated_amount: 18.99,
           original_amount: 23.99,
@@ -322,17 +360,32 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 8.png" }],
     status: "published",
     dosage: "120 Capsules",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["120 Capsules"] }],
+    options: [],
     variants: [
       {
         id: "var_11_s",
-        sku: "BEEFLIVER",
-        title: "120 Capsules",
-        inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "120 Capsules" }],
+        sku: "BEEFLIVER-120",
+        title: "Single Vial",
+        weight: "5 Gram",
+        inventory_quantity: 150,
+        options: [],
         calculated_price: {
           calculated_amount: 19.99,
           original_amount: 24.99,
+          currency_code: "aud",
+          calculated_price: { price_list_type: null }
+        }
+      },
+      {
+        id: "var_11_d",
+        sku: "BEEFLIVER-121",
+        title: "Double Vial",
+        weight: "10 Gram",
+        inventory_quantity: 100,
+        options: [],
+        calculated_price: {
+          calculated_amount: 37.00,
+          original_amount: 34.00,
           currency_code: "aud",
           calculated_price: { price_list_type: null }
         }
@@ -348,14 +401,15 @@ export const mockProducts = [
     images: [{ url: "/assets/products/asset 9.png" }],
     status: "published",
     dosage: "30 Capsules",
-    options: [{ id: "opt_pack", title: "Pack Size", values: ["30 Capsules"] }],
+    options: [],
     variants: [
       {
         id: "var_12_s",
         sku: "REUTERI-30",
         title: "30 Capsules",
+        weight: "30 Capsules",
         inventory_quantity: 100,
-        options: [{ option_id: "opt_pack", value: "30 Capsules" }],
+        options: [],
         calculated_price: {
           calculated_amount: 20.99,
           original_amount: 25.99,
