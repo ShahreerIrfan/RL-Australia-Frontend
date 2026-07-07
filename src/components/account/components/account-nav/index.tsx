@@ -25,7 +25,11 @@ const AccountNav = ({
       localStorage.removeItem("auth_token")
       localStorage.removeItem("user")
     }
-    await signout(countryCode)
+    let code = (countryCode as string) || "us"
+    if (!code || ["customer-dashboard", "admin-dashboard", "login", "signup", "store", "account", "products"].includes(code.toLowerCase())) {
+      code = "us"
+    }
+    await signout(code)
   }
 
   return (
