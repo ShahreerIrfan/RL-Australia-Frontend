@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
 import { User, Package, MapPin, LogOut, ShoppingBag } from "lucide-react"
 
@@ -15,6 +15,8 @@ interface UserData {
 
 export default function CustomerDashboard() {
     const router = useRouter()
+    const params = useParams()
+    const countryCode = (params?.countryCode as string) || "us"
     const [user, setUser] = useState<UserData | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -52,10 +54,11 @@ export default function CustomerDashboard() {
         return () => window.removeEventListener("storage", handleStorageChange)
     }, [])
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         localStorage.removeItem("auth_token")
         localStorage.removeItem("user")
-        router.push("/login")
+        const { signout } = await import("@lib/data/customer")
+        await signout(countryCode)
     }
 
     if (loading) {

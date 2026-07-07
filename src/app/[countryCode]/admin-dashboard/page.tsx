@@ -484,7 +484,7 @@ export default function AdminDashboard() {
         const token = localStorage.getItem("auth_token")
         const stored = localStorage.getItem("user")
         if (!token || !stored) {
-          window.location.href = "/login"
+          window.location.href = "/" + countryCode + "/login"
         }
       }
     }
@@ -497,7 +497,7 @@ export default function AdminDashboard() {
     localStorage.removeItem("user")
     // Also remove cookies
     document.cookie = "_medusa_jwt=; max-age=-1; path=/"
-    window.location.href = "/login"
+    window.location.href = "/" + countryCode + "/login"
   }
 
   const toggleSection = (section: string) => {
