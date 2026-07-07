@@ -372,7 +372,10 @@ export const getMockResponse = (input: string, init?: any): any => {
   
   if (url.includes("/store/regions/")) {
     const parts = url.split("/");
-    const id = parts[parts.length - 1];
+    let id = parts[parts.length - 1];
+    if (id.includes("?")) {
+      id = id.split("?")[0];
+    }
     const region = mockRegions.find(r => r.id === id) || mockRegions[0];
     return { region };
   }
@@ -383,7 +386,10 @@ export const getMockResponse = (input: string, init?: any): any => {
 
   if (url.includes("/store/collections/")) {
     const parts = url.split("/");
-    const id = parts[parts.length - 1];
+    let id = parts[parts.length - 1];
+    if (id.includes("?")) {
+      id = id.split("?")[0];
+    }
     const collection = mockCollections.find(c => c.id === id) || mockCollections[0];
     return { collection };
   }
@@ -398,7 +404,10 @@ export const getMockResponse = (input: string, init?: any): any => {
 
   if (url.includes("/store/products/")) {
     const parts = url.split("/");
-    const id = parts[parts.length - 1];
+    let id = parts[parts.length - 1];
+    if (id.includes("?")) {
+      id = id.split("?")[0];
+    }
     const product = mockProducts.find(p => p.id === id || p.handle === id) || mockProducts[0];
     return { product };
   }
