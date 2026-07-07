@@ -504,136 +504,106 @@ export default function AdminDashboard() {
         </div>
 
         {/* Navigation Menus */}
-        <nav className="p-4 space-y-6 overflow-y-auto h-[calc(100vh-4rem)]">
-          {/* Section: Overview */}
+        <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100vh-4rem)]">
+          {/* Dashboard */}
+          <button 
+            onClick={() => setActiveMenu("Dashboard")}
+            className={`w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold rounded-xl transition-all select-none cursor-pointer ${activeMenu === "Dashboard" ? "bg-[#047857] text-white shadow-md shadow-emerald-900/10" : "text-gray-600 hover:bg-gray-50"}`}
+          >
+            <LayoutGrid className="w-4 h-4 flex-shrink-0" />
+            Dashboard
+          </button>
+
+          {/* Products */}
           <div>
-            <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2.5 cursor-pointer" onClick={() => toggleSection("Overview")}>
-              <span>Overview</span>
-              {expandedSections.Overview ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </div>
-            {expandedSections.Overview && (
-              <div className="space-y-1">
+            <button 
+              onClick={() => toggleSection("ProductsSub")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl"
+            >
+              <span className="flex items-center gap-3.5">
+                <Package className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                Products
+              </span>
+              {expandedSections.ProductsSub ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
+            </button>
+            {expandedSections.ProductsSub && (
+              <div className="pl-11 pr-2 py-1 space-y-1.5 border-l border-gray-100 ml-6 mt-0.5 text-left">
                 <button 
-                  onClick={() => setActiveMenu("Dashboard")}
-                  className={`w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold rounded-xl transition-all select-none cursor-pointer ${activeMenu === "Dashboard" ? "bg-[#047857] text-white shadow-md shadow-emerald-900/10" : "text-gray-600 hover:bg-gray-50"}`}
+                  onClick={() => setActiveMenu("All Products")} 
+                  className={`block w-full text-left py-1 text-[11px] font-semibold transition-colors ${activeMenu === "All Products" ? "text-[#047857] font-bold" : "text-gray-550 hover:text-emerald-700"}`}
                 >
-                  <LayoutGrid className="w-4 h-4 flex-shrink-0" />
-                  Dashboard
+                  All Products
+                </button>
+                <button 
+                  onClick={() => setActiveMenu("Categories")} 
+                  className={`block w-full text-left py-1 text-[11px] font-semibold transition-colors ${activeMenu === "Categories" ? "text-[#047857] font-bold" : "text-gray-550 hover:text-emerald-700"}`}
+                >
+                  Categories
                 </button>
               </div>
             )}
           </div>
 
-          {/* Section: Catalog & Content */}
+          {/* Guides Library */}
           <div>
-            <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2 cursor-pointer" onClick={() => toggleSection("CatalogContent")}>
-              <span>Catalog & Content</span>
-              {expandedSections.CatalogContent ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </div>
-            {expandedSections.CatalogContent && (
-              <div className="space-y-1">
-                <button 
-                  onClick={() => toggleSection("ProductsSub")}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl"
-                >
-                  <span className="flex items-center gap-3">
-                    <Package className="w-4 h-4 text-emerald-600" />
-                    Products
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                </button>
-                {expandedSections.ProductsSub && (
-                  <div className="pl-9 pr-2 py-1 space-y-1 border-l border-gray-100 ml-5 mt-0.5 text-left">
-                    <button 
-                      onClick={() => setActiveMenu("All Products")} 
-                      className={`block w-full text-left py-1.5 text-[11px] font-semibold transition-colors ${activeMenu === "All Products" ? "text-[#047857] font-bold" : "text-gray-550 hover:text-emerald-700"}`}
-                    >
-                      All Products
-                    </button>
-                    <button 
-                      onClick={() => setActiveMenu("Categories")} 
-                      className={`block w-full text-left py-1.5 text-[11px] font-semibold transition-colors ${activeMenu === "Categories" ? "text-[#047857] font-bold" : "text-gray-550 hover:text-emerald-700"}`}
-                    >
-                      Categories
-                    </button>
-                  </div>
-                )}
-
-                <button 
-                  onClick={() => toggleSection("GuidesSub")}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl"
-                >
-                  <span className="flex items-center gap-3">
-                    <BookOpen className="w-4 h-4 text-emerald-600" />
-                    Guides Library
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                </button>
-                {expandedSections.GuidesSub && (
-                  <div className="pl-9 pr-2 py-1 space-y-1 border-l border-gray-100 ml-5 mt-0.5">
-                    <a href="#" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Manage Guides</a>
-                    <a href="#" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Email Capture Settings</a>
-                  </div>
-                )}
+            <button 
+              onClick={() => toggleSection("GuidesSub")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl"
+            >
+              <span className="flex items-center gap-3.5">
+                <BookOpen className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                Guides Library
+              </span>
+              {expandedSections.GuidesSub ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
+            </button>
+            {expandedSections.GuidesSub && (
+              <div className="pl-11 pr-2 py-1 space-y-1.5 border-l border-gray-100 ml-6 mt-0.5 text-left font-semibold text-gray-555">
+                <a href="#" className="block py-1 text-[11px] hover:text-emerald-700">Manage Guides</a>
+                <a href="#" className="block py-1 text-[11px] hover:text-emerald-700">Email Capture Settings</a>
               </div>
             )}
           </div>
 
-          {/* Section: Cart & Stacking */}
+          {/* Orders */}
           <div>
-            <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2 cursor-pointer" onClick={() => toggleSection("CartStack")}>
-              <span>Cart & Stacking</span>
-              {expandedSections.CartStack ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </div>
-            {expandedSections.CartStack && (
-              <div className="space-y-1">
-                <button 
-                  onClick={() => toggleSection("OrdersSub")}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl"
-                >
-                  <span className="flex items-center gap-3">
-                    <ShoppingCart className="w-4 h-4 text-emerald-600" />
-                    Orders
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                </button>
-                {expandedSections.OrdersSub && (
-                  <div className="pl-9 pr-2 py-1 space-y-1 border-l border-gray-100 ml-5 mt-0.5">
-                    <a href={`${BACKEND_URL}/app/orders`} target="_blank" rel="noopener noreferrer" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Order History</a>
-                    <a href={`${BACKEND_URL}/app/returns`} target="_blank" rel="noopener noreferrer" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Returns</a>
-                  </div>
-                )}
-
-                <button className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl">
-                  <span className="flex items-center gap-3">
-                    <Target className="w-4 h-4 text-emerald-600" />
-                    Stack Builder Config
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                </button>
+            <button 
+              onClick={() => toggleSection("OrdersSub")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl"
+            >
+              <span className="flex items-center gap-3.5">
+                <ShoppingCart className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                Orders
+              </span>
+              {expandedSections.OrdersSub ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
+            </button>
+            {expandedSections.OrdersSub && (
+              <div className="pl-11 pr-2 py-1 space-y-1.5 border-l border-gray-100 ml-6 mt-0.5 text-left font-semibold text-gray-555">
+                <a href={`${BACKEND_URL}/app/orders`} target="_blank" rel="noopener noreferrer" className="block py-1 text-[11px] hover:text-emerald-700">All Orders</a>
+                <a href={`${BACKEND_URL}/app/returns`} target="_blank" rel="noopener noreferrer" className="block py-1 text-[11px] hover:text-emerald-700">Returns</a>
               </div>
             )}
           </div>
 
-          {/* Section: Marketing & Reports */}
-          <div>
-            <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2 cursor-pointer" onClick={() => toggleSection("MarketingReports")}>
-              <span>Marketing & Reports</span>
-              {expandedSections.MarketingReports ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </div>
-            {expandedSections.MarketingReports && (
-              <div className="space-y-1">
-                <button className="w-full flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl">
-                  <TrendingUp className="w-4 h-4 text-emerald-600" />
-                  Campaign Analytics
-                </button>
-                <button className="w-full flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl">
-                  <Percent className="w-4 h-4 text-emerald-600" />
-                  Discount Upsells
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Stack Builder Config */}
+          <button className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl">
+            <span className="flex items-center gap-3.5">
+              <Target className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              Stack Builder Config
+            </span>
+            <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+          </button>
+
+          {/* Campaign Analytics */}
+          <button className="w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl">
+            <TrendingUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            Campaign Analytics
+          </button>
+
+          {/* Discount Upsells */}
+          <button className="w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl">
+            <Percent className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            Discount Upsells
+          </button>
         </nav>
       </aside>
 
