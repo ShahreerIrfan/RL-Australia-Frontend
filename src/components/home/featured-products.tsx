@@ -29,7 +29,7 @@ const staticProducts: Product[] = [
     price: 49.95,
     originalPrice: 64.95,
     category: "Peptides",
-    image: "/assets/products/asset 6.png",
+    image: "/assets/products/bpc-157.png",
     rating: 4.9,
     reviews: 128,
   },
