@@ -43,6 +43,13 @@ export default function CartDrawer() {
   const [loading, setLoading] = useState(false)
   const [updatingItem, setUpdatingItem] = useState<string | null>(null)
 
+  // Sync cart updates with the rest of the storefront (badge counts, loaders, etc.)
+  useEffect(() => {
+    if (cart) {
+      window.dispatchEvent(new Event("cart-updated"))
+    }
+  }, [cart])
+
   const getCartId = (): string | null => {
     if (typeof window === "undefined") return null
     return localStorage.getItem("rl_cart_id")

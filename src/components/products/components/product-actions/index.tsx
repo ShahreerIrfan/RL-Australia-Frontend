@@ -194,19 +194,28 @@ export default function ProductActions({
   const inView = useIntersection(actionsRef, "0px")
 
   // add the selected variant to the cart
-  const handleAddToCart = async () => {
-    if (!selectedVariant?.id) return null
+  const handleAddToCart = () => {
+    if (!selectedVariant?.id) return
 
     setIsAdding(true)
-
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity: 1,
-      countryCode,
-    })
-
-    setIsAdding(false)
+    window.dispatchEvent(
+      new CustomEvent("add-to-cart", {
+        detail: {
+          productId: selectedVariant.id,
+          quantity: 1,
+        },
+      })
+    )
   }
+
+  // Reset loading state when cart update event fires
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      setIsAdding(false)
+    }
+    window.addEventListener("cart-updated", handleCartUpdate)
+    return () => window.removeEventListener("cart-updated", handleCartUpdate)
+  }, [])
 
   return (
     <>
