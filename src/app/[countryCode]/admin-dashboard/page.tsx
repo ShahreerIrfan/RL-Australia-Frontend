@@ -72,6 +72,7 @@ export default function AdminDashboard() {
   const [uploading, setUploading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<any | null>(null)
+  const [productType, setProductType] = useState<"Simple" | "Variable">("Simple")
   
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState("")
@@ -244,6 +245,7 @@ export default function AdminDashboard() {
 
   const openAddModal = () => {
     setEditingProduct(null)
+    setProductType("Simple")
     setProductForm({
       name: "",
       slug: "",
@@ -270,6 +272,11 @@ export default function AdminDashboard() {
 
   const openEditModal = (product: any) => {
     setEditingProduct(product)
+    const isVar = product.variants && (
+      product.variants.length > 1 || 
+      (product.variants.length === 1 && product.variants[0].title !== "Single Vial")
+    )
+    setProductType(isVar ? "Variable" : "Simple")
     setProductForm({
       name: product.title || "",
       slug: product.handle || "",
@@ -304,7 +311,23 @@ export default function AdminDashboard() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!productForm.name || !productForm.price) {
+    
+    // Prepare payload based on Simple vs. Variable selection
+    let payload = { ...productForm }
+    if (productType === "Simple") {
+      payload.variants = []
+    } else {
+      // For variable product, set parent fields to first variant for database schema compatibility
+      const firstVar = productForm.variants?.[0]
+      if (firstVar) {
+        payload.price = firstVar.price
+        payload.original_price = firstVar.original_price
+        payload.sku = firstVar.sku
+        payload.stock_quantity = firstVar.stock_quantity
+      }
+    }
+
+    if (!payload.name || !payload.price) {
       alert("Name and Price are required.")
       return
     }
@@ -318,7 +341,7 @@ export default function AdminDashboard() {
       const res = await adminFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productForm)
+        body: JSON.stringify(payload)
       })
 
       if (res.ok) {
@@ -1203,6 +1226,39 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 border-b border-gray-100 pb-4">
+                    <div>
+                      <label className="text-[10px] font-extrabold text-gray-405 uppercase tracking-wider block mb-1">Product Type *</label>
+                      <select 
+                        value={productType}
+                        onChange={(e) => {
+                          const val = e.target.value as "Simple" | "Variable"
+                          setProductType(val)
+                          if (val === "Variable" && (!productForm.variants || productForm.variants.length === 0)) {
+                            setProductForm((prev: any) => ({
+                              ...prev,
+                              variants: [
+                                {
+                                  title: "Single Vial",
+                                  price: prev.price || "",
+                                  original_price: prev.original_price || "",
+                                  sku: prev.sku || "",
+                                  stock_quantity: prev.stock_quantity || "100",
+                                  weight: ""
+                                }
+                              ]
+                            }))
+                          }
+                        }}
+                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-650 focus:bg-white focus:border-[#047857] focus:outline-none transition-colors cursor-pointer"
+                      >
+                        <option value="Simple">Simple Product</option>
+                        <option value="Variable">Variable Product</option>
+                      </select>
+                    </div>
+                    <div></div>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Product Name *</label>
@@ -1332,28 +1388,32 @@ export default function AdminDashboard() {
                       </select>
                     </div>
 
-                    <div>
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">SKU Code</label>
-                      <input 
-                        type="text"
-                        value={productForm.sku}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, sku: e.target.value }))}
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="e.g. BPC157-5MG"
-                      />
-                    </div>
+                    {productType === "Simple" && (
+                      <>
+                        <div>
+                          <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">SKU Code</label>
+                          <input 
+                            type="text"
+                            value={productForm.sku}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, sku: e.target.value }))}
+                            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+                            placeholder="e.g. BPC157-5MG"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Stock Quantity</label>
-                      <input 
-                        type="number"
-                        min="0"
-                        value={productForm.stock_quantity}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, stock_quantity: e.target.value }))}
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="e.g. 100"
-                      />
-                    </div>
+                        <div>
+                          <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Stock Quantity</label>
+                          <input 
+                            type="number"
+                            min="0"
+                            value={productForm.stock_quantity}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, stock_quantity: e.target.value }))}
+                            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+                            placeholder="e.g. 100"
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -1370,59 +1430,86 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
-                    <div>
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Price ($) *</label>
-                      <input 
-                        type="number"
-                        required
-                        min="0"
-                        step="0.01"
-                        value={productForm.price}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, price: e.target.value }))}
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="e.g. 79.00"
-                      />
-                    </div>
+                    {productType === "Simple" ? (
+                      <>
+                        <div>
+                          <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Price ($) *</label>
+                          <input 
+                            type="number"
+                            required
+                            min="0"
+                            step="0.01"
+                            value={productForm.price}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, price: e.target.value }))}
+                            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+                            placeholder="e.g. 79.00"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Compare Price ($)</label>
-                      <input 
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={productForm.original_price}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, original_price: e.target.value }))}
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="e.g. 99.00"
-                      />
-                    </div>
+                        <div>
+                          <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Compare Price ($)</label>
+                          <input 
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={productForm.original_price}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, original_price: e.target.value }))}
+                            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+                            placeholder="e.g. 99.00"
+                          />
+                        </div>
 
-                    <div className="flex items-center gap-6 col-span-2 pt-4 justify-end">
-                      <label className="flex items-center gap-2 cursor-pointer select-none">
-                        <input 
-                          type="checkbox"
-                          checked={productForm.is_active}
-                          onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_active: e.target.checked }))}
-                          className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
-                        />
-                        <span className="text-xs font-bold text-gray-650">Active (Published)</span>
-                      </label>
+                        <div className="flex items-center gap-6 col-span-2 pt-4 justify-end">
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input 
+                              type="checkbox"
+                              checked={productForm.is_active}
+                              onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_active: e.target.checked }))}
+                              className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                            />
+                            <span className="text-xs font-bold text-gray-655">Active (Published)</span>
+                          </label>
 
-                      <label className="flex items-center gap-2 cursor-pointer select-none">
-                        <input 
-                          type="checkbox"
-                          checked={productForm.is_featured}
-                          onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_featured: e.target.checked }))}
-                          className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
-                        />
-                        <span className="text-xs font-bold text-gray-655">Featured</span>
-                      </label>
-                    </div>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input 
+                              type="checkbox"
+                              checked={productForm.is_featured}
+                              onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_featured: e.target.checked }))}
+                              className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                            />
+                            <span className="text-xs font-bold text-gray-655">Featured</span>
+                          </label>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-6 col-span-4 justify-end py-1">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input 
+                            type="checkbox"
+                            checked={productForm.is_active}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_active: e.target.checked }))}
+                            className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                          />
+                          <span className="text-xs font-bold text-gray-655">Active (Published)</span>
+                        </label>
+
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input 
+                            type="checkbox"
+                            checked={productForm.is_featured}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_featured: e.target.checked }))}
+                            className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                          />
+                          <span className="text-xs font-bold text-gray-655">Featured</span>
+                        </label>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* 5. Custom Quantity Options & Tiered Pricing Card */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
+                {productType === "Variable" && (
+                  <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
                   <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
@@ -1589,7 +1676,8 @@ export default function AdminDashboard() {
                       No custom quantity variants defined yet. Clicking "Add Option" lets you define custom packaging sizes (e.g. 5g, 10g). If none are defined, the system defaults to the top-level product price/sku above.
                     </div>
                   )}
-                </div>
+                  </div>
+                )}
 
                 {/* 5. Primary Image Card */}
                 <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
