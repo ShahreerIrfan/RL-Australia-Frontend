@@ -126,7 +126,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                   />
                 }
               >
-                <ProductActionsWrapper id={product.id} region={region} />
+                <ProductActionsWrapper id={product.id} handle={product.handle} region={region} />
               </Suspense>
 
               {/* Secure payment signals */}

@@ -137,7 +137,8 @@ export const listProductsWithSort = async ({
 
 export const retrieveProduct = async (
   id: string,
-  regionId?: string
+  regionId?: string,
+  handle?: string
 ): Promise<{ product: HttpTypes.StoreProduct }> => {
   const headers = {
     ...(await getAuthHeaders()),
@@ -154,6 +155,7 @@ export const retrieveProduct = async (
         method: "GET",
         query: {
           region_id: regionId,
+          handle,
           fields:
             "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,",
         },

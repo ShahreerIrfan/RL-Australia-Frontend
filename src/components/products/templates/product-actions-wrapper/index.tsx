@@ -7,12 +7,14 @@ import ProductActions from "@components/products/components/product-actions"
  */
 export default async function ProductActionsWrapper({
   id,
+  handle,
   region,
 }: {
   id: string
+  handle?: string
   region: HttpTypes.StoreRegion
 }) {
-  const product = await retrieveProduct(id, region.id)
+  const product = await retrieveProduct(id, region.id, handle)
     .then(({ product }) => product)
     .catch(() => null)
 

@@ -462,7 +462,12 @@ export const getMockResponse = (input: string, init?: any): any => {
     if (id.includes("?")) {
       id = id.split("?")[0];
     }
-    const product = mockProducts.find(p => p.id === id || p.handle === id) || mockProducts[0];
+    let handle: string | null = null;
+    try {
+      const parsedUrl = new URL(url, "http://localhost");
+      handle = parsedUrl.searchParams.get("handle");
+    } catch {}
+    const product = mockProducts.find(p => p.id === id || p.handle === id || (handle && p.handle === handle)) || mockProducts[0];
     return { product };
   }
 
