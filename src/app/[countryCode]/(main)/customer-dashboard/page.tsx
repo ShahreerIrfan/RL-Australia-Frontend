@@ -25,13 +25,13 @@ export default function CustomerDashboard() {
         const token = localStorage.getItem("auth_token")
 
         if (!stored || !token) {
-            router.push("/login")
+            window.location.href = "/" + countryCode + "/login"
             return
         }
 
         const parsed = JSON.parse(stored)
         if (parsed.role !== "customer") {
-            router.push("/login")
+            window.location.href = "/" + countryCode + "/login"
             return
         }
 
@@ -46,7 +46,7 @@ export default function CustomerDashboard() {
                 const token = localStorage.getItem("auth_token")
                 const stored = localStorage.getItem("user")
                 if (!token || !stored) {
-                    window.location.href = "/login"
+                    window.location.href = "/" + countryCode + "/login"
                 }
             }
         }
