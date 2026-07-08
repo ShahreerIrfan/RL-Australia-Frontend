@@ -1292,8 +1292,8 @@ export default function AdminDashboard() {
                           return (
                             <tr key={order.id} className="hover:bg-gray-50/30 transition-colors">
                               <td className="px-5 py-4">
-                                <span className="font-extrabold text-gray-900 block text-xs truncate max-w-[120px]" title={order.id}>
-                                  #{order.id.slice(0, 8)}...
+                                <span className="font-extrabold text-gray-900 block text-xs truncate max-w-[140px]" title={order.order_number || order.id}>
+                                  {order.order_number ? `#${order.order_number}` : `#${order.id.slice(0, 8)}...`}
                                 </span>
                                 <span className="text-[10px] text-gray-400 font-bold block mt-1">
                                   {new Date(order.created_at).toLocaleString("en-US", {
