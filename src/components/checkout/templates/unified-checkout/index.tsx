@@ -6,7 +6,6 @@ import LocalizedClientLink from "@components/common/components/localized-client-
 import { convertToLocale } from "@lib/util/money"
 import {
   MapPin,
-  Truck,
   CreditCard,
   Banknote,
   ShieldCheck,
@@ -16,7 +15,8 @@ import {
   Trash2,
   FileText,
   Loader2,
-  ArrowLeft
+  ArrowLeft,
+  ChevronRight
 } from "lucide-react"
 
 const BACKEND_URL =
@@ -28,7 +28,6 @@ export default function UnifiedCheckout() {
   const router = useRouter()
   const [cart, setCart] = useState<any>(null)
   const [shippingOptions, setShippingOptions] = useState<any[]>([])
-  const [selectedShipping, setSelectedShipping] = useState<string>("")
   const [selectedPayment, setSelectedPayment] = useState<string>("manual")
   const [loading, setLoading] = useState<boolean>(true)
   const [submitting, setSubmitting] = useState<boolean>(false)
@@ -78,16 +77,13 @@ export default function UnifiedCheckout() {
     }
   }, [])
 
-  // Fetch shipping options
+  // Fetch shipping options to apply behind the scenes
   const fetchShippingOptions = useCallback(async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/store/shipping-options`)
       if (res.ok) {
         const data = await res.json()
         setShippingOptions(data.shipping_options || [])
-        if (data.shipping_options?.length > 0) {
-          setSelectedShipping(data.shipping_options[0].id)
-        }
       }
     } catch (err) {
       console.error("Failed to load shipping options:", err)
@@ -193,16 +189,15 @@ export default function UnifiedCheckout() {
         throw new Error("Failed to save shipping address.")
       }
 
-      // 2. Select Shipping Method
-      if (selectedShipping) {
-        const shipRes = await fetch(`${BACKEND_URL}/store/carts/${cartId}/shipping-methods`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ option_id: selectedShipping })
-        })
-        if (!shipRes.ok) {
-          throw new Error("Failed to configure shipping option.")
-        }
+      // 2. Select default Shipping Method automatically behind the scenes
+      const shippingOptionId = shippingOptions[0]?.id || "so_standard"
+      const shipRes = await fetch(`${BACKEND_URL}/store/carts/${cartId}/shipping-methods`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ option_id: shippingOptionId })
+      })
+      if (!shipRes.ok) {
+        throw new Error("Failed to configure default shipping option.")
       }
 
       // 3. Initiate Payment Session
@@ -258,34 +253,35 @@ export default function UnifiedCheckout() {
 
   const items = cart?.items || []
   const subtotal = cart?.subtotal || 0
-  const shippingTotal = cart?.shipping_total || 0
+  const shippingTotal = shippingOptions[0]?.amount ? (shippingOptions[0].amount / 100) : 9.95
   const total = subtotal + shippingTotal
   const currencyCode = cart?.currency_code || "aud"
 
   return (
-    <div className="bg-gray-50/50 min-h-screen py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Navigation & Title */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 select-none">
-          <div className="flex flex-col gap-1.5">
-            <nav className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
+    <div className="bg-[#fbfafa] min-h-screen py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-100 pb-6 mb-8 select-none">
+          <div className="space-y-2">
+            <nav className="flex items-center gap-1.5 text-[11px] text-gray-400 font-bold uppercase tracking-wider">
               <LocalizedClientLink href="/" className="hover:text-gray-900 transition-colors">Home</LocalizedClientLink>
-              <span className="text-gray-400">/</span>
-              <span className="text-gray-900 font-extrabold">Checkout</span>
+              <span>/</span>
+              <span className="text-gray-900">Checkout</span>
             </nav>
-            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Checkout</h1>
+            <h1 className="text-3xl font-black text-gray-950 tracking-tight">Checkout Details</h1>
           </div>
           <LocalizedClientLink
             href="/cart"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-extrabold text-gray-500 hover:text-gray-900 transition-colors mt-4 md:mt-0"
           >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to shopping cart
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Cart
           </LocalizedClientLink>
         </div>
 
         {items.length === 0 ? (
           <div className="bg-white border border-gray-150 rounded-2xl p-12 text-center shadow-xs">
-            <h2 className="text-lg font-black text-gray-900 mb-2">Your cart is empty</h2>
+            <h2 className="text-base font-black text-gray-900 mb-2">Your cart is empty</h2>
             <p className="text-sm text-gray-500 mb-6">Add some products to your cart to proceed with checkout.</p>
             <LocalizedClientLink href="/store" className="inline-block bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition-colors">
               Browse Products
@@ -293,138 +289,105 @@ export default function UnifiedCheckout() {
           </div>
         ) : (
           <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Column: Form Details */}
-            <div className="lg:col-span-8 space-y-6">
+            
+            {/* Left Column: Checkout Form */}
+            <div className="lg:col-span-7 space-y-6">
               
-              {/* Shipping Address Container */}
-              <div className="bg-white rounded-2xl border border-gray-150 p-6 shadow-xs space-y-6">
-                <div className="flex items-center gap-2.5 border-b border-gray-100 pb-4">
-                  <div className="w-8 h-8 rounded-full bg-sky-50 flex items-center justify-center text-sky-600">
-                    <MapPin className="w-4 h-4" />
+              {/* Shipping Address */}
+              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-5 mb-6">
+                  <div className="w-9 h-9 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-600">
+                    <MapPin className="w-4.5 h-4.5" />
                   </div>
-                  <h2 className="text-base font-black text-gray-900">Shipping Address</h2>
+                  <div>
+                    <h2 className="text-base font-black text-gray-900">Shipping Details</h2>
+                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Please provide where to deliver your package</p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Full Name *</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="sm:col-span-2">
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Full Name *</label>
                     <input
                       type="text"
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="e.g. John Doe"
-                      className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-sky-500 transition-colors"
+                      className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Phone *</label>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Phone *</label>
                     <input
                       type="text"
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="e.g. 01755074517"
-                      className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-sky-500 transition-colors"
+                      className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">District / State *</label>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">District / State *</label>
                     <input
                       type="text"
                       required
                       value={district}
                       onChange={(e) => setDistrict(e.target.value)}
-                      placeholder="e.g. Dhaka or New South Wales"
-                      className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-sky-500 transition-colors"
+                      placeholder="e.g. Sydney or Victoria"
+                      className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Postal Code (Optional)</label>
+                  <div className="sm:col-span-2">
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Postal Code (Optional)</label>
                     <input
                       type="text"
                       value={postalCode}
                       onChange={(e) => setPostalCode(e.target.value)}
-                      placeholder="e.g. 1205"
-                      className="w-full h-11 px-4 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-sky-500 transition-colors"
+                      placeholder="e.g. 2000"
+                      className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Address *</label>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Detailed Address *</label>
                     <textarea
                       required
                       rows={3}
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      placeholder="Enter your detailed address (house, road, area)"
-                      className="w-full p-4 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-sky-500 transition-colors resize-none"
+                      placeholder="Enter your detailed street address (house/apartment, road, suburb)"
+                      className="w-full p-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200 resize-none"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Shipping Delivery Method */}
-              <div className="bg-white rounded-2xl border border-gray-150 p-6 shadow-xs space-y-6">
-                <div className="flex items-center gap-2.5 border-b border-gray-100 pb-4">
-                  <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
-                    <Truck className="w-4 h-4" />
-                  </div>
-                  <h2 className="text-base font-black text-gray-900">Delivery Method</h2>
-                </div>
-
-                <div className="space-y-3">
-                  {shippingOptions.map((option) => (
-                    <label
-                      key={option.id}
-                      onClick={() => setSelectedShipping(option.id)}
-                      className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all select-none ${
-                        selectedShipping === option.id
-                          ? "border-sky-500 bg-sky-50/20 shadow-xs"
-                          : "border-gray-200 hover:bg-gray-50/50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedShipping === option.id ? "border-sky-600" : "border-gray-300"}`}>
-                          {selectedShipping === option.id && <div className="w-2 h-2 rounded-full bg-sky-600" />}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-gray-900">{option.name}</p>
-                          <p className="text-xs text-gray-400 font-semibold mt-0.5">Estimated delivery: 1-3 days</p>
-                        </div>
-                      </div>
-                      <span className="text-sm font-black text-gray-800">
-                        {convertToLocale({ amount: option.amount / 100, currency_code: currencyCode })}
-                      </span>
-                    </label>
-                  ))}
-                  {shippingOptions.length === 0 && (
-                    <p className="text-xs text-gray-400 font-bold italic">No delivery methods available.</p>
-                  )}
-                </div>
-              </div>
-
               {/* Payment Methods */}
-              <div className="bg-white rounded-2xl border border-gray-150 p-6 shadow-xs space-y-6">
-                <div className="flex items-center gap-2.5 border-b border-gray-100 pb-4">
-                  <div className="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-[#c5a059]">
-                    <CreditCard className="w-4 h-4" />
+              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-5 mb-6">
+                  <div className="w-9 h-9 rounded-2xl bg-amber-50 flex items-center justify-center text-[#c5a059]">
+                    <CreditCard className="w-4.5 h-4.5" />
                   </div>
-                  <h2 className="text-base font-black text-gray-900">Payment Method</h2>
+                  <div>
+                    <h2 className="text-base font-black text-gray-900">Payment Option</h2>
+                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Choose how you want to pay for this order</p>
+                  </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-4">
                   {/* Cash on Delivery */}
                   <label
                     onClick={() => setSelectedPayment("manual")}
-                    className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all select-none ${
+                    className={`flex items-start gap-4 p-4 md:p-5 border rounded-2xl cursor-pointer transition-all select-none ${
                       selectedPayment === "manual"
-                        ? "border-sky-500 bg-sky-50/20 shadow-xs"
+                        ? "border-[#c5a059] bg-[#c5a059]/5 shadow-xs"
                         : "border-gray-200 hover:bg-gray-50/50"
                     }`}
                   >
-                    <div className="pt-0.5">
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedPayment === "manual" ? "border-sky-600" : "border-gray-300"}`}>
-                        {selectedPayment === "manual" && <div className="w-2 h-2 rounded-full bg-sky-600" />}
+                    <div className="pt-1">
+                      <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${selectedPayment === "manual" ? "border-[#c5a059]" : "border-gray-300"}`}>
+                        {selectedPayment === "manual" && <div className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -432,22 +395,22 @@ export default function UnifiedCheckout() {
                         <p className="text-sm font-bold text-gray-900">Cash on Delivery</p>
                         <Banknote className="w-5 h-5 text-amber-500" />
                       </div>
-                      <p className="text-xs text-gray-450 font-semibold mt-1">Pay with cash when you receive your order</p>
+                      <p className="text-xs text-gray-450 font-bold mt-1.5 leading-relaxed">Pay with cash when you receive your order</p>
                     </div>
                   </label>
 
                   {/* Paytree Payment gateway */}
                   <label
                     onClick={() => setSelectedPayment("paytree")}
-                    className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all select-none ${
+                    className={`flex items-start gap-4 p-4 md:p-5 border rounded-2xl cursor-pointer transition-all select-none ${
                       selectedPayment === "paytree"
-                        ? "border-sky-500 bg-sky-50/20 shadow-xs"
+                        ? "border-[#c5a059] bg-[#c5a059]/5 shadow-xs"
                         : "border-gray-200 hover:bg-gray-50/50"
                     }`}
                   >
-                    <div className="pt-0.5">
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedPayment === "paytree" ? "border-sky-600" : "border-gray-300"}`}>
-                        {selectedPayment === "paytree" && <div className="w-2 h-2 rounded-full bg-sky-600" />}
+                    <div className="pt-1">
+                      <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${selectedPayment === "paytree" ? "border-[#c5a059]" : "border-gray-300"}`}>
+                        {selectedPayment === "paytree" && <div className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -455,48 +418,51 @@ export default function UnifiedCheckout() {
                         <p className="text-sm font-bold text-gray-900">Paytree Payment gateway</p>
                         <ShieldCheck className="w-5 h-5 text-sky-600" />
                       </div>
-                      <p className="text-xs text-gray-450 font-semibold mt-1">Pay securely with bKash, Nagad, cards, and more via Paytree</p>
+                      <p className="text-xs text-gray-450 font-bold mt-1.5 leading-relaxed">Pay securely with bKash, Nagad, cards, and more via Paytree</p>
                     </div>
                   </label>
                 </div>
               </div>
 
-              {/* Order Notes (Optional) */}
-              <div className="bg-white rounded-2xl border border-gray-150 p-6 shadow-xs space-y-4">
-                <div className="flex items-center gap-2.5 border-b border-gray-100 pb-4">
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-500">
-                    <FileText className="w-4 h-4" />
+              {/* Order Note */}
+              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-5 mb-6">
+                  <div className="w-9 h-9 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500">
+                    <FileText className="w-4.5 h-4.5" />
                   </div>
-                  <h2 className="text-base font-black text-gray-900">Order Note (Optional)</h2>
+                  <div>
+                    <h2 className="text-base font-black text-gray-900">Delivery Notes (Optional)</h2>
+                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Add any instructions for the courier</p>
+                  </div>
                 </div>
                 <textarea
                   rows={2}
                   value={orderNote}
                   onChange={(e) => setOrderNote(e.target.value)}
-                  placeholder="Any special instructions for your order..."
-                  className="w-full p-4 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-sky-500 transition-colors resize-none"
+                  placeholder="e.g. Leave package by the door if not home..."
+                  className="w-full p-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200 resize-none"
                 />
               </div>
 
             </div>
 
-            {/* Right Column: Order Summary Card */}
-            <div className="lg:col-span-4 lg:sticky lg:top-24 space-y-6 select-none">
+            {/* Right Column: Order Summary */}
+            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6 select-none">
               
-              <div className="bg-white rounded-2xl border border-gray-150 p-6 space-y-6 shadow-xs">
-                <div className="flex items-center justify-between">
+              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-sm">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
                   <h2 className="text-lg font-black text-gray-900">Order Summary</h2>
                   <span className="bg-sky-50 text-sky-700 text-xs font-bold px-2 py-0.5 rounded-full border border-sky-100">
                     {items.length} {items.length === 1 ? "item" : "items"}
                   </span>
                 </div>
 
-                {/* Items preview list with inline adjustments */}
-                <div className="space-y-4 max-h-[300px] overflow-y-auto no-scrollbar">
+                {/* Items List */}
+                <div className="space-y-4 max-h-[300px] overflow-y-auto no-scrollbar pb-2">
                   {items.map((item: any) => (
-                    <div key={item.id} className="flex gap-3 items-center justify-between">
+                    <div key={item.id} className="flex gap-4 items-center justify-between bg-gray-50/30 p-3 rounded-2xl border border-gray-100">
                       <div className="flex gap-3 items-center min-w-0">
-                        <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-100 bg-white flex-shrink-0 flex items-center justify-center">
                           <img
                             src={item.thumbnail || "/assets/peptide-vial.png"}
                             alt={item.title}
@@ -504,62 +470,63 @@ export default function UnifiedCheckout() {
                           />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-extrabold text-gray-800 truncate max-w-[120px]">{item.title}</p>
+                          <p className="text-xs font-extrabold text-gray-900 truncate max-w-[140px]">{item.title}</p>
                           {item.variant?.title && item.variant.title !== "Default" && (
-                            <p className="text-[10px] text-gray-400 font-bold">{item.variant.title}</p>
+                            <p className="text-[10px] text-gray-400 font-bold mt-0.5">{item.variant.title}</p>
                           )}
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-3">
-                        {/* Quantity adjusts */}
-                        <div className="flex items-center border border-gray-200 bg-gray-50/50 rounded-lg overflow-hidden">
+                        {/* Minus/Plus toggles */}
+                        <div className="flex items-center border border-gray-250 bg-white rounded-xl overflow-hidden shadow-xs">
                           <button
                             type="button"
                             onClick={() => handleUpdateQty(item.id, item.quantity - 1)}
-                            className="w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-gray-100"
+                            className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors"
                           >
-                            <Minus className="w-2.5 h-2.5" />
+                            <Minus className="w-3 h-3" />
                           </button>
-                          <span className="w-6 h-6 flex items-center justify-center text-[10px] font-bold text-gray-850">
+                          <span className="w-7 h-7 flex items-center justify-center text-xs font-black text-gray-800 border-x border-gray-150">
                             {item.quantity}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleUpdateQty(item.id, item.quantity + 1)}
-                            className="w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-gray-100"
+                            className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors"
                           >
-                            <Plus className="w-2.5 h-2.5" />
+                            <Plus className="w-3 h-3" />
                           </button>
                         </div>
 
-                        {/* Price & Delete */}
-                        <span className="text-xs font-bold text-gray-900">
-                          {convertToLocale({ amount: (item.unit_price * item.quantity), currency_code: currencyCode })}
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteItem(item.id)}
-                          className="text-gray-300 hover:text-rose-500 transition-colors p-1"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {/* Totals & Trash */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black text-gray-950">
+                            {convertToLocale({ amount: (item.unit_price * item.quantity), currency_code: currencyCode })}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteItem(item.id)}
+                            className="text-gray-300 hover:text-rose-500 transition-colors p-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Promo code */}
-                <button type="button" className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-bold text-gray-600 hover:text-gray-900 transition-all">
+                {/* Promo Coupon Button */}
+                <button type="button" className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-2xl text-xs font-bold text-gray-600 hover:text-gray-900 transition-all">
                   <span className="flex items-center gap-2">
-                    <Ticket className="w-4 h-4 text-sky-600" /> Have a promo code?
+                    <Ticket className="w-4 h-4 text-[#c5a059]" /> Have a promo code?
                   </span>
-                  <span className="text-gray-400">&rarr;</span>
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
                 </button>
 
-                {/* Pricing summary */}
-                <div className="space-y-3 pt-3 border-t border-gray-100">
+                {/* Calculations details */}
+                <div className="space-y-3 pt-4 border-t border-gray-100">
                   <div className="flex justify-between items-center text-xs font-medium text-gray-500">
                     <span>Subtotal</span>
                     <span className="font-extrabold text-gray-900">
@@ -568,26 +535,25 @@ export default function UnifiedCheckout() {
                   </div>
                   <div className="flex justify-between items-center text-xs font-medium text-gray-500">
                     <span>Shipping</span>
-                    <span className="font-extrabold text-gray-900">
-                      {shippingTotal > 0
-                        ? convertToLocale({ amount: shippingTotal, currency_code: currencyCode })
-                        : "Calculated next"}
+                    <span className="font-extrabold text-[#c5a059]">
+                      {convertToLocale({ amount: shippingTotal, currency_code: currencyCode })}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                {/* Final Total */}
+                <div className="flex justify-between items-center pt-4 border-t border-gray-150">
                   <span className="text-sm font-black text-gray-900">Total</span>
-                  <span className="text-lg sm:text-xl font-black text-gray-900">
+                  <span className="text-xl sm:text-2xl font-black text-gray-950">
                     {convertToLocale({ amount: total, currency_code: currencyCode })}
                   </span>
                 </div>
 
-                {/* Place Order submit */}
+                {/* Place Order CTA Button */}
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full flex items-center justify-center gap-2 bg-sky-650 hover:bg-sky-700 text-white py-3.5 rounded-2xl text-sm font-bold transition-colors shadow-lg shadow-sky-600/15 disabled:opacity-60 border-b-2 border-sky-850"
+                  className="w-full flex items-center justify-center gap-2 bg-[#0284c7] hover:bg-[#0369a1] text-white py-4 rounded-2xl text-sm font-bold transition-all shadow-lg shadow-sky-600/20 active:translate-y-0.5 disabled:opacity-60 border-b-2 border-[#025a87] text-center"
                 >
                   {submitting ? (
                     <>
@@ -605,7 +571,7 @@ export default function UnifiedCheckout() {
                 )}
               </div>
 
-              {/* Secure Info footer */}
+              {/* Secure note */}
               <div className="text-[10px] text-gray-400 font-bold text-center flex items-center justify-center gap-1.5 select-none">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                 Your transaction is 100% encrypted & secure.
