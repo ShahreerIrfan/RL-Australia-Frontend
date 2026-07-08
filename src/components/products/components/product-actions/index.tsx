@@ -149,6 +149,17 @@ export default function ProductActions({
   }, [liveProduct.variants, options, liveProduct.options, selectedVariant])
 
   useEffect(() => {
+    // Only update searchParams if there are multiple variants (variable product)
+    if (!liveProduct.variants || liveProduct.variants.length <= 1) {
+      const params = new URLSearchParams(searchParams.toString())
+      if (params.has("v_id")) {
+        params.delete("v_id")
+        const qs = params.toString()
+        router.replace(pathname + (qs ? "?" + qs : ""))
+      }
+      return
+    }
+
     const params = new URLSearchParams(searchParams.toString())
     const value = isValidVariant ? selectedVariant?.id : null
 
@@ -163,7 +174,7 @@ export default function ProductActions({
     }
 
     router.replace(pathname + "?" + params.toString())
-  }, [selectedVariant, isValidVariant])
+  }, [selectedVariant, isValidVariant, liveProduct.variants])
 
   // check if the selected variant is in stock
   const inStock = useMemo(() => {
