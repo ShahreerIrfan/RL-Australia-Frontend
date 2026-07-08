@@ -8,12 +8,15 @@ import { X, Minus, Plus } from "lucide-react"
 import Spinner from "@components/common/icons/spinner"
 import { convertToLocale } from "@lib/util/money"
 
+import { Table } from "@medusajs/ui"
+
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
+  type?: "full" | "preview"
   currencyCode: string
 }
 
-const Item = ({ item, currencyCode }: ItemProps) => {
+const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const [updating, setUpdating] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -40,6 +43,36 @@ const Item = ({ item, currencyCode }: ItemProps) => {
 
   const unitPrice = item.unit_price || 0
   const totalPrice = unitPrice * item.quantity
+
+  if (type === "preview") {
+    return (
+      <Table.Row className="hover:bg-gray-50/50 transition-colors" data-testid="product-row">
+        <Table.Cell className="py-3 pl-0 pr-4 w-12 sm:w-16">
+          <LocalizedClientLink href={`/products/${item.product_handle}`} className="w-12 h-12 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">
+            <img
+              src={item.thumbnail || "/assets/peptide-vial.png"}
+              alt={item.product_title || item.title}
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).src = "/assets/peptide-vial.png" }}
+            />
+          </LocalizedClientLink>
+        </Table.Cell>
+        <Table.Cell className="py-3 px-4 text-left">
+          <LocalizedClientLink href={`/products/${item.product_handle}`} className="text-xs sm:text-sm font-bold text-gray-800 hover:text-sky-600 transition-colors block truncate max-w-[140px] sm:max-w-[180px]">
+            {item.product_title || item.title}
+          </LocalizedClientLink>
+          <span className="text-[10px] text-gray-400 font-bold block mt-0.5">
+            {item.quantity}x {convertToLocale({ amount: unitPrice, currency_code: currencyCode })}
+          </span>
+        </Table.Cell>
+        <Table.Cell className="py-3 pl-4 pr-0 text-right !pr-0">
+          <span className="text-xs sm:text-sm font-black text-gray-900">
+            {convertToLocale({ amount: totalPrice, currency_code: currencyCode })}
+          </span>
+        </Table.Cell>
+      </Table.Row>
+    )
+  }
 
   return (
     <div className={`relative bg-white rounded-2xl border border-gray-150 p-4 sm:p-5 shadow-xs transition-opacity duration-200 ${updating || deleting ? "opacity-60" : "opacity-100"}`}>
