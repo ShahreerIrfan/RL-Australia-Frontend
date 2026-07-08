@@ -5,10 +5,12 @@ import Ideal from "@components/common/icons/ideal"
 import Bancontact from "@components/common/icons/bancontact"
 import PayPal from "@components/common/icons/paypal"
 
+import { Banknote, ShieldCheck } from "lucide-react"
+
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
 export const paymentInfoMap: Record<
   string,
-  { title: string; icon: React.JSX.Element }
+  { title: string; description?: string; icon: React.JSX.Element }
 > = {
   pp_stripe_stripe: {
     title: "Credit card",
@@ -34,7 +36,16 @@ export const paymentInfoMap: Record<
     title: "Manual Payment",
     icon: <CreditCard />,
   },
-  // Add more payment providers here
+  manual: {
+    title: "Cash on Delivery",
+    description: "Pay when you receive your order",
+    icon: <Banknote className="w-5 h-5 text-amber-500" />,
+  },
+  paytree: {
+    title: "Paytree Payment gateway",
+    description: "Pay securely with bKash, Nagad, cards, and more via Paytree",
+    icon: <ShieldCheck className="w-5 h-5 text-sky-600" />,
+  },
 }
 
 // This only checks if it is native stripe or medusa payments for card payments, it ignores the other stripe-based providers
