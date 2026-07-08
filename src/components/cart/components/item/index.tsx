@@ -1,143 +1,119 @@
 "use client"
 
-import { Table, Text, clx } from "@medusajs/ui"
-import { updateLineItem } from "@lib/data/cart"
+import { updateLineItem, deleteLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
-import CartItemSelect from "@components/cart/components/cart-item-select"
-import ErrorMessage from "@components/checkout/components/error-message"
-import DeleteButton from "@components/common/components/delete-button"
-import LineItemOptions from "@components/common/components/line-item-options"
-import LineItemPrice from "@components/common/components/line-item-price"
-import LineItemUnitPrice from "@components/common/components/line-item-unit-price"
 import LocalizedClientLink from "@components/common/components/localized-client-link"
-import Spinner from "@components/common/icons/spinner"
-import Thumbnail from "@components/products/components/thumbnail"
 import { useState } from "react"
+import { X, Minus, Plus } from "lucide-react"
+import Spinner from "@components/common/icons/spinner"
+import { convertToLocale } from "@lib/util/money"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
-  type?: "full" | "preview"
   currencyCode: string
 }
 
-const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
+const Item = ({ item, currencyCode }: ItemProps) => {
   const [updating, setUpdating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const changeQuantity = async (quantity: number) => {
-    setError(null)
+    if (quantity <= 0) {
+      handleDelete()
+      return
+    }
     setUpdating(true)
-
     await updateLineItem({
       lineId: item.id,
       quantity,
+    }).finally(() => {
+      setUpdating(false)
     })
-      .catch((err) => {
-        setError(err.message)
-      })
-      .finally(() => {
-        setUpdating(false)
-      })
   }
 
-  // TODO: Update this to grab the actual max inventory
-  const maxQtyFromInventory = 10
-  const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
+  const handleDelete = async () => {
+    setDeleting(true)
+    await deleteLineItem(item.id).finally(() => {
+      setDeleting(false)
+    })
+  }
+
+  const unitPrice = item.unit_price || 0
+  const totalPrice = unitPrice * item.quantity
 
   return (
-    <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
-        <LocalizedClientLink
-          href={`/products/${item.product_handle}`}
-          className={clx("flex", {
-            "w-16": type === "preview",
-            "small:w-24 w-12": type === "full",
-          })}
-        >
-          <Thumbnail
-            thumbnail={item.thumbnail}
-            images={item.variant?.product?.images}
-            size="square"
-          />
-        </LocalizedClientLink>
-      </Table.Cell>
-
-      <Table.Cell className="text-left">
-        <Text
-          className="txt-medium-plus text-ui-fg-base"
-          data-testid="product-title"
-        >
-          {item.product_title}
-        </Text>
-        <LineItemOptions variant={item.variant} data-testid="product-variant" />
-      </Table.Cell>
-
-      {type === "full" && (
-        <Table.Cell>
-          <div className="flex gap-2 items-center w-28">
-            <DeleteButton id={item.id} data-testid="product-delete-button" />
-            <CartItemSelect
-              value={item.quantity}
-              onChange={(value) => changeQuantity(parseInt(value.target.value))}
-              className="w-14 h-10 p-4"
-              data-testid="product-select-button"
-            >
-              {/* TODO: Update this with the v2 way of managing inventory */}
-              {Array.from(
-                {
-                  length: Math.min(maxQuantity, 10),
-                },
-                (_, i) => (
-                  <option value={i + 1} key={i}>
-                    {i + 1}
-                  </option>
-                )
-              )}
-
-              <option value={1} key={1}>
-                1
-              </option>
-            </CartItemSelect>
-            {updating && <Spinner />}
+    <div className={`relative bg-white rounded-2xl border border-gray-150 p-4 sm:p-5 shadow-xs transition-opacity duration-200 ${updating || deleting ? "opacity-60" : "opacity-100"}`}>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+        {/* Product Image and Details */}
+        <div className="col-span-1 md:col-span-6 flex gap-4 items-center">
+          <LocalizedClientLink href={`/products/${item.product_handle}`} className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0 flex items-center justify-center">
+            <img
+              src={item.thumbnail || "/assets/peptide-vial.png"}
+              alt={item.product_title || item.title}
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).src = "/assets/peptide-vial.png" }}
+            />
+          </LocalizedClientLink>
+          <div className="min-w-0">
+            <LocalizedClientLink href={`/products/${item.product_handle}`} className="text-sm sm:text-base font-extrabold text-gray-900 hover:text-sky-600 transition-colors block truncate">
+              {item.product_title || item.title}
+            </LocalizedClientLink>
+            {item.variant?.title && item.variant.title !== "Default" && (
+              <p className="text-[11px] text-gray-450 font-bold uppercase tracking-wider mt-1">{item.variant.title}</p>
+            )}
           </div>
-          <ErrorMessage error={error} data-testid="product-error-message" />
-        </Table.Cell>
-      )}
+        </div>
 
-      {type === "full" && (
-        <Table.Cell className="hidden small:table-cell">
-          <LineItemUnitPrice
-            item={item}
-            style="tight"
-            currencyCode={currencyCode}
-          />
-        </Table.Cell>
-      )}
+        {/* Unit Price */}
+        <div className="col-span-1 md:col-span-2 flex md:justify-center items-center gap-2 md:gap-0">
+          <span className="text-xs text-gray-400 font-bold md:hidden">Price:</span>
+          <span className="text-sm font-bold text-[#c5a059]">
+            {convertToLocale({ amount: unitPrice, currency_code: currencyCode })}
+          </span>
+        </div>
 
-      <Table.Cell className="!pr-0">
-        <span
-          className={clx("!pr-0", {
-            "flex flex-col items-end h-full justify-center": type === "preview",
-          })}
-        >
-          {type === "preview" && (
-            <span className="flex gap-x-1 ">
-              <Text className="text-ui-fg-muted">{item.quantity}x </Text>
-              <LineItemUnitPrice
-                item={item}
-                style="tight"
-                currencyCode={currencyCode}
-              />
+        {/* Quantity Controls */}
+        <div className="col-span-1 md:col-span-2 flex md:justify-center items-center gap-2 md:gap-0">
+          <span className="text-xs text-gray-400 font-bold md:hidden">Qty:</span>
+          <div className="flex items-center border border-gray-200 bg-gray-50/50 rounded-xl overflow-hidden">
+            <button
+              onClick={() => changeQuantity(item.quantity - 1)}
+              disabled={updating || deleting}
+              className="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            <span className="w-8 h-8 flex items-center justify-center text-xs font-bold text-gray-800 border-x border-gray-200">
+              {updating ? <Spinner className="w-3.5 h-3.5 animate-spin" /> : item.quantity}
             </span>
-          )}
-          <LineItemPrice
-            item={item}
-            style="tight"
-            currencyCode={currencyCode}
-          />
-        </span>
-      </Table.Cell>
-    </Table.Row>
+            <button
+              onClick={() => changeQuantity(item.quantity + 1)}
+              disabled={updating || deleting}
+              className="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Total Price & Delete Button */}
+        <div className="col-span-1 md:col-span-2 flex justify-between md:justify-end items-center gap-3">
+          <span className="text-xs text-gray-400 font-bold md:hidden">Total:</span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm sm:text-base font-black text-gray-900">
+              {convertToLocale({ amount: totalPrice, currency_code: currencyCode })}
+            </span>
+            <button
+              onClick={handleDelete}
+              disabled={updating || deleting}
+              className="w-8 h-8 rounded-lg hover:bg-rose-50 flex items-center justify-center text-gray-300 hover:text-rose-500 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
