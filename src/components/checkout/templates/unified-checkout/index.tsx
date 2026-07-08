@@ -33,13 +33,25 @@ export default function UnifiedCheckout() {
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Form Fields
+  // Shipping Form Fields
   const [fullName, setFullName] = useState<string>("")
   const [phone, setPhone] = useState<string>("")
   const [district, setDistrict] = useState<string>("")
   const [postalCode, setPostalCode] = useState<string>("")
   const [address, setAddress] = useState<string>("")
   const [orderNote, setOrderNote] = useState<string>("")
+
+  // Billing Address Fields
+  const [sameAsShipping, setSameAsShipping] = useState<boolean>(true)
+  const [billingCountry, setBillingCountry] = useState<string>("au")
+  const [billingFirstName, setBillingFirstName] = useState<string>("")
+  const [billingLastName, setBillingLastName] = useState<string>("")
+  const [billingAddress1, setBillingAddress1] = useState<string>("")
+  const [billingAddress2, setBillingAddress2] = useState<string>("")
+  const [billingCity, setBillingCity] = useState<string>("")
+  const [billingState, setBillingState] = useState<string>("")
+  const [billingPostalCode, setBillingPostalCode] = useState<string>("")
+  const [billingPhone, setBillingPhone] = useState<string>("")
 
   // Fetch cart details client-side
   const getCartId = (): string | null => {
@@ -69,6 +81,35 @@ export default function UnifiedCheckout() {
           if (addr.postal_code) setPostalCode(addr.postal_code)
           if (addr.address_1) setAddress(addr.address_1)
         }
+
+        // Prefill Billing Address form if already set
+        if (data.cart.billing_address && Object.keys(data.cart.billing_address).length > 0) {
+          const bAddr = data.cart.billing_address
+          const shipAddr = data.cart.shipping_address || {}
+          
+          const isSame = 
+            bAddr.first_name === shipAddr.first_name &&
+            bAddr.last_name === shipAddr.last_name &&
+            bAddr.address_1 === shipAddr.address_1 &&
+            bAddr.city === shipAddr.city &&
+            bAddr.province === shipAddr.province &&
+            bAddr.postal_code === shipAddr.postal_code &&
+            bAddr.phone === shipAddr.phone
+            
+          setSameAsShipping(isSame)
+          
+          if (!isSame) {
+            if (bAddr.country_code) setBillingCountry(bAddr.country_code)
+            if (bAddr.first_name) setBillingFirstName(bAddr.first_name)
+            if (bAddr.last_name) setBillingLastName(bAddr.last_name)
+            if (bAddr.address_1) setBillingAddress1(bAddr.address_1)
+            if (bAddr.address_2) setBillingAddress2(bAddr.address_2)
+            if (bAddr.city) setBillingCity(bAddr.city)
+            if (bAddr.province) setBillingState(bAddr.province)
+            if (bAddr.postal_code) setBillingPostalCode(bAddr.postal_code)
+            if (bAddr.phone) setBillingPhone(bAddr.phone)
+          }
+        }
       }
     } catch (err) {
       console.error("Failed to fetch cart:", err)
@@ -77,7 +118,7 @@ export default function UnifiedCheckout() {
     }
   }, [])
 
-  // Fetch shipping options to apply behind the scenes
+  // Fetch shipping options
   const fetchShippingOptions = useCallback(async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/store/shipping-options`)
@@ -149,6 +190,11 @@ export default function UnifiedCheckout() {
       return
     }
 
+    if (!sameAsShipping && (!billingFirstName || !billingLastName || !billingAddress1 || !billingCity || !billingState || !billingPostalCode)) {
+      setError("Please fill in all required billing fields.")
+      return
+    }
+
     setSubmitting(true)
 
     try {
@@ -156,6 +202,33 @@ export default function UnifiedCheckout() {
       const nameParts = fullName.trim().split(" ")
       const firstName = nameParts[0] || ""
       const lastName = nameParts.slice(1).join(" ") || firstName
+
+      // Billing Address payload configuration
+      let billingAddressObj = {}
+      if (sameAsShipping) {
+        billingAddressObj = {
+          first_name: firstName,
+          last_name: lastName,
+          address_1: address,
+          city: district,
+          province: district,
+          postal_code: postalCode || "0000",
+          phone: phone,
+          country_code: "au"
+        }
+      } else {
+        billingAddressObj = {
+          first_name: billingFirstName,
+          last_name: billingLastName,
+          address_1: billingAddress1,
+          address_2: billingAddress2 || "",
+          city: billingCity,
+          province: billingState,
+          postal_code: billingPostalCode,
+          phone: billingPhone || "",
+          country_code: billingCountry
+        }
+      }
 
       const addrRes = await fetch(`${BACKEND_URL}/store/carts/${cartId}`, {
         method: "POST",
@@ -172,16 +245,7 @@ export default function UnifiedCheckout() {
             phone: phone,
             country_code: "au"
           },
-          billing_address: {
-            first_name: firstName,
-            last_name: lastName,
-            address_1: address,
-            city: district,
-            province: district,
-            postal_code: postalCode || "0000",
-            phone: phone,
-            country_code: "au"
-          }
+          billing_address: billingAddressObj
         })
       })
 
@@ -424,6 +488,155 @@ export default function UnifiedCheckout() {
                 </div>
               </div>
 
+              {/* Billing Address Card */}
+              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-5">
+                  <div className="w-9 h-9 rounded-2xl bg-amber-50 flex items-center justify-center text-[#c5a059]">
+                    <MapPin className="w-4.5 h-4.5" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-black text-gray-900">Billing Address</h2>
+                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Specify your billing information if different</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Same as shipping address */}
+                  <label
+                    onClick={() => setSameAsShipping(true)}
+                    className={`flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition-all select-none ${
+                      sameAsShipping
+                        ? "border-[#c5a059] bg-[#c5a059]/5 shadow-xs"
+                        : "border-gray-200 hover:bg-gray-50/50"
+                    }`}
+                  >
+                    <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${sameAsShipping ? "border-[#c5a059]" : "border-gray-300"}`}>
+                      {sameAsShipping && <div className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />}
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">Same as shipping address</span>
+                  </label>
+
+                  {/* Use a different billing address */}
+                  <label
+                    onClick={() => setSameAsShipping(false)}
+                    className={`flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition-all select-none ${
+                      !sameAsShipping
+                        ? "border-[#c5a059] bg-[#c5a059]/5 shadow-xs"
+                        : "border-gray-200 hover:bg-gray-50/50"
+                    }`}
+                  >
+                    <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${!sameAsShipping ? "border-[#c5a059]" : "border-gray-300"}`}>
+                      {!sameAsShipping && <div className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />}
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">Use a different billing address</span>
+                  </label>
+
+                  {/* Expanded Billing Fields */}
+                  {!sameAsShipping && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-gray-100 animate-fade-in-top">
+                      <div className="sm:col-span-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Country / Region</label>
+                        <select
+                          value={billingCountry}
+                          onChange={(e) => setBillingCountry(e.target.value)}
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-205"
+                        >
+                          <option value="au">Australia</option>
+                          <option value="us">United States</option>
+                          <option value="in">India</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">First Name *</label>
+                        <input
+                          type="text"
+                          required={!sameAsShipping}
+                          value={billingFirstName}
+                          onChange={(e) => setBillingFirstName(e.target.value)}
+                          placeholder="First name"
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Last Name *</label>
+                        <input
+                          type="text"
+                          required={!sameAsShipping}
+                          value={billingLastName}
+                          onChange={(e) => setBillingLastName(e.target.value)}
+                          placeholder="Last name"
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Address *</label>
+                        <input
+                          type="text"
+                          required={!sameAsShipping}
+                          value={billingAddress1}
+                          onChange={(e) => setBillingAddress1(e.target.value)}
+                          placeholder="Address (street address, P.O. box)"
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Apartment, suite, etc. (Optional)</label>
+                        <input
+                          type="text"
+                          value={billingAddress2}
+                          onChange={(e) => setBillingAddress2(e.target.value)}
+                          placeholder="Apartment, suite, unit, etc."
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">City *</label>
+                        <input
+                          type="text"
+                          required={!sameAsShipping}
+                          value={billingCity}
+                          onChange={(e) => setBillingCity(e.target.value)}
+                          placeholder="City"
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">State *</label>
+                        <input
+                          type="text"
+                          required={!sameAsShipping}
+                          value={billingState}
+                          onChange={(e) => setBillingState(e.target.value)}
+                          placeholder="State / Province"
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">PIN code / Postal code *</label>
+                        <input
+                          type="text"
+                          required={!sameAsShipping}
+                          value={billingPostalCode}
+                          onChange={(e) => setBillingPostalCode(e.target.value)}
+                          placeholder="PIN code"
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Phone (Optional)</label>
+                        <input
+                          type="text"
+                          value={billingPhone}
+                          onChange={(e) => setBillingPhone(e.target.value)}
+                          placeholder="Phone"
+                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Order Note */}
               <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs">
                 <div className="flex items-center gap-3 border-b border-gray-100 pb-5 mb-6">
@@ -553,7 +766,7 @@ export default function UnifiedCheckout() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full flex items-center justify-center gap-2 bg-[#0284c7] hover:bg-[#0369a1] text-white py-4 rounded-2xl text-sm font-bold transition-all shadow-lg shadow-sky-600/20 active:translate-y-0.5 disabled:opacity-60 border-b-2 border-[#025a87] text-center"
+                  className="w-full flex items-center justify-center gap-2 bg-[#0284c7] hover:bg-[#0369a1] text-white py-4 rounded-2xl text-sm font-bold transition-all shadow-lg shadow-sky-600/20 active:translate-y-0.5 disabled:opacity-60 border-b-2 border-[#025a87] text-center cursor-pointer"
                 >
                   {submitting ? (
                     <>
