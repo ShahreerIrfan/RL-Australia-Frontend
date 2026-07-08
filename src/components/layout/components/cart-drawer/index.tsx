@@ -58,12 +58,16 @@ export default function CartDrawer() {
   const setCartId = (id: string) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("rl_cart_id", id)
+      document.cookie = `_medusa_cart_id=${id}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
     }
   }
 
   const fetchCart = useCallback(async () => {
     const cartId = getCartId()
     if (!cartId) return
+    if (typeof window !== "undefined") {
+      document.cookie = `_medusa_cart_id=${cartId}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
+    }
     try {
       const res = await cartFetch(`${CART_API}/store/carts/${cartId}`, { cache: "no-store" })
       if (res.ok) {
