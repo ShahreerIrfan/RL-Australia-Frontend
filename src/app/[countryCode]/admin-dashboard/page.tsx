@@ -7,8 +7,9 @@ import {
   ChevronDown, ChevronRight, Menu, X, Bell, Mail, Search, 
   ExternalLink, Moon, Clock, Star, Award, TrendingUp,
   Percent, Settings, ClipboardList, BookOpen, Target, Activity, FileText,
-  LayoutGrid, Pencil, Trash2, Eye, Plus, Upload
+  LayoutGrid, Pencil, Trash2, Eye, Plus, Upload, Loader2
 } from "lucide-react"
+import { convertToLocale } from "@lib/util/money"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 
@@ -74,6 +75,11 @@ export default function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<any | null>(null)
   const [productType, setProductType] = useState<"Simple" | "Variable">("Simple")
   
+  // Order CRUD states
+  const [orders, setOrders] = useState<any[]>([])
+  const [ordersLoading, setOrdersLoading] = useState(false)
+  const [updatingOrderStatus, setUpdatingOrderStatus] = useState<string | null>(null)
+  
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("")
@@ -128,6 +134,39 @@ export default function AdminDashboard() {
     }
   }
 
+  const fetchOrders = async () => {
+    try {
+      setOrdersLoading(true)
+      const res = await adminFetch(`${BACKEND_URL}/store/orders`, { cache: "no-store" })
+      if (res.ok) {
+        const data = await res.json()
+        setOrders(data.orders || [])
+      }
+    } catch (err) {
+      console.error("Error fetching orders:", err)
+    } finally {
+      setOrdersLoading(false)
+    }
+  }
+
+  const updateOrderStatus = async (id: string, newStatus: string) => {
+    try {
+      setUpdatingOrderStatus(id)
+      const res = await adminFetch(`${BACKEND_URL}/admin/orders/${id}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      })
+      if (res.ok) {
+        fetchOrders()
+      }
+    } catch (err) {
+      console.error("Error updating order status:", err)
+    } finally {
+      setUpdatingOrderStatus(null)
+    }
+  }
+
   useEffect(() => {
     fetchCategories()
     fetchProducts()
@@ -136,6 +175,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (activeMenu === "All Products") {
       fetchProducts()
+    } else if (activeMenu === "All Orders") {
+      fetchOrders()
     }
   }, [activeMenu])
 
@@ -616,7 +657,12 @@ export default function AdminDashboard() {
             </button>
             {expandedSections.OrdersSub && (
               <div className="pl-11 pr-2 py-1 space-y-1.5 border-l border-gray-100 ml-6 mt-0.5 text-left font-semibold text-gray-555">
-                <a href={`${BACKEND_URL}/app/orders`} target="_blank" rel="noopener noreferrer" className="block py-1 text-[11px] hover:text-emerald-700">All Orders</a>
+                <button
+                  onClick={() => setActiveMenu("All Orders")}
+                  className={`block w-full text-left py-1 text-[11px] font-semibold transition-colors ${activeMenu === "All Orders" ? "text-[#047857] font-bold" : "text-gray-555 hover:text-emerald-700"}`}
+                >
+                  All Orders
+                </button>
                 <a href={`${BACKEND_URL}/app/returns`} target="_blank" rel="noopener noreferrer" className="block py-1 text-[11px] hover:text-emerald-700">Returns</a>
               </div>
             )}
@@ -1199,6 +1245,126 @@ export default function AdminDashboard() {
                         <button type="submit" className="px-5 py-2.5 bg-[#047857] hover:bg-[#035f43] text-white text-xs font-bold rounded-xl transition-colors shadow-sm">{editingCategory ? "Update" : "Create"}</button>
                       </div>
                     </form>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeMenu === "All Orders" && (
+            <div className="space-y-6 text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-gray-900 tracking-tight">Order Management</h1>
+                  <p className="text-xs text-gray-400 font-semibold mt-0.5">Real-time overview of customer orders and dispatch statuses</p>
+                </div>
+              </div>
+
+              {ordersLoading ? (
+                <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-150 rounded-2xl gap-3">
+                  <Loader2 className="w-6 h-6 text-emerald-600 animate-spin" />
+                  <p className="text-xs text-gray-400 font-bold">Loading orders database...</p>
+                </div>
+              ) : orders.length === 0 ? (
+                <div className="bg-white border border-gray-150 rounded-2xl p-12 text-center shadow-xs">
+                  <h3 className="text-sm font-black text-gray-900 mb-1">No orders found</h3>
+                  <p className="text-xs text-gray-550">Orders placed by customers will automatically register here.</p>
+                </div>
+              ) : (
+                <div className="bg-white border border-gray-150 rounded-2xl shadow-xs overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm animate-fade-in-top">
+                      <thead>
+                        <tr className="bg-gray-50/75 border-b border-gray-150 text-[10px] font-black text-gray-450 uppercase tracking-wider select-none">
+                          <th className="px-5 py-4 text-left">Order Details</th>
+                          <th className="px-5 py-4 text-left">Customer</th>
+                          <th className="px-5 py-4 text-left">Items Purchased</th>
+                          <th className="px-5 py-4 text-left">Delivery Address</th>
+                          <th className="px-5 py-4 text-left">Total Price</th>
+                          <th className="px-5 py-4 text-left">Status</th>
+                          <th className="px-5 py-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {orders.map((order) => {
+                          const itemsList = order.items || []
+                          const sAddr = order.shipping_address || {}
+                          return (
+                            <tr key={order.id} className="hover:bg-gray-50/30 transition-colors">
+                              <td className="px-5 py-4">
+                                <span className="font-extrabold text-gray-900 block text-xs truncate max-w-[120px]" title={order.id}>
+                                  #{order.id.slice(0, 8)}...
+                                </span>
+                                <span className="text-[10px] text-gray-400 font-bold block mt-1">
+                                  {new Date(order.created_at).toLocaleString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                  })}
+                                </span>
+                              </td>
+                              <td className="px-5 py-4">
+                                <span className="font-bold text-gray-800 block text-xs truncate max-w-[140px]" title={order.email}>
+                                  {order.email}
+                                </span>
+                                <span className="text-[10px] text-gray-400 font-bold block mt-0.5">
+                                  {sAddr.phone || "No phone"}
+                                </span>
+                              </td>
+                              <td className="px-5 py-4">
+                                <div className="space-y-1 max-w-[200px]">
+                                  {itemsList.map((item: any, idx: number) => (
+                                    <div key={idx} className="flex items-center gap-1.5 text-xs text-gray-700 font-semibold truncate">
+                                      <span className="bg-gray-100 text-gray-600 font-black text-[10px] px-1.5 py-0.5 rounded-md">
+                                        {item.quantity}x
+                                      </span>
+                                      <span className="truncate">{item.title}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                              <td className="px-5 py-4">
+                                <span className="text-xs font-semibold text-gray-700 block truncate max-w-[180px]" title={`${sAddr.address_1}, ${sAddr.city}`}>
+                                  {sAddr.address_1 || "N/A"}
+                                </span>
+                                <span className="text-[10px] text-gray-400 font-bold block mt-0.5">
+                                  {[sAddr.city, sAddr.province, sAddr.postal_code].filter(Boolean).join(", ")}
+                                </span>
+                              </td>
+                              <td className="px-5 py-4 font-black text-gray-900 text-xs">
+                                {convertToLocale({ amount: order.total, currency_code: order.currency_code || "aud" })}
+                              </td>
+                              <td className="px-5 py-4">
+                                <select
+                                  value={order.status}
+                                  disabled={updatingOrderStatus === order.id}
+                                  onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                  className="text-[11px] font-black bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1 focus:bg-white focus:outline-none focus:border-[#047857] focus:ring-2 focus:ring-[#047857]/10 cursor-pointer transition-all duration-200"
+                                >
+                                  <option value="confirmed">Confirmed</option>
+                                  <option value="processing">Processing</option>
+                                  <option value="shipped">Shipped</option>
+                                  <option value="delivered">Delivered</option>
+                                  <option value="cancelled">Cancelled</option>
+                                </select>
+                              </td>
+                              <td className="px-5 py-4 text-right">
+                                <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                  order.status === "delivered"
+                                    ? "bg-emerald-50 border-emerald-100 text-emerald-700"
+                                    : order.status === "cancelled"
+                                    ? "bg-rose-50 border-rose-100 text-rose-700"
+                                    : "bg-amber-50 border-amber-100 text-amber-700"
+                                }`}>
+                                  {order.status}
+                                </span>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}
