@@ -94,8 +94,7 @@ export default function UnifiedCheckout() {
   ]
 
   const handleAddUpsell = async (slug: string) => {
-    const variantId = productMap[slug]
-    if (!variantId) return
+    const variantId = productMap[slug] || slug
     const cartId = getCartId()
     if (!cartId) return
     try {
@@ -119,14 +118,12 @@ export default function UnifiedCheckout() {
     if (!cartId) return
     try {
       for (const item of UPSELL_ITEMS) {
-        const variantId = productMap[item.slug]
-        if (variantId) {
-          await fetch(`${BACKEND_URL}/store/carts/${cartId}/line-items`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ variant_id: variantId, quantity: 1 })
-          })
-        }
+        const variantId = productMap[item.slug] || item.slug
+        await fetch(`${BACKEND_URL}/store/carts/${cartId}/line-items`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ variant_id: variantId, quantity: 1 })
+        })
       }
       await fetchCart()
       window.dispatchEvent(new Event("cart-updated"))
@@ -969,7 +966,7 @@ export default function UnifiedCheckout() {
                             <button
                               type="button"
                               onClick={() => handleAddUpsell(item.slug)}
-                              disabled={submitting || !variantId || isInCart}
+                              disabled={submitting || isInCart}
                               className={`px-2 py-0.5 text-[9px] font-black rounded-lg transition-all ${
                                 isInCart
                                   ? "bg-emerald-50 text-emerald-600 border border-emerald-100"

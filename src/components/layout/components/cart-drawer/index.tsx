@@ -240,8 +240,7 @@ export default function CartDrawer() {
   ]
 
   const addSingleUpsell = async (slug: string) => {
-    const variantId = productMap[slug]
-    if (!variantId) return
+    const variantId = productMap[slug] || slug
     setLoading(true)
     try {
       let cartId = getCartId()
@@ -256,6 +255,7 @@ export default function CartDrawer() {
       if (res.ok) {
         const data = await res.json()
         setCart(data.cart)
+        window.dispatchEvent(new Event("cart-updated"))
       }
     } catch (err) {
       console.error("Error adding upsell:", err)
@@ -272,16 +272,15 @@ export default function CartDrawer() {
         cartId = await createCart()
       }
       for (const item of UPSELL_ITEMS) {
-        const variantId = productMap[item.slug]
-        if (variantId) {
-          await cartFetch(`${CART_API}/store/carts/${cartId}/line-items`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ variant_id: variantId, quantity: 1 })
-          })
-        }
+        const variantId = productMap[item.slug] || item.slug
+        await cartFetch(`${CART_API}/store/carts/${cartId}/line-items`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ variant_id: variantId, quantity: 1 })
+        })
       }
       await fetchCart()
+      window.dispatchEvent(new Event("cart-updated"))
     } catch (err) {
       console.error("Error adding all upsells:", err)
     } finally {
@@ -456,7 +455,7 @@ export default function CartDrawer() {
                           </div>
                           <button
                             onClick={() => addSingleUpsell(item.slug)}
-                            disabled={loading || !variantId || isInCart}
+                            disabled={loading || isInCart}
                             className={`px-2.5 py-1 text-[10px] font-black rounded-lg transition-all ${
                               isInCart
                                 ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
