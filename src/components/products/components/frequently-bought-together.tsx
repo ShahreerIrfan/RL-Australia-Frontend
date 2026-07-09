@@ -104,8 +104,9 @@ export default function FrequentlyBoughtTogether() {
         {accessories.map((item) => {
           const isAdded = !!addedItems[item.handle]
           const variantId = item.variants?.[0]?.id || item.id
+          const rawPrice = item.variants?.[0]?.calculated_price?.calculated_amount ?? item.price ?? 0
           return (
-            <div key={item.id} className="flex items-center justify-between gap-3 bg-gray-50/50 border border-gray-100 p-3 rounded-xl">
+            <div key={item.id} className="flex items-center justify-between gap-3 bg-gray-50/50 border border-gray-150 p-3 rounded-xl">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-white border border-gray-150 rounded-lg flex items-center justify-center font-bold text-[10px] text-gray-500 flex-shrink-0">
                   {getLabel(item.title)}
@@ -113,7 +114,7 @@ export default function FrequentlyBoughtTogether() {
                 <div>
                   <span className="text-xs font-bold text-gray-800 block leading-tight">{item.title}</span>
                   <span className="text-xs font-extrabold text-emerald-600 block mt-0.5">
-                    A${Number(item.price).toFixed(2)}
+                    A${Number(rawPrice).toFixed(2)}
                   </span>
                 </div>
               </div>
