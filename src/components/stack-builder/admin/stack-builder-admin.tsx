@@ -1,14 +1,10 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import {
-  Plus,
-  Trash2,
-  Save,
-  Loader2,
-  X,
-  Search,
-  Package,
+  Plus, Trash2, Save, Loader2, X, Search, Package, Check,
+  Heart, Brain, Zap, Dumbbell, Target, Shield, Moon,
+  Sparkles, Flame, Smile, Award, Activity, AlertCircle, Hourglass,
 } from "lucide-react"
 
 const BACKEND_URL =
@@ -26,25 +22,38 @@ interface Product {
   id: string
   title: string
   thumbnail: string | null
-  variants: { id: string; title: string }[]
 }
 
 const ICON_OPTIONS = [
-  "Heart",
-  "Brain",
-  "Zap",
-  "Dumbbell",
-  "Target",
-  "Shield",
-  "Moon",
-  "Sparkles",
-  "Flame",
-  "Smile",
-  "Award",
-  "Activity",
-  "AlertCircle",
-  "Hourglass",
+  { name: "Heart", component: Heart },
+  { name: "Brain", component: Brain },
+  { name: "Zap", component: Zap },
+  { name: "Dumbbell", component: Dumbbell },
+  { name: "Target", component: Target },
+  { name: "Shield", component: Shield },
+  { name: "Moon", component: Moon },
+  { name: "Sparkles", component: Sparkles },
+  { name: "Flame", component: Flame },
+  { name: "Smile", component: Smile },
+  { name: "Award", component: Award },
+  { name: "Activity", component: Activity },
+  { name: "AlertCircle", component: AlertCircle },
+  { name: "Hourglass", component: Hourglass },
 ]
+
+const adminFetch = (url: string, init?: RequestInit) => {
+  const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null
+  return fetch(url, {
+    ...init,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "",
+      ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+      ...init?.headers,
+    },
+  })
+}
 
 export default function StackBuilderAdmin() {
   const [goals, setGoals] = useState<Goal[]>([])
@@ -63,65 +72,66 @@ export default function StackBuilderAdmin() {
     product_ids: [] as string[],
   })
 
-  // Product search
-  const [productSearch, setProductSearch] = useState("")
-  const [searchResults, setSearchResults] = useState<Product[]>([])
-  const [searching, setSearching] = useState(false)
+  // Product dropdown state
+  const [allProducts, setAllProducts] = useState<Product[]>([])
+  const [productsLoading, setProductsLoading] = useState(false)
+  const [productDropdownOpen, setProductDropdownOpen] = useState(false)
+  const [productSearchQuery, setProductSearchQuery] = useState("")
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Fetch goals from backend
   useEffect(() => {
     fetchGoals()
+    fetchAllProducts()
+  }, [])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setProductDropdownOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
   async function fetchGoals() {
     try {
       setLoading(true)
-      const res = await fetch(`${BACKEND_URL}/admin/recommendations`, {
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      })
+      const res = await adminFetch(`${BACKEND_URL}/admin/recommendations`)
       if (res.ok) {
         const data = await res.json()
         setGoals(data.goals || [])
+        setError(null)
+      } else if (res.status === 404) {
+        setError("Backend route /admin/recommendations not found. Please deploy backend changes first.")
       } else {
-        setError("Failed to fetch goals. Is the backend running?")
+        setError("Failed to fetch goals.")
       }
     } catch (err) {
-      setError(
-        "Cannot connect to backend. Make sure the Medusa server is running at " +
-          BACKEND_URL
-      )
+      setError("Cannot connect to backend at " + BACKEND_URL + ". Deploy the backend admin API routes.")
     } finally {
       setLoading(false)
     }
   }
 
-  async function searchProducts(query: string) {
-    if (!query || query.length < 2) {
-      setSearchResults([])
-      return
-    }
+  async function fetchAllProducts() {
     try {
-      setSearching(true)
-      const res = await fetch(
-        `${BACKEND_URL}/admin/products?q=${encodeURIComponent(query)}&limit=10`,
-        {
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        }
-      )
+      setProductsLoading(true)
+      const res = await adminFetch(`${BACKEND_URL}/admin/products?limit=100`)
       if (res.ok) {
         const data = await res.json()
-        setSearchResults(data.products || [])
+        setAllProducts(data.products || [])
       }
     } catch (err) {
-      console.error("Product search failed:", err)
+      // silently fail
     } finally {
-      setSearching(false)
+      setProductsLoading(false)
     }
   }
 
   async function handleSave() {
+    if (!formData.goal_name) return
     try {
       setSaving(true)
       setError(null)
@@ -130,12 +140,8 @@ export default function StackBuilderAdmin() {
         ? `${BACKEND_URL}/admin/recommendations/${editingGoal.id}`
         : `${BACKEND_URL}/admin/recommendations`
 
-      const method = "POST"
-
-      const res = await fetch(url, {
-        method,
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+      const res = await adminFetch(url, {
+        method: "POST",
         body: JSON.stringify(formData),
       })
 
@@ -145,8 +151,8 @@ export default function StackBuilderAdmin() {
         resetForm()
         fetchGoals()
       } else {
-        const data = await res.json()
-        setError(data.message || "Failed to save goal")
+        const data = await res.json().catch(() => ({}))
+        setError(data.message || "Failed to save. Make sure backend is deployed.")
       }
     } catch (err) {
       setError("Failed to save. Check backend connection.")
@@ -156,21 +162,16 @@ export default function StackBuilderAdmin() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Are you sure you want to delete this goal?")) return
-
+    if (!confirm("Delete this quiz option?")) return
     try {
-      const res = await fetch(`${BACKEND_URL}/admin/recommendations/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      })
+      const res = await adminFetch(`${BACKEND_URL}/admin/recommendations/${id}`, { method: "DELETE" })
       if (res.ok) {
-        setSuccess("Goal deleted!")
+        setSuccess("Deleted!")
         setTimeout(() => setSuccess(null), 3000)
         fetchGoals()
       }
     } catch (err) {
-      setError("Failed to delete goal")
+      setError("Failed to delete")
     }
   }
 
@@ -178,8 +179,8 @@ export default function StackBuilderAdmin() {
     setFormData({ icon: "Heart", goal_name: "", description: "", product_ids: [] })
     setEditingGoal(null)
     setShowForm(false)
-    setProductSearch("")
-    setSearchResults([])
+    setProductDropdownOpen(false)
+    setProductSearchQuery("")
   }
 
   function startEdit(goal: Goal) {
@@ -193,273 +194,272 @@ export default function StackBuilderAdmin() {
     setShowForm(true)
   }
 
-  function addProductId(productId: string) {
-    if (!formData.product_ids.includes(productId)) {
-      setFormData((prev) => ({
-        ...prev,
-        product_ids: [...prev.product_ids, productId],
-      }))
-    }
-  }
-
-  function removeProductId(productId: string) {
+  function toggleProduct(productId: string) {
     setFormData((prev) => ({
       ...prev,
-      product_ids: prev.product_ids.filter((id) => id !== productId),
+      product_ids: prev.product_ids.includes(productId)
+        ? prev.product_ids.filter((id) => id !== productId)
+        : [...prev.product_ids, productId],
     }))
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-      </div>
-    )
-  }
+  const filteredProducts = allProducts.filter((p) =>
+    p.title.toLowerCase().includes(productSearchQuery.toLowerCase())
+  )
+
+  const selectedIcon = ICON_OPTIONS.find((i) => i.name === formData.icon)
+  const SelectedIconComponent = selectedIcon?.component || Heart
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Stack Builder — Goal Management
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Create and manage quiz goals. Assign real products to each goal.
-            </p>
-          </div>
-          <button
-            onClick={() => {
-              resetForm()
-              setShowForm(true)
-            }}
-            className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Add Goal
-          </button>
+    <div className="space-y-6 text-left">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight">
+            Stack Builder — Quiz Options
+          </h1>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Create quiz options and assign products to each. These appear on the public Stack Builder page.
+          </p>
         </div>
+        <button
+          onClick={() => { resetForm(); setShowForm(true) }}
+          className="inline-flex items-center gap-2 bg-[#047857] hover:bg-[#035f43] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-colors shadow-sm"
+        >
+          <Plus className="w-4 h-4" />
+          Add Quiz Option
+        </button>
+      </div>
 
-        {/* Messages */}
-        {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-            {error}
+      {/* Messages */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-medium">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-xs font-medium">
+          ✓ {success}
+        </div>
+      )}
+
+      {/* Form */}
+      {showForm && (
+        <div className="bg-white rounded-2xl border border-gray-150 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-base font-bold text-gray-900">
+              {editingGoal ? "Edit Quiz Option" : "New Quiz Option"}
+            </h2>
+            <button onClick={resetForm} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+              <X className="w-4 h-4 text-gray-400" />
+            </button>
           </div>
-        )}
-        {success && (
-          <div className="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-sm">
-            ✓ {success}
-          </div>
-        )}
 
-        {/* Goal Form Modal */}
-        {showForm && (
-          <div className="mb-8 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {editingGoal ? "Edit Goal" : "New Goal"}
-              </h2>
-              <button
-                onClick={resetForm}
-                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
-            </div>
-
-            <div className="grid gap-4">
-              {/* Icon */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Icon
-                </label>
+          <div className="grid gap-5">
+            {/* Icon select with preview */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1.5">Icon</label>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <SelectedIconComponent className="w-5 h-5 text-emerald-600" />
+                </div>
                 <select
                   value={formData.icon}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, icon: e.target.value }))
-                  }
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  onChange={(e) => setFormData((prev) => ({ ...prev, icon: e.target.value }))}
+                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
                 >
-                  {ICON_OPTIONS.map((icon) => (
-                    <option key={icon} value={icon}>
-                      {icon}
-                    </option>
+                  {ICON_OPTIONS.map((opt) => (
+                    <option key={opt.name} value={opt.name}>{opt.name}</option>
                   ))}
                 </select>
               </div>
+            </div>
 
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title (Goal Name)
-                </label>
-                <input
-                  type="text"
-                  value={formData.goal_name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      goal_name: e.target.value,
-                    }))
-                  }
-                  placeholder="e.g., Cardiovascular Health"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                />
-              </div>
+            {/* Title */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1.5">Title (Goal Name)</label>
+              <input
+                type="text"
+                value={formData.goal_name}
+                onChange={(e) => setFormData((prev) => ({ ...prev, goal_name: e.target.value }))}
+                placeholder="e.g., Cardiovascular Health"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+              />
+            </div>
 
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  placeholder="e.g., Support heart function, circulation, and overall cardiovascular wellness."
-                  rows={2}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                />
-              </div>
+            {/* Description */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1.5">Description</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="e.g., Support heart function, circulation, and overall cardiovascular wellness."
+                rows={2}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:border-[#047857] focus:outline-none transition-colors resize-none"
+              />
+            </div>
 
-              {/* Products */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Products ({formData.product_ids.length} assigned)
-                </label>
+            {/* Products multi-select dropdown */}
+            <div ref={dropdownRef}>
+              <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1.5">
+                Products ({formData.product_ids.length} selected)
+              </label>
 
-                {/* Added products */}
-                {formData.product_ids.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {formData.product_ids.map((pid) => (
-                      <span
-                        key={pid}
-                        className="inline-flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs px-2 py-1 rounded-full"
-                      >
-                        <Package className="w-3 h-3" />
-                        {pid.slice(0, 20)}...
-                        <button
-                          onClick={() => removeProductId(pid)}
-                          className="ml-0.5 hover:text-red-500"
-                        >
+              {/* Selected products tags */}
+              {formData.product_ids.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {formData.product_ids.map((pid) => {
+                    const product = allProducts.find((p) => p.id === pid)
+                    return (
+                      <span key={pid} className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-semibold px-2.5 py-1 rounded-full">
+                        {product?.thumbnail && (
+                          <img src={product.thumbnail} alt="" className="w-4 h-4 rounded object-cover" />
+                        )}
+                        {product?.title || pid.slice(0, 15) + "..."}
+                        <button onClick={() => toggleProduct(pid)} className="hover:text-red-500 ml-0.5">
                           <X className="w-3 h-3" />
                         </button>
                       </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Product search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    value={productSearch}
-                    onChange={(e) => {
-                      setProductSearch(e.target.value)
-                      searchProducts(e.target.value)
-                    }}
-                    placeholder="Search products to add..."
-                    className="w-full border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm"
-                  />
-                  {searching && (
-                    <Loader2 className="absolute right-3 top-2.5 w-4 h-4 animate-spin text-gray-400" />
-                  )}
+                    )
+                  })}
                 </div>
+              )}
 
-                {/* Search results */}
-                {searchResults.length > 0 && (
-                  <div className="mt-2 border border-gray-200 rounded-lg max-h-48 overflow-y-auto">
-                    {searchResults.map((product) => (
-                      <button
-                        key={product.id}
-                        onClick={() => addProductId(product.id)}
-                        disabled={formData.product_ids.includes(product.id)}
-                        className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-left border-b border-gray-50 last:border-0"
-                      >
-                        {product.thumbnail && (
-                          <img
-                            src={product.thumbnail}
-                            alt=""
-                            className="w-8 h-8 rounded object-cover"
-                          />
-                        )}
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">
-                            {product.title}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {product.id}
-                          </p>
-                        </div>
-                        {formData.product_ids.includes(product.id) && (
-                          <span className="ml-auto text-xs text-emerald-600">
-                            Added
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Save button */}
+              {/* Dropdown trigger */}
               <button
-                onClick={handleSave}
-                disabled={saving || !formData.goal_name}
-                className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                type="button"
+                onClick={() => setProductDropdownOpen(!productDropdownOpen)}
+                className="w-full flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-500 hover:border-gray-300 transition-colors text-left"
               >
-                {saving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
-                {editingGoal ? "Update Goal" : "Create Goal"}
+                <span className="flex items-center gap-2">
+                  <Package className="w-4 h-4 text-gray-400" />
+                  {productDropdownOpen ? "Close product list" : "Click to select products..."}
+                </span>
+                <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-bold">
+                  {allProducts.length} available
+                </span>
               </button>
-            </div>
-          </div>
-        )}
 
-        {/* Goals List */}
-        {goals.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <Package className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">
-              No goals created yet. Click "Add Goal" to create your first quiz
-              option.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {goals.map((goal) => (
-              <div
-                key={goal.id}
-                className="bg-white rounded-xl border border-gray-100 p-5 flex items-center justify-between hover:shadow-sm transition-shadow"
-              >
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs bg-gray-100 px-2 py-0.5 rounded font-medium text-gray-500">
-                      {goal.icon}
-                    </span>
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      {goal.goal_name}
-                    </h3>
+              {/* Dropdown panel */}
+              {productDropdownOpen && (
+                <div className="mt-2 border border-gray-200 rounded-xl bg-white shadow-lg overflow-hidden">
+                  {/* Search inside dropdown */}
+                  <div className="p-2 border-b border-gray-100">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-2 w-3.5 h-3.5 text-gray-400" />
+                      <input
+                        type="text"
+                        value={productSearchQuery}
+                        onChange={(e) => setProductSearchQuery(e.target.value)}
+                        placeholder="Search products..."
+                        className="w-full bg-gray-50 border border-gray-100 rounded-lg pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:border-emerald-300"
+                        autoFocus
+                      />
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500">{goal.description}</p>
-                  <p className="text-[10px] text-gray-400 mt-1">
-                    {(goal.product_ids || []).length} products assigned
-                  </p>
+
+                  {/* Product list */}
+                  <div className="max-h-64 overflow-y-auto">
+                    {productsLoading ? (
+                      <div className="p-4 text-center">
+                        <Loader2 className="w-4 h-4 animate-spin text-gray-400 mx-auto" />
+                      </div>
+                    ) : filteredProducts.length === 0 ? (
+                      <div className="p-4 text-center text-xs text-gray-400">
+                        No products found
+                      </div>
+                    ) : (
+                      filteredProducts.map((product) => {
+                        const isSelected = formData.product_ids.includes(product.id)
+                        return (
+                          <button
+                            key={product.id}
+                            type="button"
+                            onClick={() => toggleProduct(product.id)}
+                            className={`w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 ${isSelected ? "bg-emerald-50/50" : ""}`}
+                          >
+                            {/* Checkbox */}
+                            <div className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? "bg-emerald-500 border-emerald-500" : "border-gray-300"}`}>
+                              {isSelected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                            </div>
+
+                            {/* Thumbnail */}
+                            {product.thumbnail ? (
+                              <img src={product.thumbnail} alt="" className="w-8 h-8 rounded-lg object-cover border border-gray-100 flex-shrink-0" />
+                            ) : (
+                              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                <Package className="w-3.5 h-3.5 text-gray-400" />
+                              </div>
+                            )}
+
+                            {/* Product info */}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-semibold text-gray-800 truncate">{product.title}</p>
+                              <p className="text-[10px] text-gray-400 truncate">{product.id}</p>
+                            </div>
+
+                            {isSelected && (
+                              <span className="text-[10px] font-bold text-emerald-600 flex-shrink-0">✓ Added</span>
+                            )}
+                          </button>
+                        )
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Save */}
+            <button
+              onClick={handleSave}
+              disabled={saving || !formData.goal_name}
+              className="inline-flex items-center justify-center gap-2 bg-[#047857] hover:bg-[#035f43] disabled:bg-gray-300 text-white px-5 py-3 rounded-xl text-xs font-bold transition-colors"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {editingGoal ? "Update Quiz Option" : "Create Quiz Option"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Goals List */}
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+        </div>
+      ) : goals.length === 0 && !error ? (
+        <div className="bg-white rounded-2xl border border-gray-150 p-12 text-center">
+          <Package className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <p className="text-sm text-gray-500 font-medium">
+            No quiz options created yet.
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            Click &ldquo;Add Quiz Option&rdquo; to create your first one.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {goals.map((goal) => {
+            const GoalIcon = ICON_OPTIONS.find((i) => i.name === goal.icon)?.component || Heart
+            return (
+              <div key={goal.id} className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center justify-between hover:shadow-sm transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <GoalIcon className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900">{goal.goal_name}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{goal.description}</p>
+                    <p className="text-[10px] text-gray-400 mt-1 font-medium">
+                      {(goal.product_ids || []).length} product{(goal.product_ids || []).length !== 1 ? "s" : ""} assigned
+                    </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => startEdit(goal)}
-                    className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                    className="px-3 py-1.5 text-[11px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
                   >
                     Edit
                   </button>
@@ -471,10 +471,10 @@ export default function StackBuilderAdmin() {
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
