@@ -13,36 +13,76 @@ interface Product {
   description: string
   thumbnail: string
   variants?: any[]
-  category?: { name: string }
+  category?: { id: string; name: string } | null
 }
 
-export default function FrequentlyBoughtTogether() {
+interface FrequentlyBoughtTogetherProps {
+  currentProduct: {
+    id: string
+    handle: string
+    category?: {
+      id: string
+      name: string
+    } | null
+  }
+}
+
+export default function FrequentlyBoughtTogether({ currentProduct }: FrequentlyBoughtTogetherProps) {
   const [accessories, setAccessories] = useState<Product[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/store/products`)
+    if (!currentProduct) return
+
+    const categoryId = currentProduct.category?.id
+    const categoryName = currentProduct.category?.name || ""
+    
+    // Determine if current product is an accessory itself
+    const isAccessoryProduct = categoryName.toLowerCase().includes("accessories") || 
+                             ["sterile-insulin-syringes", "bacteriostatic-sterile-water", "alcohol-prep-wipes"].includes(currentProduct.handle)
+    
+    // If it's a regular product (e.g. peptide/supplement) and belongs to a category, fetch items in that category
+    const fetchUrl = (categoryId && !isAccessoryProduct)
+      ? `${BACKEND_URL}/store/products?category_id=${categoryId}`
+      : `${BACKEND_URL}/store/products`
+
+    fetch(fetchUrl)
       .then(res => res.json())
       .then(data => {
         const list = data.products || []
-        // Filter by category or handle match
-        const filtered = list.filter((p: any) => 
-          p.category?.name?.toLowerCase().includes("accessories") ||
-          ["sterile-insulin-syringes", "bacteriostatic-sterile-water", "alcohol-prep-wipes"].includes(p.handle)
-        )
-        // Order them consistently: syringes, water, wipes
-        const ordered = [
-          filtered.find((p: any) => p.handle === "sterile-insulin-syringes"),
-          filtered.find((p: any) => p.handle === "bacteriostatic-sterile-water"),
-          filtered.find((p: any) => p.handle === "alcohol-prep-wipes")
-        ].filter(Boolean) as Product[]
+        
+        // Filter out current product itself
+        let filtered = list.filter((p: any) => p.id !== currentProduct.id)
+        
+        // If we queried a category but got no recommendations, or if the current product is an accessory, fallback to accessories list
+        if (filtered.length === 0 || isAccessoryProduct) {
+          fetch(`${BACKEND_URL}/store/products`)
+            .then(res => res.json())
+            .then(allData => {
+              const allList = allData.products || []
+              const accList = allList.filter((p: any) => 
+                p.category?.name?.toLowerCase().includes("accessories") ||
+                ["sterile-insulin-syringes", "bacteriostatic-sterile-water", "alcohol-prep-wipes"].includes(p.handle)
+              )
+              // Order accessories consistently: syringes, water, wipes
+              const ordered = [
+                accList.find((p: any) => p.handle === "sterile-insulin-syringes"),
+                accList.find((p: any) => p.handle === "bacteriostatic-sterile-water"),
+                accList.find((p: any) => p.handle === "alcohol-prep-wipes")
+              ].filter(Boolean) as Product[]
 
-        setAccessories(ordered.length > 0 ? ordered : (filtered as Product[]))
+              setAccessories(ordered.length > 0 ? ordered : (accList as Product[]))
+            })
+            .catch(err => console.error("Accessories fallback fetch error:", err))
+        } else {
+          // Show up to 3 items from the same category
+          setAccessories(filtered.slice(0, 3) as Product[])
+        }
       })
       .catch(err => console.error("Frequently Bought Together Fetch Error:", err))
       .finally(() => setLoading(false))
-  }, [])
+  }, [currentProduct])
 
   const handleQuickAdd = async (productId: string, slug: string) => {
     setAddedItems(prev => ({ ...prev, [slug]: true }))
@@ -83,7 +123,8 @@ export default function FrequentlyBoughtTogether() {
     if (t.includes("syringe")) return "1ml"
     if (t.includes("water")) return "10ml"
     if (t.includes("wipe") || t.includes("alcohol")) return "Prep"
-    return "Add"
+    // Fallback for peptides/supplements: first 3 letters capitalized (e.g. NMN, BPC, GLY)
+    return title.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase()
   }
 
   if (loading) {
