@@ -1,90 +1,136 @@
 "use client"
 
-import React, { useState } from "react"
-import { Check } from "lucide-react"
+import React, { useState, useEffect } from "react"
+import { Check, Loader2 } from "lucide-react"
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+
+interface Product {
+  id: string
+  title: string
+  handle: string
+  price: number
+  description: string
+  thumbnail: string
+  variants?: any[]
+  category?: { name: string }
+}
 
 export default function FrequentlyBoughtTogether() {
+  const [accessories, setAccessories] = useState<Product[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({})
 
-  const handleQuickAdd = (itemId: string) => {
-    setAddedItems((prev) => ({ ...prev, [itemId]: true }))
-    setTimeout(() => {
-      setAddedItems((prev) => ({ ...prev, [itemId]: false }))
-    }, 2000)
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/store/products`)
+      .then(res => res.json())
+      .then(data => {
+        const list = data.products || []
+        // Filter by category or handle match
+        const filtered = list.filter((p: any) => 
+          p.category?.name?.toLowerCase().includes("accessories") ||
+          ["sterile-insulin-syringes", "bacteriostatic-sterile-water", "alcohol-prep-wipes"].includes(p.handle)
+        )
+        // Order them consistently: syringes, water, wipes
+        const ordered = [
+          filtered.find((p: any) => p.handle === "sterile-insulin-syringes"),
+          filtered.find((p: any) => p.handle === "bacteriostatic-sterile-water"),
+          filtered.find((p: any) => p.handle === "alcohol-prep-wipes")
+        ].filter(Boolean) as Product[]
+
+        setAccessories(ordered.length > 0 ? ordered : (filtered as Product[]))
+      })
+      .catch(err => console.error("Frequently Bought Together Fetch Error:", err))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleQuickAdd = async (productId: string, slug: string) => {
+    setAddedItems(prev => ({ ...prev, [slug]: true }))
+    try {
+      let cartId = typeof window !== "undefined" ? localStorage.getItem("rl_cart_id") : null
+      if (!cartId) {
+        const createRes = await fetch(`${BACKEND_URL}/store/carts`, { method: "POST" })
+        if (createRes.ok) {
+          const createData = await createRes.json()
+          cartId = createData.cart.id
+          if (typeof window !== "undefined") {
+            localStorage.setItem("rl_cart_id", cartId!)
+          }
+        }
+      }
+      if (cartId) {
+        const res = await fetch(`${BACKEND_URL}/store/carts/${cartId}/line-items`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ variant_id: productId || slug, quantity: 1 })
+        })
+        if (res.ok) {
+          window.dispatchEvent(new Event("cart-updated"))
+          window.dispatchEvent(new Event("open-cart-drawer"))
+        }
+      }
+    } catch (err) {
+      console.error("Frequently Bought Together Add Error:", err)
+    } finally {
+      setTimeout(() => {
+        setAddedItems(prev => ({ ...prev, [slug]: false }))
+      }, 1500)
+    }
   }
 
+  const getLabel = (title: string) => {
+    const t = title.toLowerCase()
+    if (t.includes("syringe")) return "1ml"
+    if (t.includes("water")) return "10ml"
+    if (t.includes("wipe") || t.includes("alcohol")) return "Prep"
+    return "Add"
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-white border border-gray-200/85 rounded-2xl p-6 shadow-md flex items-center justify-center gap-3">
+        <Loader2 className="w-5 h-5 text-emerald-600 animate-spin" />
+        <span className="text-xs font-bold text-gray-500">Loading recommendations...</span>
+      </div>
+    )
+  }
+
+  if (accessories.length === 0) return null
+
   return (
-    <div className="bg-white border border-gray-200/85 rounded-2xl p-5 shadow-md">
+    <div className="bg-white border border-gray-200/85 rounded-2xl p-5 shadow-md text-left">
       <h4 className="text-sm font-bold text-gray-800 mb-3">Frequently Bought Together</h4>
       <div className="space-y-2.5">
-        {/* Syringes add-on */}
-        <div className="flex items-center justify-between gap-3 bg-gray-50/50 border border-gray-100 p-3 rounded-xl">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white border border-gray-150 rounded-lg flex items-center justify-center font-bold text-[10px] text-gray-500 flex-shrink-0">
-              1ml
+        {accessories.map((item) => {
+          const isAdded = !!addedItems[item.handle]
+          const variantId = item.variants?.[0]?.id || item.id
+          return (
+            <div key={item.id} className="flex items-center justify-between gap-3 bg-gray-50/50 border border-gray-100 p-3 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-white border border-gray-150 rounded-lg flex items-center justify-center font-bold text-[10px] text-gray-500 flex-shrink-0">
+                  {getLabel(item.title)}
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-gray-800 block leading-tight">{item.title}</span>
+                  <span className="text-xs font-extrabold text-emerald-600 block mt-0.5">
+                    A${Number(item.price).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => handleQuickAdd(variantId, item.handle)}
+                disabled={isAdded}
+                className={`font-bold text-xs px-3.5 py-1.5 rounded-lg active:scale-95 transition-all flex-shrink-0 flex items-center justify-center ${
+                  isAdded
+                    ? "bg-emerald-600 text-white"
+                    : "bg-gray-900 hover:bg-emerald-600 text-white"
+                }`}
+              >
+                {isAdded ? <Check className="w-3.5 h-3.5" /> : "Add"}
+              </button>
             </div>
-            <div>
-              <span className="text-xs font-bold text-gray-800 block leading-tight">Sterile Insulin Syringes (Pack of 10)</span>
-              <span className="text-xs font-extrabold text-emerald-600 block mt-0.5">$14.95</span>
-            </div>
-          </div>
-          <button
-            onClick={() => handleQuickAdd("syringes")}
-            className={`font-bold text-xs px-3.5 py-1.5 rounded-lg active:scale-95 transition-all flex-shrink-0 ${
-              addedItems["syringes"]
-                ? "bg-emerald-600 text-white"
-                : "bg-gray-900 hover:bg-emerald-600 text-white"
-            }`}
-          >
-            {addedItems["syringes"] ? <Check className="w-3.5 h-3.5" /> : "Add"}
-          </button>
-        </div>
-
-        {/* Sterile water add-on */}
-        <div className="flex items-center justify-between gap-3 bg-gray-50/50 border border-gray-100 p-3 rounded-xl">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white border border-gray-150 rounded-lg flex items-center justify-center font-bold text-[10px] text-gray-500 flex-shrink-0">
-              10ml
-            </div>
-            <div>
-              <span className="text-xs font-bold text-gray-800 block leading-tight">Bacteriostatic Sterile Water (10ml)</span>
-              <span className="text-xs font-extrabold text-emerald-600 block mt-0.5">$9.95</span>
-            </div>
-          </div>
-          <button
-            onClick={() => handleQuickAdd("water")}
-            className={`font-bold text-xs px-3.5 py-1.5 rounded-lg active:scale-95 transition-all flex-shrink-0 ${
-              addedItems["water"]
-                ? "bg-emerald-600 text-white"
-                : "bg-gray-900 hover:bg-emerald-600 text-white"
-            }`}
-          >
-            {addedItems["water"] ? <Check className="w-3.5 h-3.5" /> : "Add"}
-          </button>
-        </div>
-
-        {/* Wipes add-on */}
-        <div className="flex items-center justify-between gap-3 bg-gray-50/50 border border-gray-100 p-3 rounded-xl">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white border border-gray-150 rounded-lg flex items-center justify-center font-bold text-[10px] text-gray-500 flex-shrink-0">
-              Prep
-            </div>
-            <div>
-              <span className="text-xs font-bold text-gray-800 block leading-tight">Alcohol Prep Wipes (Box of 100)</span>
-              <span className="text-xs font-extrabold text-emerald-600 block mt-0.5">$6.50</span>
-            </div>
-          </div>
-          <button
-            onClick={() => handleQuickAdd("wipes")}
-            className={`font-bold text-xs px-3.5 py-1.5 rounded-lg active:scale-95 transition-all flex-shrink-0 ${
-              addedItems["wipes"]
-                ? "bg-emerald-600 text-white"
-                : "bg-gray-900 hover:bg-emerald-600 text-white"
-            }`}
-          >
-            {addedItems["wipes"] ? <Check className="w-3.5 h-3.5" /> : "Add"}
-          </button>
-        </div>
+          )
+        })}
       </div>
     </div>
   )
