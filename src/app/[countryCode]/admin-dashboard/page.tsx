@@ -80,6 +80,8 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<any[]>([])
   const [ordersLoading, setOrdersLoading] = useState(false)
   const [updatingOrderStatus, setUpdatingOrderStatus] = useState<string | null>(null)
+  const [updatingOrderPaymentStatus, setUpdatingOrderPaymentStatus] = useState<string | null>(null)
+  const [updatingOrderTracking, setUpdatingOrderTracking] = useState<string | null>(null)
   
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState("")
@@ -165,6 +167,58 @@ export default function AdminDashboard() {
       console.error("Error updating order status:", err)
     } finally {
       setUpdatingOrderStatus(null)
+    }
+  }
+
+  const updateOrderParameters = async (id: string, params: { status?: string, payment_status?: string, shipping_method?: string, tracking_number?: string }) => {
+    try {
+      setUpdatingOrderStatus(id)
+      const res = await adminFetch(`${BACKEND_URL}/admin/orders/${id}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params)
+      })
+      if (res.ok) {
+        fetchOrders()
+      }
+    } catch (err) {
+      console.error("Error updating order parameters:", err)
+    } finally {
+      setUpdatingOrderStatus(null)
+    }
+  }
+
+  const updateOrderTracking = async (id: string, provider: string, num: string, link: string) => {
+    try {
+      setUpdatingOrderTracking(id)
+      const res = await adminFetch(`${BACKEND_URL}/admin/orders/${id}/tracking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tracking_number: num, tracking_provider: provider, tracking_link: link })
+      })
+      if (res.ok) {
+        fetchOrders()
+      }
+    } catch (err) {
+      console.error("Error updating order tracking:", err)
+    } finally {
+      setUpdatingOrderTracking(null)
+    }
+  }
+
+  const addOrderPrivateNote = async (id: string, noteText: string) => {
+    if (!noteText.trim()) return
+    try {
+      const res = await adminFetch(`${BACKEND_URL}/admin/orders/${id}/note`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note: noteText })
+      })
+      if (res.ok) {
+        fetchOrders()
+      }
+    } catch (err) {
+      console.error("Error adding private note:", err)
     }
   }
 
