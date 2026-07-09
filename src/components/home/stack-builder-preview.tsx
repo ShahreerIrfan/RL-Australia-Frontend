@@ -37,10 +37,10 @@ export default function StackBuilderPreview() {
             Interactive Stack Finder
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight uppercase">
-            Find Your Perfect Supplements
+            Find Your Perfect Stack
           </h2>
           <p className="text-sm sm:text-lg text-gray-600 mt-4 max-w-2xl mx-auto font-medium leading-relaxed">
-            Not sure where to start? Take our quick quiz to match with supplements tailored to your goals.
+            Not sure where to start? Take our quick quiz to match with stacks tailored to your goals.
           </p>
           <div className="mt-8">
             <Link

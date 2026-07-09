@@ -38,12 +38,20 @@ sdk.client.fetch = async <T>(
     headers: newHeaders,
   }
   try {
-    return await originalFetch(input, init)
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 4000)
+
+    const response = await originalFetch(input, {
+      ...init,
+      signal: controller.signal,
+    })
+    clearTimeout(timeoutId)
+    return response
   } catch (error: any) {
     const { getMockResponse } = require("./util/mock-data")
     const mock = getMockResponse(input, init)
     if (mock) {
-      console.warn(`[SDK Fallback] Backend fetch failed for "${input}", using mock data fallback.`);
+      console.warn(`[SDK Fallback] Backend fetch failed or timed out for "${input}", using mock data fallback.`);
       return mock as T
     }
     throw error

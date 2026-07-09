@@ -27,7 +27,7 @@ interface Cart {
 }
 
 const CART_API = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
-const FREE_SHIPPING_THRESHOLD = 150
+const FREE_SHIPPING_THRESHOLD = 200
 
 const cartFetch = (url: string, init?: RequestInit) => {
   const headers = {
@@ -42,6 +42,28 @@ export default function CartDrawer() {
   const [cart, setCart] = useState<Cart | null>(null)
   const [loading, setLoading] = useState(false)
   const [updatingItem, setUpdatingItem] = useState<string | null>(null)
+  const [productMap, setProductMap] = useState<Record<string, string>>({})
+
+  // Fetch all product slugs for upsells
+  useEffect(() => {
+    fetch(`${CART_API}/store/products`)
+      .then(res => res.json())
+      .then(data => {
+        const map: Record<string, string> = {}
+        data.products?.forEach((p: any) => {
+          map[p.slug] = p.variants?.[0]?.id || p.id
+        })
+        setProductMap(map)
+      })
+      .catch(err => console.error("Error loading products for upsell:", err))
+  }, [])
+
+  // Sync cart updates with the rest of the storefront (badge counts, loaders, etc.)
+  useEffect(() => {
+    if (cart) {
+      window.dispatchEvent(new Event("cart-updated"))
+    }
+  }, [cart])
 
   const getCartId = (): string | null => {
     if (typeof window === "undefined") return null
@@ -51,12 +73,16 @@ export default function CartDrawer() {
   const setCartId = (id: string) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("rl_cart_id", id)
+      document.cookie = `_medusa_cart_id=${id}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
     }
   }
 
   const fetchCart = useCallback(async () => {
     const cartId = getCartId()
     if (!cartId) return
+    if (typeof window !== "undefined") {
+      document.cookie = `_medusa_cart_id=${cartId}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
+    }
     try {
       const res = await cartFetch(`${CART_API}/store/carts/${cartId}`, { cache: "no-store" })
       if (res.ok) {
@@ -96,9 +122,12 @@ export default function CartDrawer() {
         const data = await res.json()
         setCart(data.cart)
         setIsOpen(true)
+      } else {
+        window.dispatchEvent(new Event("cart-updated"))
       }
     } catch (err) {
       console.error("Failed to add to cart:", err)
+      window.dispatchEvent(new Event("cart-updated"))
     } finally {
       setLoading(false)
     }
@@ -164,6 +193,100 @@ export default function CartDrawer() {
       window.removeEventListener("cart-updated", handleCartUpdate)
     }
   }, [fetchCart])
+
+  const UPSELL_ITEMS = [
+    {
+      name: "Beef Liver Pills",
+      slug: "beef-liver-pills",
+      price: 19.99,
+      wasPrice: 24.99,
+      hook: "Nature's multivitamin: B12, iron & folate in one tiny pill."
+    },
+    {
+      name: "Glycine",
+      slug: "glycine",
+      price: 17.99,
+      wasPrice: 21.99,
+      hook: "The sleep-and-skin amino acid your stack is missing."
+    },
+    {
+      name: "CoQ10",
+      slug: "coq10",
+      price: 18.99,
+      wasPrice: 23.99,
+      hook: "Mitochondrial fuel for energy that actually lasts."
+    },
+    {
+      name: "NMN",
+      slug: "nmn",
+      price: 22.99,
+      wasPrice: 28.99,
+      hook: "The NAD+ booster everyone's stacking for longevity."
+    },
+    {
+      name: "Creatine Gummies",
+      slug: "protein-creatine-gummies",
+      price: 16.99,
+      wasPrice: 19.99,
+      hook: "Gains in gummy form. No shaker, no excuses."
+    },
+    {
+      name: "L. Reuteri",
+      slug: "l-reuteri",
+      price: 20.99,
+      wasPrice: 25.99,
+      hook: "Gut health meets feel-good hormones."
+    }
+  ]
+
+  const addSingleUpsell = async (slug: string) => {
+    const variantId = productMap[slug] || slug
+    setLoading(true)
+    try {
+      let cartId = getCartId()
+      if (!cartId) {
+        cartId = await createCart()
+      }
+      const res = await cartFetch(`${CART_API}/store/carts/${cartId}/line-items`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ variant_id: variantId, quantity: 1 })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCart(data.cart)
+        window.dispatchEvent(new Event("cart-updated"))
+      }
+    } catch (err) {
+      console.error("Error adding upsell:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const addAllUpsells = async () => {
+    setLoading(true)
+    try {
+      let cartId = getCartId()
+      if (!cartId) {
+        cartId = await createCart()
+      }
+      for (const item of UPSELL_ITEMS) {
+        const variantId = productMap[item.slug] || item.slug
+        await cartFetch(`${CART_API}/store/carts/${cartId}/line-items`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ variant_id: variantId, quantity: 1 })
+        })
+      }
+      await fetchCart()
+      window.dispatchEvent(new Event("cart-updated"))
+    } catch (err) {
+      console.error("Error adding all upsells:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const totalItems = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
   const subtotal = cart?.subtotal || 0
@@ -304,6 +427,58 @@ export default function CartDrawer() {
                   </button>
                 </div>
               ))}
+
+              {/* Checkout Upsell Rail */}
+              <div className="mt-8 border-t border-dashed border-gray-200 pt-6 text-left">
+                <div className="flex items-center justify-between mb-3.5">
+                  <div>
+                    <h3 className="text-sm font-black text-gray-900">Complete Your Stack</h3>
+                    <p className="text-[10px] text-gray-400 font-bold mt-0.5">Highly recommended additions under $25</p>
+                  </div>
+                </div>
+
+                {/* Horizontal Scroll Rail */}
+                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-thin select-none">
+                  {UPSELL_ITEMS.map((item, idx) => {
+                    const isInCart = cart?.items?.some(i => i.product_handle === item.slug || i.product_title?.toLowerCase().includes(item.name.toLowerCase()))
+                    const variantId = productMap[item.slug]
+                    return (
+                      <div key={idx} className="flex-shrink-0 w-[155px] bg-gray-50/50 border border-gray-150 rounded-xl p-3 flex flex-col justify-between hover:bg-gray-50/80 transition-colors">
+                        <div>
+                          <span className="font-bold text-gray-800 text-[11px] block truncate">{item.name}</span>
+                          <span className="text-[9px] text-gray-400 font-bold block leading-tight mt-1 line-clamp-2 h-6">{item.hook}</span>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <div className="flex flex-col">
+                            <span className="text-[9px] text-gray-400 line-through font-bold leading-none">${item.wasPrice}</span>
+                            <span className="text-xs font-black text-[#c5a059] mt-0.5">${item.price}</span>
+                          </div>
+                          <button
+                            onClick={() => addSingleUpsell(item.slug)}
+                            disabled={loading || isInCart}
+                            className={`px-2.5 py-1 text-[10px] font-black rounded-lg transition-all ${
+                              isInCart
+                                ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                                : "bg-sky-600 hover:bg-sky-700 text-white hover:shadow-md hover:shadow-sky-600/10"
+                            }`}
+                          >
+                            {isInCart ? "Added" : "+ Add"}
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Add All CTA */}
+                <button
+                  onClick={addAllUpsells}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-1.5 bg-gray-50 hover:bg-gray-100/80 border border-gray-200 text-gray-700 hover:text-gray-900 py-2.5 rounded-xl text-xs font-bold transition-all mt-1"
+                >
+                  ⚡ Add all to cart — $112.94 <span className="text-gray-400 line-through font-medium">$141.94</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

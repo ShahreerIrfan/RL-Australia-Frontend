@@ -210,9 +210,16 @@ export default function Nav({ customer }: NavProps) {
                       <button
                         onClick={async () => {
                           setProfileDropdownOpen(false)
+                          if (typeof window !== "undefined") {
+                            localStorage.removeItem("auth_token")
+                            localStorage.removeItem("user")
+                          }
                           const { signout } = await import("@lib/data/customer")
                           const pathParts = window.location.pathname.split("/")
-                          const countryCode = pathParts[1] || "us"
+                          let countryCode = pathParts[1] || "us"
+                          if (!countryCode || ["customer-dashboard", "admin-dashboard", "login", "signup", "store", "account", "products"].includes(countryCode.toLowerCase())) {
+                            countryCode = "us"
+                          }
                           await signout(countryCode)
                         }}
                         className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-650 hover:bg-red-50/40 hover:text-red-700 transition-colors w-full text-left border-t border-gray-100 mt-1 cursor-pointer"
@@ -370,9 +377,16 @@ export default function Nav({ customer }: NavProps) {
               <button
                 onClick={async () => {
                   setDrawerOpen(false)
+                  if (typeof window !== "undefined") {
+                    localStorage.removeItem("auth_token")
+                    localStorage.removeItem("user")
+                  }
                   const { signout } = await import("@lib/data/customer")
                   const pathParts = window.location.pathname.split("/")
-                  const countryCode = pathParts[1] || "us"
+                  let countryCode = pathParts[1] || "us"
+                  if (!countryCode || ["customer-dashboard", "admin-dashboard", "login", "signup", "store", "account", "products"].includes(countryCode.toLowerCase())) {
+                    countryCode = "us"
+                  }
                   await signout(countryCode)
                 }}
                 className="flex items-center justify-center gap-2 w-full text-center text-sm font-semibold text-red-600 border border-red-150 py-2.5 rounded-lg hover:bg-red-50/40 transition-colors"

@@ -5,10 +5,12 @@ import { useRouter, useParams } from "next/navigation"
 import { 
   LogOut, Package, Users, DollarSign, ShoppingCart, BarChart3, 
   ChevronDown, ChevronRight, Menu, X, Bell, Mail, Search, 
-  Maximize2, Moon, Clock, Star, Award, TrendingUp,
+  ExternalLink, Moon, Clock, Star, Award, TrendingUp,
   Percent, Settings, ClipboardList, BookOpen, Target, Activity, FileText,
-  LayoutGrid, Pencil, Trash2, Eye, Plus, Upload
+  LayoutGrid, Pencil, Trash2, Eye, Plus, Upload, Loader2
 } from "lucide-react"
+import { convertToLocale } from "@lib/util/money"
+import OrderManagement from "./OrderManagement"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 
@@ -72,6 +74,14 @@ export default function AdminDashboard() {
   const [uploading, setUploading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<any | null>(null)
+  const [productType, setProductType] = useState<"Simple" | "Variable">("Simple")
+  
+  // Order CRUD states
+  const [orders, setOrders] = useState<any[]>([])
+  const [ordersLoading, setOrdersLoading] = useState(false)
+  const [updatingOrderStatus, setUpdatingOrderStatus] = useState<string | null>(null)
+  const [updatingOrderPaymentStatus, setUpdatingOrderPaymentStatus] = useState<string | null>(null)
+  const [updatingOrderTracking, setUpdatingOrderTracking] = useState<string | null>(null)
   
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState("")
@@ -127,6 +137,91 @@ export default function AdminDashboard() {
     }
   }
 
+  const fetchOrders = async () => {
+    try {
+      setOrdersLoading(true)
+      const res = await adminFetch(`${BACKEND_URL}/store/orders`, { cache: "no-store" })
+      if (res.ok) {
+        const data = await res.json()
+        setOrders(data.orders || [])
+      }
+    } catch (err) {
+      console.error("Error fetching orders:", err)
+    } finally {
+      setOrdersLoading(false)
+    }
+  }
+
+  const updateOrderStatus = async (id: string, newStatus: string) => {
+    try {
+      setUpdatingOrderStatus(id)
+      const res = await adminFetch(`${BACKEND_URL}/admin/orders/${id}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      })
+      if (res.ok) {
+        fetchOrders()
+      }
+    } catch (err) {
+      console.error("Error updating order status:", err)
+    } finally {
+      setUpdatingOrderStatus(null)
+    }
+  }
+
+  const updateOrderParameters = async (id: string, params: { status?: string, payment_status?: string, shipping_method?: string, tracking_number?: string }) => {
+    try {
+      setUpdatingOrderStatus(id)
+      const res = await adminFetch(`${BACKEND_URL}/admin/orders/${id}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params)
+      })
+      if (res.ok) {
+        fetchOrders()
+      }
+    } catch (err) {
+      console.error("Error updating order parameters:", err)
+    } finally {
+      setUpdatingOrderStatus(null)
+    }
+  }
+
+  const updateOrderTracking = async (id: string, provider: string, num: string, link: string) => {
+    try {
+      setUpdatingOrderTracking(id)
+      const res = await adminFetch(`${BACKEND_URL}/admin/orders/${id}/tracking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tracking_number: num, tracking_provider: provider, tracking_link: link })
+      })
+      if (res.ok) {
+        fetchOrders()
+      }
+    } catch (err) {
+      console.error("Error updating order tracking:", err)
+    } finally {
+      setUpdatingOrderTracking(null)
+    }
+  }
+
+  const addOrderPrivateNote = async (id: string, noteText: string) => {
+    if (!noteText.trim()) return
+    try {
+      const res = await adminFetch(`${BACKEND_URL}/admin/orders/${id}/note`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note: noteText })
+      })
+      if (res.ok) {
+        fetchOrders()
+      }
+    } catch (err) {
+      console.error("Error adding private note:", err)
+    }
+  }
+
   useEffect(() => {
     fetchCategories()
     fetchProducts()
@@ -135,6 +230,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (activeMenu === "All Products") {
       fetchProducts()
+    } else if (activeMenu === "All Orders") {
+      fetchOrders()
     }
   }, [activeMenu])
 
@@ -244,6 +341,7 @@ export default function AdminDashboard() {
 
   const openAddModal = () => {
     setEditingProduct(null)
+    setProductType("Simple")
     setProductForm({
       name: "",
       slug: "",
@@ -270,6 +368,11 @@ export default function AdminDashboard() {
 
   const openEditModal = (product: any) => {
     setEditingProduct(product)
+    const isVar = product.variants && (
+      product.variants.length > 1 || 
+      (product.variants.length === 1 && product.variants[0].title !== "Single Vial")
+    )
+    setProductType(isVar ? "Variable" : "Simple")
     setProductForm({
       name: product.title || "",
       slug: product.handle || "",
@@ -304,7 +407,23 @@ export default function AdminDashboard() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!productForm.name || !productForm.price) {
+    
+    // Prepare payload based on Simple vs. Variable selection
+    let payload = { ...productForm }
+    if (productType === "Simple") {
+      payload.variants = []
+    } else {
+      // For variable product, set parent fields to first variant for database schema compatibility
+      const firstVar = productForm.variants?.[0]
+      if (firstVar) {
+        payload.price = firstVar.price
+        payload.original_price = firstVar.original_price
+        payload.sku = firstVar.sku
+        payload.stock_quantity = firstVar.stock_quantity
+      }
+    }
+
+    if (!payload.name || !payload.price) {
       alert("Name and Price are required.")
       return
     }
@@ -318,7 +437,7 @@ export default function AdminDashboard() {
       const res = await adminFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productForm)
+        body: JSON.stringify(payload)
       })
 
       if (res.ok) {
@@ -454,12 +573,27 @@ export default function AdminDashboard() {
     setLoading(false)
   }, [router])
 
+  // Listen for storage changes from other tabs to enforce immediate logout
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "auth_token" || e.key === "user") {
+        const token = localStorage.getItem("auth_token")
+        const stored = localStorage.getItem("user")
+        if (!token || !stored) {
+          window.location.href = "/" + countryCode + "/login"
+        }
+      }
+    }
+    window.addEventListener("storage", handleStorageChange)
+    return () => window.removeEventListener("storage", handleStorageChange)
+  }, [])
+
   const handleLogout = () => {
     localStorage.removeItem("auth_token")
     localStorage.removeItem("user")
     // Also remove cookies
     document.cookie = "_medusa_jwt=; max-age=-1; path=/"
-    window.location.href = "/login"
+    window.location.href = "/" + countryCode + "/login"
   }
 
   const toggleSection = (section: string) => {
@@ -504,136 +638,111 @@ export default function AdminDashboard() {
         </div>
 
         {/* Navigation Menus */}
-        <nav className="p-4 space-y-6 overflow-y-auto h-[calc(100vh-4rem)]">
-          {/* Section: Overview */}
+        <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100vh-4rem)]">
+          {/* Dashboard */}
+          <button 
+            onClick={() => setActiveMenu("Dashboard")}
+            className={`w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold rounded-xl transition-all select-none cursor-pointer ${activeMenu === "Dashboard" ? "bg-[#047857] text-white shadow-md shadow-emerald-900/10" : "text-gray-600 hover:bg-gray-50"}`}
+          >
+            <LayoutGrid className="w-4 h-4 flex-shrink-0" />
+            Dashboard
+          </button>
+
+          {/* Products */}
           <div>
-            <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2.5 cursor-pointer" onClick={() => toggleSection("Overview")}>
-              <span>Overview</span>
-              {expandedSections.Overview ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </div>
-            {expandedSections.Overview && (
-              <div className="space-y-1">
+            <button 
+              onClick={() => toggleSection("ProductsSub")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl"
+            >
+              <span className="flex items-center gap-3.5">
+                <Package className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                Products
+              </span>
+              {expandedSections.ProductsSub ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
+            </button>
+            {expandedSections.ProductsSub && (
+              <div className="pl-11 pr-2 py-1 space-y-1.5 border-l border-gray-100 ml-6 mt-0.5 text-left">
                 <button 
-                  onClick={() => setActiveMenu("Dashboard")}
-                  className={`w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold rounded-xl transition-all select-none cursor-pointer ${activeMenu === "Dashboard" ? "bg-[#047857] text-white shadow-md shadow-emerald-900/10" : "text-gray-600 hover:bg-gray-50"}`}
+                  onClick={() => setActiveMenu("All Products")} 
+                  className={`block w-full text-left py-1 text-[11px] font-semibold transition-colors ${activeMenu === "All Products" ? "text-[#047857] font-bold" : "text-gray-550 hover:text-emerald-700"}`}
                 >
-                  <LayoutGrid className="w-4 h-4 flex-shrink-0" />
-                  Dashboard
+                  All Products
+                </button>
+                <button 
+                  onClick={() => setActiveMenu("Categories")} 
+                  className={`block w-full text-left py-1 text-[11px] font-semibold transition-colors ${activeMenu === "Categories" ? "text-[#047857] font-bold" : "text-gray-550 hover:text-emerald-700"}`}
+                >
+                  Categories
                 </button>
               </div>
             )}
           </div>
 
-          {/* Section: Catalog & Content */}
+          {/* Guides Library */}
           <div>
-            <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2 cursor-pointer" onClick={() => toggleSection("CatalogContent")}>
-              <span>Catalog & Content</span>
-              {expandedSections.CatalogContent ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </div>
-            {expandedSections.CatalogContent && (
-              <div className="space-y-1">
-                <button 
-                  onClick={() => toggleSection("ProductsSub")}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl"
-                >
-                  <span className="flex items-center gap-3">
-                    <Package className="w-4 h-4 text-emerald-600" />
-                    Products
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                </button>
-                {expandedSections.ProductsSub && (
-                  <div className="pl-9 pr-2 py-1 space-y-1 border-l border-gray-100 ml-5 mt-0.5 text-left">
-                    <button 
-                      onClick={() => setActiveMenu("All Products")} 
-                      className={`block w-full text-left py-1.5 text-[11px] font-semibold transition-colors ${activeMenu === "All Products" ? "text-[#047857] font-bold" : "text-gray-550 hover:text-emerald-700"}`}
-                    >
-                      All Products
-                    </button>
-                    <button 
-                      onClick={() => setActiveMenu("Categories")} 
-                      className={`block w-full text-left py-1.5 text-[11px] font-semibold transition-colors ${activeMenu === "Categories" ? "text-[#047857] font-bold" : "text-gray-550 hover:text-emerald-700"}`}
-                    >
-                      Categories
-                    </button>
-                  </div>
-                )}
-
-                <button 
-                  onClick={() => toggleSection("GuidesSub")}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl"
-                >
-                  <span className="flex items-center gap-3">
-                    <BookOpen className="w-4 h-4 text-emerald-600" />
-                    Guides Library
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-                </button>
-                {expandedSections.GuidesSub && (
-                  <div className="pl-9 pr-2 py-1 space-y-1 border-l border-gray-100 ml-5 mt-0.5">
-                    <a href="#" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Manage Guides</a>
-                    <a href="#" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Email Capture Settings</a>
-                  </div>
-                )}
+            <button 
+              onClick={() => toggleSection("GuidesSub")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl"
+            >
+              <span className="flex items-center gap-3.5">
+                <BookOpen className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                Guides Library
+              </span>
+              {expandedSections.GuidesSub ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
+            </button>
+            {expandedSections.GuidesSub && (
+              <div className="pl-11 pr-2 py-1 space-y-1.5 border-l border-gray-100 ml-6 mt-0.5 text-left font-semibold text-gray-555">
+                <a href="#" className="block py-1 text-[11px] hover:text-emerald-700">Manage Guides</a>
+                <a href="#" className="block py-1 text-[11px] hover:text-emerald-700">Email Capture Settings</a>
               </div>
             )}
           </div>
 
-          {/* Section: Cart & Stacking */}
+          {/* Orders */}
           <div>
-            <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2 cursor-pointer" onClick={() => toggleSection("CartStack")}>
-              <span>Cart & Stacking</span>
-              {expandedSections.CartStack ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </div>
-            {expandedSections.CartStack && (
-              <div className="space-y-1">
-                <button 
-                  onClick={() => toggleSection("OrdersSub")}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl"
+            <button 
+              onClick={() => toggleSection("OrdersSub")}
+              className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl"
+            >
+              <span className="flex items-center gap-3.5">
+                <ShoppingCart className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                Orders
+              </span>
+              {expandedSections.OrdersSub ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
+            </button>
+            {expandedSections.OrdersSub && (
+              <div className="pl-11 pr-2 py-1 space-y-1.5 border-l border-gray-100 ml-6 mt-0.5 text-left font-semibold text-gray-555">
+                <button
+                  onClick={() => setActiveMenu("All Orders")}
+                  className={`block w-full text-left py-1 text-[11px] font-semibold transition-colors ${activeMenu === "All Orders" ? "text-[#047857] font-bold" : "text-gray-555 hover:text-emerald-700"}`}
                 >
-                  <span className="flex items-center gap-3">
-                    <ShoppingCart className="w-4 h-4 text-emerald-600" />
-                    Orders
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+                  All Orders
                 </button>
-                {expandedSections.OrdersSub && (
-                  <div className="pl-9 pr-2 py-1 space-y-1 border-l border-gray-100 ml-5 mt-0.5">
-                    <a href={`${BACKEND_URL}/app/orders`} target="_blank" rel="noopener noreferrer" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Order History</a>
-                    <a href={`${BACKEND_URL}/app/returns`} target="_blank" rel="noopener noreferrer" className="block py-1.5 text-[11px] text-gray-550 hover:text-emerald-700">Returns</a>
-                  </div>
-                )}
-
-                <button className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl">
-                  <span className="flex items-center gap-3">
-                    <Target className="w-4 h-4 text-emerald-600" />
-                    Stack Builder Config
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                </button>
+                <a href={`${BACKEND_URL}/app/returns`} target="_blank" rel="noopener noreferrer" className="block py-1 text-[11px] hover:text-emerald-700">Returns</a>
               </div>
             )}
           </div>
 
-          {/* Section: Marketing & Reports */}
-          <div>
-            <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2 cursor-pointer" onClick={() => toggleSection("MarketingReports")}>
-              <span>Marketing & Reports</span>
-              {expandedSections.MarketingReports ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-            </div>
-            {expandedSections.MarketingReports && (
-              <div className="space-y-1">
-                <button className="w-full flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl">
-                  <TrendingUp className="w-4 h-4 text-emerald-600" />
-                  Campaign Analytics
-                </button>
-                <button className="w-full flex items-center gap-3 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 rounded-xl">
-                  <Percent className="w-4 h-4 text-emerald-600" />
-                  Discount Upsells
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Stack Builder Config */}
+          <button className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl">
+            <span className="flex items-center gap-3.5">
+              <Target className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              Stack Builder Config
+            </span>
+            <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+          </button>
+
+          {/* Campaign Analytics */}
+          <button className="w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl">
+            <TrendingUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            Campaign Analytics
+          </button>
+
+          {/* Discount Upsells */}
+          <button className="w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl">
+            <Percent className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            Discount Upsells
+          </button>
         </nav>
       </aside>
 
@@ -661,10 +770,16 @@ export default function AdminDashboard() {
             <button className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-750">
               <Search className="w-4 h-4" />
             </button>
-            {/* Maximize */}
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-750 hidden sm:flex">
-              <Maximize2 className="w-4 h-4" />
-            </button>
+            {/* Visit Site */}
+            <a 
+              href="/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-750 hidden sm:flex"
+              title="Visit Site"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </a>
             {/* Mail */}
             <button className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-750 relative">
               <Mail className="w-4 h-4" />
@@ -1190,6 +1305,20 @@ export default function AdminDashboard() {
               )}
             </div>
           )}
+
+          {activeMenu === "All Orders" && (
+            <OrderManagement
+              orders={orders}
+              ordersLoading={ordersLoading}
+              updatingOrderStatus={updatingOrderStatus}
+              updatingOrderTracking={updatingOrderTracking}
+              fetchOrders={fetchOrders}
+              updateOrderParameters={updateOrderParameters}
+              updateOrderTracking={updateOrderTracking}
+              addOrderPrivateNote={addOrderPrivateNote}
+              countryCode={countryCode as string}
+            />
+          )}
         </main>
 
         {/* Inline Product Add/Edit View (replaces modal) */}
@@ -1227,6 +1356,39 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 border-b border-gray-100 pb-4">
+                    <div>
+                      <label className="text-[10px] font-extrabold text-gray-405 uppercase tracking-wider block mb-1">Product Type *</label>
+                      <select 
+                        value={productType}
+                        onChange={(e) => {
+                          const val = e.target.value as "Simple" | "Variable"
+                          setProductType(val)
+                          if (val === "Variable" && (!productForm.variants || productForm.variants.length === 0)) {
+                            setProductForm((prev: any) => ({
+                              ...prev,
+                              variants: [
+                                {
+                                  title: "Single Vial",
+                                  price: prev.price || "",
+                                  original_price: prev.original_price || "",
+                                  sku: prev.sku || "",
+                                  stock_quantity: prev.stock_quantity || "100",
+                                  weight: ""
+                                }
+                              ]
+                            }))
+                          }
+                        }}
+                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-650 focus:bg-white focus:border-[#047857] focus:outline-none transition-colors cursor-pointer"
+                      >
+                        <option value="Simple">Simple Product</option>
+                        <option value="Variable">Variable Product</option>
+                      </select>
+                    </div>
+                    <div></div>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Product Name *</label>
@@ -1356,28 +1518,32 @@ export default function AdminDashboard() {
                       </select>
                     </div>
 
-                    <div>
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">SKU Code</label>
-                      <input 
-                        type="text"
-                        value={productForm.sku}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, sku: e.target.value }))}
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="e.g. BPC157-5MG"
-                      />
-                    </div>
+                    {productType === "Simple" && (
+                      <>
+                        <div>
+                          <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">SKU Code</label>
+                          <input 
+                            type="text"
+                            value={productForm.sku}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, sku: e.target.value }))}
+                            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+                            placeholder="e.g. BPC157-5MG"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Stock Quantity</label>
-                      <input 
-                        type="number"
-                        min="0"
-                        value={productForm.stock_quantity}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, stock_quantity: e.target.value }))}
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="e.g. 100"
-                      />
-                    </div>
+                        <div>
+                          <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Stock Quantity</label>
+                          <input 
+                            type="number"
+                            min="0"
+                            value={productForm.stock_quantity}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, stock_quantity: e.target.value }))}
+                            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+                            placeholder="e.g. 100"
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -1394,59 +1560,86 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
-                    <div>
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Price ($) *</label>
-                      <input 
-                        type="number"
-                        required
-                        min="0"
-                        step="0.01"
-                        value={productForm.price}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, price: e.target.value }))}
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="e.g. 79.00"
-                      />
-                    </div>
+                    {productType === "Simple" ? (
+                      <>
+                        <div>
+                          <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Price ($) *</label>
+                          <input 
+                            type="number"
+                            required
+                            min="0"
+                            step="0.01"
+                            value={productForm.price}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, price: e.target.value }))}
+                            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+                            placeholder="e.g. 79.00"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Compare Price ($)</label>
-                      <input 
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={productForm.original_price}
-                        onChange={(e) => setProductForm((prev: any) => ({ ...prev, original_price: e.target.value }))}
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
-                        placeholder="e.g. 99.00"
-                      />
-                    </div>
+                        <div>
+                          <label className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1">Compare Price ($)</label>
+                          <input 
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={productForm.original_price}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, original_price: e.target.value }))}
+                            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:border-[#047857] focus:outline-none transition-colors"
+                            placeholder="e.g. 99.00"
+                          />
+                        </div>
 
-                    <div className="flex items-center gap-6 col-span-2 pt-4 justify-end">
-                      <label className="flex items-center gap-2 cursor-pointer select-none">
-                        <input 
-                          type="checkbox"
-                          checked={productForm.is_active}
-                          onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_active: e.target.checked }))}
-                          className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
-                        />
-                        <span className="text-xs font-bold text-gray-650">Active (Published)</span>
-                      </label>
+                        <div className="flex items-center gap-6 col-span-2 pt-4 justify-end">
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input 
+                              type="checkbox"
+                              checked={productForm.is_active}
+                              onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_active: e.target.checked }))}
+                              className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                            />
+                            <span className="text-xs font-bold text-gray-655">Active (Published)</span>
+                          </label>
 
-                      <label className="flex items-center gap-2 cursor-pointer select-none">
-                        <input 
-                          type="checkbox"
-                          checked={productForm.is_featured}
-                          onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_featured: e.target.checked }))}
-                          className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
-                        />
-                        <span className="text-xs font-bold text-gray-655">Featured</span>
-                      </label>
-                    </div>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input 
+                              type="checkbox"
+                              checked={productForm.is_featured}
+                              onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_featured: e.target.checked }))}
+                              className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                            />
+                            <span className="text-xs font-bold text-gray-655">Featured</span>
+                          </label>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-6 col-span-4 justify-end py-1">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input 
+                            type="checkbox"
+                            checked={productForm.is_active}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_active: e.target.checked }))}
+                            className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                          />
+                          <span className="text-xs font-bold text-gray-655">Active (Published)</span>
+                        </label>
+
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input 
+                            type="checkbox"
+                            checked={productForm.is_featured}
+                            onChange={(e) => setProductForm((prev: any) => ({ ...prev, is_featured: e.target.checked }))}
+                            className="w-4.5 h-4.5 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                          />
+                          <span className="text-xs font-bold text-gray-655">Featured</span>
+                        </label>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* 5. Custom Quantity Options & Tiered Pricing Card */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
+                {productType === "Variable" && (
+                  <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
                   <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
@@ -1613,7 +1806,8 @@ export default function AdminDashboard() {
                       No custom quantity variants defined yet. Clicking "Add Option" lets you define custom packaging sizes (e.g. 5g, 10g). If none are defined, the system defaults to the top-level product price/sku above.
                     </div>
                   )}
-                </div>
+                  </div>
+                )}
 
                 {/* 5. Primary Image Card */}
                 <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">

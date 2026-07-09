@@ -29,7 +29,7 @@ const staticProducts: Product[] = [
     price: 49.95,
     originalPrice: 64.95,
     category: "Peptides",
-    image: "/assets/products/asset 6.png",
+    image: "/assets/products/bpc-157.png",
     rating: 4.9,
     reviews: 128,
   },
@@ -202,8 +202,15 @@ export default function FeaturedProducts() {
             reviews: Math.floor(Math.random() * 100) + 20,
           }))
           if (dbProducts.length > 0) {
-            // Set to live database products only
-            setAllProducts(dbProducts)
+            // Sort to prioritize Peptides at the top of the list
+            const sortedProducts = [...dbProducts].sort((a, b) => {
+              const isAPeptide = a.category?.toLowerCase() === "peptides"
+              const isBPeptide = b.category?.toLowerCase() === "peptides"
+              if (isAPeptide && !isBPeptide) return -1
+              if (!isAPeptide && isBPeptide) return 1
+              return 0
+            })
+            setAllProducts(sortedProducts)
           }
         }
       } catch {

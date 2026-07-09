@@ -69,17 +69,17 @@ export default function GuidesPreview() {
 
           {/* Right Column - Grid of Guide Cards */}
           <div className="md:col-span-8 grid sm:grid-cols-2 gap-6">
-            {/* Compare Supplements */}
+            {/* Compare Peptides */}
             <div className="relative rounded-xl overflow-hidden h-[180px] flex items-end p-5 shadow-sm border border-gray-100">
               <img
                 src="/assets/asset 124.jpeg"
-                alt="Compare Supplements"
+                alt="Compare Peptides"
                 className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50" />
               <div className="relative z-10 text-left w-full">
                 <h4 className="text-base font-extrabold text-white mb-2 uppercase">
-                  Compare Supplements
+                  Compare Peptides
                 </h4>
                 <Link
                   href="/resources"
@@ -132,17 +132,17 @@ export default function GuidesPreview() {
               </div>
             </div>
 
-            {/* Premium Quality Supplements */}
+            {/* Premium Quality Peptides */}
             <div className="bg-[#1d2d3d] rounded-xl flex flex-col justify-between p-5 shadow-sm border border-gray-800">
               <h4 className="text-base font-extrabold text-white uppercase">
-                Premium Quality Supplements
+                Premium Quality Peptides
               </h4>
               <div className="mt-4 text-left">
                 <Link
                   href="/store"
                   className="inline-block bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-[10px] px-3.5 py-1.5 rounded uppercase tracking-wider transition-colors shadow-sm"
                 >
-                  Explore Quality Supplements
+                  Explore Quality Peptides
                 </Link>
               </div>
             </div>

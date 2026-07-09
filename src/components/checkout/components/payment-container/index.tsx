@@ -42,16 +42,25 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
       )}
     >
       <div className="flex items-center justify-between ">
-        <div className="flex items-center gap-x-4">
-          <Radio checked={selectedPaymentOptionId === paymentProviderId} />
-          <Text className="text-base-regular">
-            {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
-          </Text>
+        <div className="flex items-start gap-x-4">
+          <div className="pt-0.5">
+            <Radio checked={selectedPaymentOptionId === paymentProviderId} />
+          </div>
+          <div>
+            <Text className="text-sm font-extrabold text-gray-800">
+              {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
+            </Text>
+            {paymentInfoMap[paymentProviderId]?.description && (
+              <p className="text-[11px] text-gray-450 font-semibold mt-0.5">
+                {paymentInfoMap[paymentProviderId].description}
+              </p>
+            )}
+          </div>
           {isManual(paymentProviderId) && isDevelopment && (
             <PaymentTest className="hidden small:block" />
           )}
         </div>
-        <span className="justify-self-end text-ui-fg-base">
+        <span className="justify-self-end text-ui-fg-base flex-shrink-0">
           {paymentInfoMap[paymentProviderId]?.icon}
         </span>
       </div>

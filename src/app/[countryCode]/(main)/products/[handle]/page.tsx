@@ -6,7 +6,6 @@ import ProductTemplate from "@components/products/templates"
 import { HttpTypes } from "@medusajs/types"
 
 export const dynamic = "force-dynamic"
-export const revalidate = 0
 
 type Props = {
   params: Promise<{ countryCode: string; handle: string }>

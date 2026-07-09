@@ -126,7 +126,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                   />
                 }
               >
-                <ProductActionsWrapper id={product.id} region={region} />
+                <ProductActionsWrapper id={product.id} handle={product.handle} region={region} />
               </Suspense>
 
               {/* Secure payment signals */}
@@ -147,7 +147,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
             </div>
 
             {/* Frequently Bought Together (Low-cost Add-ons section 6.3/7.4) */}
-            <FrequentlyBoughtTogether />
+            <FrequentlyBoughtTogether currentProduct={product} />
 
             {/* Product details tabs */}
             <div className="bg-white border border-gray-200/85 rounded-2xl p-5 shadow-md">

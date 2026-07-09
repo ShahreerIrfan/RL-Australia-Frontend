@@ -49,46 +49,75 @@ export default function ProductActions({
     })
   }
 
+  const [liveProduct, setLiveProduct] = useState<HttpTypes.StoreProduct>(product)
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0)
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
 
+  // Keep liveProduct in sync when product prop changes (e.g., navigating to another page)
+  useEffect(() => {
+    setLiveProduct(product)
+  }, [product])
+
+  // Fetch fresh product variants dynamically on client load to bypass Next.js static ISR cache
+  useEffect(() => {
+    const fetchFreshProduct = async () => {
+      try {
+        const { listProducts } = await import("@lib/data/products")
+        const fresh = await listProducts({
+          countryCode: "us",
+          queryParams: { handle: product.handle }
+        }).then(({ response }) => response.products[0])
+
+        if (fresh && fresh.variants) {
+          setLiveProduct(fresh)
+        }
+      } catch (err) {
+        console.error("Failed to load fresh product options:", err)
+      }
+    }
+
+    if (product.handle) {
+      fetchFreshProduct()
+    }
+  }, [product.handle])
+
   // Sync selectedVariantIndex if query parameter has v_id
   useEffect(() => {
     const vId = searchParams?.get("v_id")
-    if (vId && product.variants) {
-      const idx = product.variants.findIndex((v) => v.id === vId)
+    if (vId && liveProduct.variants) {
+      const idx = liveProduct.variants.findIndex((v) => v.id === vId)
       if (idx !== -1 && idx !== selectedVariantIndex) {
         setSelectedVariantIndex(idx)
       }
     }
-  }, [searchParams, product.variants])
+  }, [searchParams, liveProduct.variants])
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
-    if (product.variants?.length === 1) {
-      const variantOptions = optionsAsKeymap(product.variants[0].options)
+    if (liveProduct.variants?.length === 1) {
+      const variantOptions = optionsAsKeymap(liveProduct.variants[0].options)
       setOptions(variantOptions ?? {})
     }
-  }, [product.variants])
+  }, [liveProduct.variants])
 
   const selectedVariant = useMemo(() => {
-    if (!product.variants || product.variants.length === 0) {
+    if (!liveProduct.variants || liveProduct.variants.length === 0) {
       return
     }
 
     // If it has medusa options, use options matching
-    if (product.options && product.options.length > 0) {
-      return product.variants.find((v) => {
+    if (liveProduct.options && liveProduct.options.length > 0) {
+      return liveProduct.variants.find((v) => {
         const variantOptions = optionsAsKeymap(v.options)
         return isEqual(variantOptions, options)
       })
     }
 
     // Otherwise fall back to selected index
-    return product.variants[selectedVariantIndex] || product.variants[0]
-  }, [product.variants, options, selectedVariantIndex, product.options])
+    return liveProduct.variants[selectedVariantIndex] || liveProduct.variants[0]
+  }, [liveProduct.variants, options, selectedVariantIndex, liveProduct.options])
 
   // update the options when a variant is selected
   const setOptionValue = (optionId: string, value: string) => {
@@ -100,7 +129,7 @@ export default function ProductActions({
 
   const selectVariant = (index: number) => {
     setSelectedVariantIndex(index)
-    const variant = product.variants?.[index]
+    const variant = liveProduct.variants?.[index]
     if (variant?.id) {
       const params = new URLSearchParams(searchParams.toString())
       params.set("v_id", variant.id)
@@ -110,31 +139,24 @@ export default function ProductActions({
 
   //check if the selected options produce a valid variant
   const isValidVariant = useMemo(() => {
-    if (product.options && product.options.length > 0) {
-      return product.variants?.some((v) => {
+    if (liveProduct.options && liveProduct.options.length > 0) {
+      return liveProduct.variants?.some((v) => {
         const variantOptions = optionsAsKeymap(v.options)
         return isEqual(variantOptions, options)
       })
     }
     return !!selectedVariant
-  }, [product.variants, options, product.options, selectedVariant])
+  }, [liveProduct.variants, options, liveProduct.options, selectedVariant])
 
   useEffect(() => {
+    // Always clean up v_id from URL to keep product single page links clean and static
     const params = new URLSearchParams(searchParams.toString())
-    const value = isValidVariant ? selectedVariant?.id : null
-
-    if (params.get("v_id") === value) {
-      return
-    }
-
-    if (value) {
-      params.set("v_id", value)
-    } else {
+    if (params.has("v_id")) {
       params.delete("v_id")
+      const qs = params.toString()
+      router.replace(pathname + (qs ? "?" + qs : ""))
     }
-
-    router.replace(pathname + "?" + params.toString())
-  }, [selectedVariant, isValidVariant])
+  }, [searchParams, pathname, router])
 
   // check if the selected variant is in stock
   const inStock = useMemo(() => {
@@ -165,28 +187,37 @@ export default function ProductActions({
   const inView = useIntersection(actionsRef, "0px")
 
   // add the selected variant to the cart
-  const handleAddToCart = async () => {
-    if (!selectedVariant?.id) return null
+  const handleAddToCart = () => {
+    if (!selectedVariant?.id) return
 
     setIsAdding(true)
-
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity: 1,
-      countryCode,
-    })
-
-    setIsAdding(false)
+    window.dispatchEvent(
+      new CustomEvent("add-to-cart", {
+        detail: {
+          productId: selectedVariant.id,
+          quantity: 1,
+        },
+      })
+    )
   }
+
+  // Reset loading state when cart update event fires
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      setIsAdding(false)
+    }
+    window.addEventListener("cart-updated", handleCartUpdate)
+    return () => window.removeEventListener("cart-updated", handleCartUpdate)
+  }, [])
 
   return (
     <>
       <div className="flex flex-col gap-y-2" ref={actionsRef}>
         <div>
           {/* Medusa standard options selector */}
-          {product.options && product.options.length > 0 && (product.variants?.length ?? 0) > 1 && (
+          {liveProduct.options && liveProduct.options.length > 0 && (liveProduct.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-4">
-              {(product.options || []).map((option, index) => {
+              {(liveProduct.options || []).map((option, index) => {
                 return (
                   <div key={option.id || index}>
                     <OptionSelect
@@ -205,13 +236,13 @@ export default function ProductActions({
           )}
 
           {/* Custom products direct variant list selector with radio buttons */}
-          {(!product.options || product.options.length === 0) && (product.variants?.length ?? 0) > 1 && (
+          {(!liveProduct.options || liveProduct.options.length === 0) && (liveProduct.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-3.5 mb-6 text-left">
               <span className="text-xs sm:text-sm font-extrabold text-gray-700 uppercase tracking-wider block">
                 Choose Packaging / Quantity:
               </span>
               <div className="flex flex-col gap-3">
-                {product.variants!.map((v, idx) => {
+                {liveProduct.variants!.map((v, idx) => {
                   const isSelected = selectedVariant?.id === v.id
                   const priceAmount = v.calculated_price?.calculated_amount || 0
                   const originalAmount = v.calculated_price?.original_amount || priceAmount
@@ -301,7 +332,7 @@ export default function ProductActions({
                         )}
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
               <Divider />
@@ -309,7 +340,7 @@ export default function ProductActions({
           )}
         </div>
 
-        <ProductPrice product={product} variant={selectedVariant} />
+        <ProductPrice product={liveProduct} variant={selectedVariant} />
 
         <Button
           onClick={handleAddToCart}
@@ -332,7 +363,7 @@ export default function ProductActions({
             : "Add to cart"}
         </Button>
         <MobileActions
-          product={product}
+          product={liveProduct}
           variant={selectedVariant}
           options={options}
           updateOptions={setOptionValue}

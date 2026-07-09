@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
 import { User, Package, MapPin, LogOut, ShoppingBag } from "lucide-react"
 
@@ -15,6 +15,8 @@ interface UserData {
 
 export default function CustomerDashboard() {
     const router = useRouter()
+    const params = useParams()
+    const countryCode = (params?.countryCode as string) || "us"
     const [user, setUser] = useState<UserData | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -23,13 +25,13 @@ export default function CustomerDashboard() {
         const token = localStorage.getItem("auth_token")
 
         if (!stored || !token) {
-            router.push("/login")
+            window.location.href = "/" + countryCode + "/login"
             return
         }
 
         const parsed = JSON.parse(stored)
         if (parsed.role !== "customer") {
-            router.push("/login")
+            window.location.href = "/" + countryCode + "/login"
             return
         }
 
@@ -37,10 +39,26 @@ export default function CustomerDashboard() {
         setLoading(false)
     }, [router])
 
-    const handleLogout = () => {
+    // Listen for storage changes from other tabs to enforce immediate logout
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === "auth_token" || e.key === "user") {
+                const token = localStorage.getItem("auth_token")
+                const stored = localStorage.getItem("user")
+                if (!token || !stored) {
+                    window.location.href = "/" + countryCode + "/login"
+                }
+            }
+        }
+        window.addEventListener("storage", handleStorageChange)
+        return () => window.removeEventListener("storage", handleStorageChange)
+    }, [])
+
+    const handleLogout = async () => {
         localStorage.removeItem("auth_token")
         localStorage.removeItem("user")
-        router.push("/login")
+        const { signout } = await import("@lib/data/customer")
+        await signout(countryCode)
     }
 
     if (loading) {

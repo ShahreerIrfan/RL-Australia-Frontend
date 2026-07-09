@@ -68,7 +68,7 @@ export const listProducts = async ({
         },
         headers,
         next,
-        cache: "force-cache",
+        cache: "no-store",
       }
     )
     .then(({ products, count }) => {
@@ -133,4 +133,35 @@ export const listProductsWithSort = async ({
     nextPage,
     queryParams,
   }
+}
+
+export const retrieveProduct = async (
+  id: string,
+  regionId?: string,
+  handle?: string
+): Promise<{ product: HttpTypes.StoreProduct }> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("products")),
+  }
+
+  return sdk.client
+    .fetch<{ product: HttpTypes.StoreProduct }>(
+      `/store/products/${id}`,
+      {
+        method: "GET",
+        query: {
+          region_id: regionId,
+          handle,
+          fields:
+            "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags,",
+        },
+        headers,
+        next,
+        cache: "no-store",
+      }
+    )
 }

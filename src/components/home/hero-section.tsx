@@ -24,7 +24,7 @@ export default function HeroSection() {
           {/* Left - Content */}
           <div className="lg:col-span-6 text-left">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-5">
-              Lab Tested Supplements
+              Lab Tested Peptides &amp; Stacks
               <br />
               You Can <span className="bg-gradient-to-r from-sky-400 via-amber-300 to-[#c5a059] bg-clip-text text-transparent underline decoration-[#c5a059] decoration-wavy decoration-3">TRUST</span>
             </h1>

@@ -7,14 +7,23 @@ import ProductActions from "@components/products/components/product-actions"
  */
 export default async function ProductActionsWrapper({
   id,
+  handle,
   region,
 }: {
   id: string
+  handle?: string
   region: HttpTypes.StoreRegion
 }) {
+  const queryParams: any = {}
+  if (handle) {
+    queryParams.handle = handle
+  } else {
+    queryParams.id = [id]
+  }
+
   const product = await listProducts({
-    queryParams: { id: [id] },
-    regionId: region.id,
+    countryCode: "us",
+    queryParams,
   })
     .then(({ response }) => response.products[0])
     .catch(() => null)
