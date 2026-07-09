@@ -7,7 +7,6 @@ import {
   Sparkles, Flame, Smile, Award, Activity, AlertCircle,
   Hourglass, Loader2, ArrowRight, Package,
 } from "lucide-react"
-import { goalStacks } from "@lib/stack-builder-data"
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
@@ -54,16 +53,8 @@ export default function StackBuilderListing() {
         // Backend unavailable
       }
 
-      // Fallback to static data
-      setOptions(
-        goalStacks.map((g) => ({
-          id: g.id,
-          icon: g.icon,
-          goal_name: g.title,
-          description: g.description,
-          products: g.products,
-        }))
-      )
+      // No backend data — show empty state (do NOT use static fallback)
+      setOptions([])
       setSource("static")
       setLoading(false)
     }

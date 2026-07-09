@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { convertToLocale } from "@lib/util/money"
 import OrderManagement from "./OrderManagement"
+import StackBuilderAdmin from "@components/stack-builder/admin/stack-builder-admin"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 
@@ -724,12 +725,15 @@ export default function AdminDashboard() {
           </div>
 
           {/* Stack Builder Config */}
-          <button className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl">
+          <button
+            onClick={() => setActiveMenu("Stack Builder Config")}
+            className={`w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold rounded-xl transition-all select-none cursor-pointer ${activeMenu === "Stack Builder Config" ? "bg-[#047857] text-white shadow-md shadow-emerald-900/10" : "text-gray-600 hover:bg-gray-50"}`}
+          >
             <span className="flex items-center gap-3.5">
-              <Target className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <Target className="w-4 h-4 flex-shrink-0" />
               Stack Builder Config
             </span>
-            <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+            <ChevronRight className="w-3.5 h-3.5 opacity-60" />
           </button>
 
           {/* Campaign Analytics */}
@@ -1304,6 +1308,10 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
+          )}
+
+          {activeMenu === "Stack Builder Config" && (
+            <StackBuilderAdmin />
           )}
 
           {activeMenu === "All Orders" && (
