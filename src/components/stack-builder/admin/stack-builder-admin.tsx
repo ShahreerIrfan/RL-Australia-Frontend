@@ -43,12 +43,14 @@ const ICON_OPTIONS = [
 
 const adminFetch = (url: string, init?: RequestInit) => {
   const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null
+  const adminSecret = typeof window !== "undefined" ? (localStorage.getItem("admin_secret") || "") : ""
   return fetch(url, {
     ...init,
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
       "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "",
+      "x-admin-secret": adminSecret || process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "",
       ...(token ? { "Authorization": `Bearer ${token}` } : {}),
       ...init?.headers,
     },
@@ -98,18 +100,17 @@ export default function StackBuilderAdmin() {
   async function fetchGoals() {
     try {
       setLoading(true)
-      const res = await adminFetch(`${BACKEND_URL}/admin/recommendations`)
+      const res = await adminFetch(`${BACKEND_URL}/store/recommendations`)
       if (res.ok) {
         const data = await res.json()
-        setGoals(data.goals || [])
+        const goalsData = data.goals || data.recommendations || []
+        setGoals(goalsData)
         setError(null)
-      } else if (res.status === 404) {
-        setError("Backend route /admin/recommendations not found. Please deploy backend changes first.")
       } else {
-        setError("Failed to fetch goals.")
+        setError(`Failed to load quiz options (${res.status}). Check backend deployment.`)
       }
     } catch (err) {
-      setError("Cannot connect to backend at " + BACKEND_URL + ". Deploy the backend admin API routes.")
+      setError("Cannot connect to backend at " + BACKEND_URL)
     } finally {
       setLoading(false)
     }
@@ -118,7 +119,7 @@ export default function StackBuilderAdmin() {
   async function fetchAllProducts() {
     try {
       setProductsLoading(true)
-      const res = await adminFetch(`${BACKEND_URL}/admin/products?limit=100`)
+      const res = await adminFetch(`${BACKEND_URL}/store/products?limit=100`)
       if (res.ok) {
         const data = await res.json()
         setAllProducts(data.products || [])
@@ -137,22 +138,22 @@ export default function StackBuilderAdmin() {
       setError(null)
 
       const url = editingGoal
-        ? `${BACKEND_URL}/admin/recommendations/${editingGoal.id}`
-        : `${BACKEND_URL}/admin/recommendations`
+        ? `${BACKEND_URL}/store/recommendations/${editingGoal.id}`
+        : `${BACKEND_URL}/store/recommendations`
 
-      const res = await adminFetch(url, {
+      let res = await adminFetch(url, {
         method: "POST",
         body: JSON.stringify(formData),
       })
 
       if (res.ok) {
-        setSuccess(editingGoal ? "Goal updated!" : "Goal created!")
+        setSuccess(editingGoal ? "Quiz option updated!" : "Quiz option created!")
         setTimeout(() => setSuccess(null), 3000)
         resetForm()
         fetchGoals()
       } else {
         const data = await res.json().catch(() => ({}))
-        setError(data.message || "Failed to save. Make sure backend is deployed.")
+        setError(data.message || `Failed to save (${res.status}).`)
       }
     } catch (err) {
       setError("Failed to save. Check backend connection.")
@@ -164,7 +165,7 @@ export default function StackBuilderAdmin() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this quiz option?")) return
     try {
-      const res = await adminFetch(`${BACKEND_URL}/admin/recommendations/${id}`, { method: "DELETE" })
+      const res = await adminFetch(`${BACKEND_URL}/store/recommendations/${id}`, { method: "DELETE" })
       if (res.ok) {
         setSuccess("Deleted!")
         setTimeout(() => setSuccess(null), 3000)
