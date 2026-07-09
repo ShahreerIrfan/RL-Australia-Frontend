@@ -5,11 +5,22 @@ import { useSearchParams } from "next/navigation"
 import GoalSelector from "./goal-selector"
 import StackRecommendation from "./stack-recommendation"
 import ManualBuilder from "./manual-builder"
-import { goalStacks, GoalStack, StackProduct } from "@lib/stack-builder-data"
-import { ArrowLeft, Sparkles, Wrench } from "lucide-react"
+import { goalStacks, GoalStack, StackProduct, allProducts } from "@lib/stack-builder-data"
+import { ArrowLeft, Sparkles, Wrench, Loader2 } from "lucide-react"
 
 type BuilderMode = "quiz" | "manual"
 type QuizStep = "select-goal" | "view-stack"
+
+interface ApiGoal {
+  id: string
+  icon: string
+  goal_name: string
+  description: string
+  products: any[]
+}
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "pk_test"
 
 export default function StackBuilderClient() {
   const searchParams = useSearchParams()
@@ -19,10 +30,56 @@ export default function StackBuilderClient() {
   const [stackProducts, setStackProducts] = useState<StackProduct[]>([])
   const [cartMessage, setCartMessage] = useState<string | null>(null)
 
+  // API-based goals
+  const [apiGoals, setApiGoals] = useState<ApiGoal[]>([])
+  const [loading, setLoading] = useState(true)
+  const [dataSource, setDataSource] = useState<"api" | "static">("static")
+
+  // Fetch goals from backend API
+  useEffect(() => {
+    async function fetchGoals() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/store/recommendations`, {
+          headers: {
+            "x-publishable-api-key": PUBLISHABLE_KEY,
+            "Content-Type": "application/json",
+          },
+        })
+        if (response.ok) {
+          const data = await response.json()
+          if (data.recommendations && data.recommendations.length > 0) {
+            setApiGoals(data.recommendations)
+            setDataSource("api")
+          }
+        }
+      } catch (error) {
+        // Backend unavailable, will use static data
+        console.warn("[Stack Builder] Backend unavailable, using static data")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchGoals()
+  }, [])
+
   // Check if a goal was passed via URL (from homepage goal cards)
   useEffect(() => {
+    if (loading) return
+
     const goalParam = searchParams.get("goal")
     if (goalParam) {
+      if (dataSource === "api") {
+        // Match by goal_name (slug-ified)
+        const found = apiGoals.find(
+          (g) => g.goal_name.toLowerCase().replace(/\s+/g, "-") === goalParam ||
+                 g.id === goalParam
+        )
+        if (found) {
+          selectApiGoal(found)
+          return
+        }
+      }
+      // Fallback to static data
       const found = goalStacks.find((g) => g.id === goalParam)
       if (found) {
         setSelectedGoal(found)
@@ -30,7 +87,40 @@ export default function StackBuilderClient() {
         setQuizStep("view-stack")
       }
     }
-  }, [searchParams])
+  }, [searchParams, loading, dataSource, apiGoals])
+
+  // Convert API goal to internal format and select it
+  const selectApiGoal = (apiGoal: ApiGoal) => {
+    const products: StackProduct[] = apiGoal.products.map((p: any) => {
+      const variant = p.variants?.[0]
+      const price = variant?.calculated_price?.calculated_amount
+        ? variant.calculated_price.calculated_amount / 100
+        : 0
+
+      return {
+        id: p.id,
+        name: p.title,
+        dosage: variant?.title || "",
+        price: price,
+        image: p.thumbnail || "/assets/products/asset 6.png",
+        role: p.description || "",
+        category: "Product",
+      }
+    })
+
+    const goal: GoalStack = {
+      id: apiGoal.id,
+      title: apiGoal.goal_name,
+      description: apiGoal.description || "",
+      icon: apiGoal.icon || "Heart",
+      color: "sky",
+      products,
+    }
+
+    setSelectedGoal(goal)
+    setStackProducts([...products])
+    setQuizStep("view-stack")
+  }
 
   const handleGoalSelect = (goal: GoalStack) => {
     setSelectedGoal(goal)
@@ -38,13 +128,17 @@ export default function StackBuilderClient() {
     setQuizStep("view-stack")
   }
 
+  const handleApiGoalSelect = (apiGoal: ApiGoal) => {
+    selectApiGoal(apiGoal)
+  }
+
   const handleRemoveProduct = (productId: string) => {
     setStackProducts((prev) => prev.filter((p) => p.id !== productId))
   }
 
   const handleAddToCart = () => {
-    // In a real implementation, this would call the Medusa cart API
-    // For now, show a confirmation message
+    // TODO: Integrate with Medusa Cart API when backend is connected
+    // For now show confirmation
     setCartMessage(
       `Added ${stackProducts.length} item${stackProducts.length > 1 ? "s" : ""} to your cart!`
     )
@@ -63,6 +157,42 @@ export default function StackBuilderClient() {
       `Added ${products.length} item${products.length > 1 ? "s" : ""} to your cart!`
     )
     setTimeout(() => setCartMessage(null), 4000)
+  }
+
+  // Convert API goals to GoalStack format for the GoalSelector component
+  const getDisplayGoals = (): GoalStack[] => {
+    if (dataSource === "api" && apiGoals.length > 0) {
+      return apiGoals.map((g) => ({
+        id: g.id,
+        title: g.goal_name,
+        description: g.description || "",
+        icon: g.icon || "Heart",
+        color: "sky",
+        products: g.products.map((p: any) => ({
+          id: p.id,
+          name: p.title,
+          dosage: p.variants?.[0]?.title || "",
+          price: p.variants?.[0]?.calculated_price?.calculated_amount
+            ? p.variants[0].calculated_price.calculated_amount / 100
+            : 0,
+          image: p.thumbnail || "/assets/products/asset 6.png",
+          role: p.description || "",
+          category: "Product",
+        })),
+      }))
+    }
+    return goalStacks
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center gap-3 text-gray-500">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span className="text-sm">Loading Stack Builder...</span>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -84,6 +214,13 @@ export default function StackBuilderClient() {
             Build the perfect combination of peptides, nootropics, and
             supplements for your goals.
           </p>
+
+          {/* Data source indicator (dev only) */}
+          {dataSource === "api" && (
+            <p className="text-[10px] text-center text-emerald-600 mt-2">
+              ✓ Connected to live product catalog
+            </p>
+          )}
 
           {/* Mode Switcher */}
           <div className="flex items-center justify-center gap-2 mt-6">
@@ -121,11 +258,13 @@ export default function StackBuilderClient() {
         {mode === "quiz" ? (
           <>
             {quizStep === "select-goal" && (
-              <GoalSelector onSelect={handleGoalSelect} />
+              <GoalSelector
+                goals={getDisplayGoals()}
+                onSelect={handleGoalSelect}
+              />
             )}
             {quizStep === "view-stack" && selectedGoal && (
               <>
-                {/* Back button */}
                 <button
                   onClick={handleReset}
                   className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6 transition-colors"

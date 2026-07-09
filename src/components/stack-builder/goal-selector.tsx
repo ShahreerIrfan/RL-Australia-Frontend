@@ -53,10 +53,12 @@ const colorMap: Record<string, { bg: string; border: string; text: string; iconB
 }
 
 interface Props {
+  goals?: GoalStack[]
   onSelect: (goal: GoalStack) => void
 }
 
-export default function GoalSelector({ onSelect }: Props) {
+export default function GoalSelector({ goals, onSelect }: Props) {
+  const displayGoals = goals || goalStacks
   return (
     <div>
       {/* Instructions */}
@@ -75,7 +77,7 @@ export default function GoalSelector({ onSelect }: Props) {
 
       {/* Goal cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {goalStacks.map((goal) => {
+        {displayGoals.map((goal) => {
           const Icon = iconMap[goal.icon] || Heart
           const colors = colorMap[goal.color] || colorMap.sky
 
