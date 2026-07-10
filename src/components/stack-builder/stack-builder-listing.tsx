@@ -5,7 +5,7 @@ import Link from "next/link"
 import {
   Heart, Brain, Zap, Dumbbell, Target, Shield, Moon,
   Sparkles, Flame, Smile, Award, Activity, AlertCircle,
-  Hourglass, Loader2, Package,
+  Hourglass, Loader2, Package, ArrowRight
 } from "lucide-react"
 
 const BACKEND_URL =
@@ -83,7 +83,7 @@ export default function StackBuilderListing() {
             <p className="text-gray-500">No stack options available yet. Check back soon!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
             {options.map((option) => {
               const Icon = iconMap[option.icon] || Heart
 
@@ -91,27 +91,33 @@ export default function StackBuilderListing() {
                 <Link
                   key={option.id}
                   href={`/stack-builder/${option.id}`}
-                  className="group flex flex-col items-center justify-center bg-white rounded-2xl border-2 border-gray-100 p-4 sm:p-6 lg:p-8 hover:shadow-xl hover:border-sky-200 hover:-translate-y-1 transition-all duration-300 text-center min-h-[130px] sm:min-h-[160px] lg:min-h-[180px] relative overflow-hidden"
+                  className="group flex flex-col items-center justify-between bg-white rounded-3xl border-2 border-gray-300 p-6 hover:shadow-[0_20px_40px_rgba(2,132,199,0.08)] hover:border-sky-400 hover:-translate-y-1.5 transition-all duration-300 text-center min-h-[220px] relative overflow-hidden"
                 >
                   {/* Subtle hover background glow */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-sky-50/0 to-sky-50/0 group-hover:from-sky-50/40 group-hover:to-white transition-all duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-sky-50/0 via-white to-white group-hover:from-sky-50/20 transition-all duration-300 pointer-events-none" />
 
                   {/* Icon */}
-                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-2xl bg-gray-50 border-2 border-gray-100 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-sky-50 group-hover:border-sky-200 group-hover:scale-110 transition-all duration-300 shadow-sm">
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-gray-600 group-hover:text-sky-600 transition-colors duration-300 stroke-[1.75]" />
+                  <div className="relative w-14 h-14 rounded-2xl bg-gray-50 border-2 border-gray-250 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-sky-500 group-hover:border-sky-500 transition-all duration-300 shadow-sm">
+                    <Icon className="w-6 h-6 text-gray-600 group-hover:text-white transition-colors duration-300 stroke-[2]" />
                   </div>
 
-                  {/* Title */}
-                  <h3 className="relative text-[10px] sm:text-xs lg:text-sm font-black text-gray-800 group-hover:text-sky-700 uppercase tracking-wider leading-tight transition-colors duration-300">
-                    {option.goal_name}
-                  </h3>
+                  {/* Text Details */}
+                  <div className="flex-1 flex flex-col items-center justify-center my-2">
+                    <h3 className="relative text-xs sm:text-sm font-black text-gray-900 group-hover:text-sky-600 uppercase tracking-wider leading-tight transition-colors duration-300">
+                      {option.goal_name}
+                    </h3>
 
-                  {/* Description - only on larger screens */}
-                  {option.description && (
-                    <p className="relative hidden sm:block text-[10px] lg:text-xs text-gray-400 mt-1.5 line-clamp-2 leading-relaxed max-w-[140px] lg:max-w-[180px]">
-                      {option.description}
-                    </p>
-                  )}
+                    {option.description && (
+                      <p className="relative text-[11px] text-gray-400 mt-2 line-clamp-2 leading-relaxed max-w-[180px]">
+                        {option.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Interactive Button */}
+                  <div className="w-full py-2 bg-gray-50 text-gray-700 text-[10px] font-bold rounded-xl group-hover:bg-sky-600 group-hover:text-white flex items-center justify-center gap-1.5 transition-all duration-300 border border-gray-100 group-hover:border-sky-600 uppercase tracking-wider select-none">
+                    Select Stack <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={3} />
+                  </div>
                 </Link>
               )
             })}
