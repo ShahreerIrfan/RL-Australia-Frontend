@@ -33,6 +33,7 @@ export default function UnifiedCheckout() {
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(200)
+  const [productMap, setProductMap] = useState<Record<string, string>>({})
 
   // Fetch free shipping threshold settings
   useEffect(() => {
