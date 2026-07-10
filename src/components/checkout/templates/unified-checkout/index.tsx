@@ -425,6 +425,8 @@ export default function UnifiedCheckout() {
 
         // Redirect to confirmation page
         router.push(`/au/order/${completeData.order.id}/confirmed`)
+      } else if (completeData.type === "paytree_redirect" && completeData.checkout_url) {
+        window.location.href = completeData.checkout_url
       } else {
         throw new Error("Unexpected API order placement response.")
       }
