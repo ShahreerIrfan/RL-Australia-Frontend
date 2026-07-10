@@ -27,7 +27,6 @@ interface Cart {
 }
 
 const CART_API = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
-const FREE_SHIPPING_THRESHOLD = 200
 
 const cartFetch = (url: string, init?: RequestInit) => {
   const headers = {
@@ -43,6 +42,27 @@ export default function CartDrawer() {
   const [loading, setLoading] = useState(false)
   const [updatingItem, setUpdatingItem] = useState<string | null>(null)
   const [productMap, setProductMap] = useState<Record<string, string>>({})
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(200)
+
+  // Fetch free shipping threshold settings
+  const fetchShippingThreshold = useCallback(() => {
+    fetch(`${CART_API}/store/settings`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.settings?.free_shipping_threshold) {
+          setFreeShippingThreshold(parseFloat(data.settings.free_shipping_threshold) || 200)
+        }
+      })
+      .catch(err => console.error("Error loading shipping settings:", err))
+  }, [])
+
+  useEffect(() => {
+    fetchShippingThreshold()
+    window.addEventListener("settings-updated", fetchShippingThreshold)
+    return () => {
+      window.removeEventListener("settings-updated", fetchShippingThreshold)
+    }
+  }, [fetchShippingThreshold])
 
   // Fetch all product slugs for upsells
   useEffect(() => {
@@ -290,8 +310,8 @@ export default function CartDrawer() {
 
   const totalItems = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
   const subtotal = cart?.subtotal || 0
-  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal)
-  const progressPercent = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100)
+  const remaining = Math.max(0, freeShippingThreshold - subtotal)
+  const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100)
 
   return (
     <>

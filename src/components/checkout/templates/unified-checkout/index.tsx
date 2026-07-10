@@ -32,7 +32,19 @@ export default function UnifiedCheckout() {
   const [loading, setLoading] = useState<boolean>(true)
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
-  const [productMap, setProductMap] = useState<Record<string, string>>({})
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(200)
+
+  // Fetch free shipping threshold settings
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/store/settings`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.settings?.free_shipping_threshold) {
+          setFreeShippingThreshold(parseFloat(data.settings.free_shipping_threshold) || 200)
+        }
+      })
+      .catch(err => console.error("Error loading shipping settings:", err))
+  }, [])
 
   // Fetch all product slugs for upsells
   useEffect(() => {
@@ -788,19 +800,19 @@ export default function UnifiedCheckout() {
                   </span>
                 </div>
 
-                {/* Free Shipping Progress */}
+                 {/* Free Shipping Progress */}
                 <div className="bg-gray-50 border border-gray-150 rounded-2xl p-4 mb-5 text-left">
                   <p className="text-[11px] font-bold text-gray-700 mb-2">
-                    {subtotal >= 200 ? (
+                    {subtotal >= freeShippingThreshold ? (
                       <span className="text-emerald-700 font-extrabold">🎉 You qualify for free delivery!</span>
                     ) : (
-                      <>Add <span className="text-sky-605 font-extrabold">{convertToLocale({ amount: (200 - subtotal), currency_code: currencyCode })}</span> more for <span className="text-sky-605 font-extrabold">free delivery</span></>
+                      <>Add <span className="text-sky-605 font-extrabold">{convertToLocale({ amount: (freeShippingThreshold - subtotal), currency_code: currencyCode })}</span> more for <span className="text-sky-605 font-extrabold">free delivery</span></>
                     )}
                   </p>
                   <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-sky-400 to-sky-600 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min(100, (subtotal / 200) * 100)}%` }}
+                      style={{ width: `${Math.min(100, (subtotal / freeShippingThreshold) * 100)}%` }}
                     />
                   </div>
                 </div>

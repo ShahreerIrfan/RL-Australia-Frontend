@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Plus, Minus, ShoppingCart, Truck, X } from "lucide-react"
 import { allProducts, StackProduct } from "@lib/stack-builder-data"
 
@@ -8,10 +8,21 @@ interface Props {
   onAddToCart: (products: StackProduct[]) => void
 }
 
-const FREE_SHIPPING_THRESHOLD = 200
-
 export default function ManualBuilder({ onAddToCart }: Props) {
   const [selectedProducts, setSelectedProducts] = useState<StackProduct[]>([])
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(200)
+
+  useEffect(() => {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+    fetch(`${BACKEND_URL}/store/settings`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.settings?.free_shipping_threshold) {
+          setFreeShippingThreshold(parseFloat(data.settings.free_shipping_threshold) || 200)
+        }
+      })
+      .catch(err => console.error("Error loading shipping settings:", err))
+  }, [])
 
   const isInStack = (productId: string) =>
     selectedProducts.some((p) => p.id === productId)
@@ -27,7 +38,7 @@ export default function ManualBuilder({ onAddToCart }: Props) {
   }
 
   const totalPrice = selectedProducts.reduce((sum, p) => sum + p.price, 0)
-  const shippingRemaining = Math.max(FREE_SHIPPING_THRESHOLD - totalPrice, 0)
+  const shippingRemaining = Math.max(freeShippingThreshold - totalPrice, 0)
 
   return (
     <div>
@@ -177,7 +188,7 @@ export default function ManualBuilder({ onAddToCart }: Props) {
                     <div
                       className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
                       style={{
-                        width: `${(Math.min(totalPrice, FREE_SHIPPING_THRESHOLD) / FREE_SHIPPING_THRESHOLD) * 100}%`,
+                        width: `${(Math.min(totalPrice, freeShippingThreshold) / freeShippingThreshold) * 100}%`,
                       }}
                     />
                   </div>

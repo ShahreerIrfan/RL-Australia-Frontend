@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { X, ShoppingCart, Truck, RotateCcw } from "lucide-react"
 import { GoalStack, StackProduct } from "@lib/stack-builder-data"
 
@@ -12,8 +12,6 @@ interface Props {
   onReset: () => void
 }
 
-const FREE_SHIPPING_THRESHOLD = 200
-
 export default function StackRecommendation({
   goal,
   products,
@@ -21,14 +19,28 @@ export default function StackRecommendation({
   onAddToCart,
   onReset,
 }: Props) {
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(200)
+
+  useEffect(() => {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+    fetch(`${BACKEND_URL}/store/settings`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.settings?.free_shipping_threshold) {
+          setFreeShippingThreshold(parseFloat(data.settings.free_shipping_threshold) || 200)
+        }
+      })
+      .catch(err => console.error("Error loading shipping settings:", err))
+  }, [])
+
   const totalPrice = products.reduce((sum, p) => sum + p.price, 0)
   const totalOriginalPrice = products.reduce(
     (sum, p) => sum + (p.originalPrice || p.price),
     0
   )
   const totalSavings = totalOriginalPrice - totalPrice
-  const shippingProgress = Math.min(totalPrice, FREE_SHIPPING_THRESHOLD)
-  const shippingRemaining = Math.max(FREE_SHIPPING_THRESHOLD - totalPrice, 0)
+  const shippingProgress = Math.min(totalPrice, freeShippingThreshold)
+  const shippingRemaining = Math.max(freeShippingThreshold - totalPrice, 0)
 
   return (
     <div>
@@ -178,7 +190,7 @@ export default function StackRecommendation({
                     <div
                       className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
                       style={{
-                        width: `${(shippingProgress / FREE_SHIPPING_THRESHOLD) * 100}%`,
+                        width: `${(shippingProgress / freeShippingThreshold) * 100}%`,
                       }}
                     />
                   </div>

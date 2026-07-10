@@ -747,6 +747,18 @@ export default function AdminDashboard() {
             <Percent className="w-4 h-4 text-emerald-600 flex-shrink-0" />
             Discount Upsells
           </button>
+
+          {/* Store Settings */}
+          <button 
+            onClick={() => setActiveMenu("Store Settings")}
+            className={`w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold rounded-xl transition-all select-none cursor-pointer ${activeMenu === "Store Settings" ? "bg-[#047857] text-white shadow-md shadow-emerald-900/10" : "text-gray-600 hover:bg-gray-50"}`}
+          >
+            <span className="flex items-center gap-3.5">
+              <Settings className="w-4 h-4 flex-shrink-0" />
+              Store Settings
+            </span>
+            <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+          </button>
         </nav>
       </aside>
 
@@ -1326,6 +1338,10 @@ export default function AdminDashboard() {
               addOrderPrivateNote={addOrderPrivateNote}
               countryCode={countryCode as string}
             />
+          )}
+
+          {activeMenu === "Store Settings" && (
+            <StoreSettingsAdmin />
           )}
         </main>
 
@@ -1944,6 +1960,137 @@ export default function AdminDashboard() {
               </form>
           </main>
         )}
+      </div>
+    </div>
+  )
+}
+
+function StoreSettingsAdmin() {
+  const [threshold, setThreshold] = useState("200")
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+
+  const fetchSettings = async () => {
+    try {
+      setLoading(true)
+      const res = await adminFetch(`${BACKEND_URL}/store/settings`)
+      if (res.ok) {
+        const data = await res.json()
+        if (data.settings?.free_shipping_threshold) {
+          setThreshold(data.settings.free_shipping_threshold)
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching settings:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    setMessage(null)
+    try {
+      const res = await adminFetch(`${BACKEND_URL}/store/settings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: "free_shipping_threshold", value: threshold })
+      })
+      if (res.ok) {
+        setMessage({ type: "success", text: "Free shipping threshold updated successfully!" })
+        window.dispatchEvent(new Event("settings-updated"))
+      } else {
+        setMessage({ type: "error", text: "Failed to update settings" })
+      }
+    } catch (err) {
+      console.error("Save settings error:", err)
+      setMessage({ type: "error", text: "An error occurred while saving settings" })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="space-y-6 text-left max-w-4xl animate-fade-in">
+      <div>
+        <h1 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight">Store Settings</h1>
+        <p className="text-xs text-gray-500">Configure global configurations, thresholds, and shipping pricing</p>
+      </div>
+
+      {message && (
+        <div className={`p-4 rounded-xl border text-xs font-bold transition-all ${
+          message.type === "success" 
+            ? "bg-emerald-50 border-emerald-200 text-emerald-800" 
+            : "bg-rose-50 border-rose-200 text-rose-800"
+        }`}>
+          {message.text}
+        </div>
+      )}
+
+      <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm space-y-6">
+        <form onSubmit={handleSave} className="space-y-4">
+          <div className="flex items-center gap-3.5 border-b border-gray-100 pb-4">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
+              <Settings className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-gray-950">Free Shipping Threshold</h3>
+              <p className="text-[10px] text-gray-450 font-medium -mt-0.5">Configure minimum checkout subtotal to qualify for standard free shipping</p>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="py-6 flex items-center justify-center text-gray-400 font-bold text-xs">
+              <div className="animate-spin w-5 h-5 border-2 border-[#047857] border-t-transparent rounded-full mr-2" />
+              Loading current settings...
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider block mb-1.5">Free Shipping Threshold Amount ($)</label>
+                <div className="relative rounded-xl max-w-xs">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <span className="text-gray-400 text-xs font-bold">$</span>
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    required
+                    value={threshold}
+                    onChange={(e) => setThreshold(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-8 pr-4 py-2.5 text-xs font-bold text-gray-800 focus:bg-white focus:border-emerald-500 focus:outline-none transition-all shadow-xs"
+                    placeholder="e.g. 200.00"
+                  />
+                </div>
+                <p className="text-[10px] text-gray-400 mt-2 font-medium">Currently set to ${parseFloat(threshold || "0").toFixed(2)}. Customer shopping carts will display a progress indicator showing this target amount.</p>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex items-center justify-center gap-1.5 bg-[#047857] hover:bg-[#035f43] disabled:opacity-65 text-white px-5 py-2.5 text-xs font-bold rounded-xl shadow-sm transition-all"
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Configurations"
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+        </form>
       </div>
     </div>
   )
