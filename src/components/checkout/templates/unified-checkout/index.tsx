@@ -489,84 +489,84 @@ export default function UnifiedCheckout() {
             <div className="lg:col-span-7 space-y-6">
               
               {/* Shipping Address */}
-              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs">
-                <div className="flex items-center gap-3 border-b border-gray-100 pb-5 mb-6">
-                  <div className="w-9 h-9 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-600">
-                    <MapPin className="w-4.5 h-4.5" />
+              <div className="bg-white rounded-3xl border-2 border-gray-250 p-6 md:p-8 shadow-xs">
+                <div className="flex items-center gap-3 border-b border-gray-150 pb-5 mb-6">
+                  <div className="w-10 h-10 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-600">
+                    <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-base font-black text-gray-900">Shipping Details</h2>
-                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Please provide where to deliver your package</p>
+                    <h2 className="text-lg font-bold text-gray-950">Shipping Details</h2>
+                    <p className="text-xs text-gray-500 mt-1 font-medium">Please provide where to deliver your package</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Full Name *</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Full Name *</label>
                     <input
                       type="text"
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="e.g. John Doe"
-                      className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
+                      className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Phone *</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Phone *</label>
                     <input
                       type="text"
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="e.g. 01755074517"
-                      className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
+                      className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">District / State *</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">District / State *</label>
                     <input
                       type="text"
                       required
                       value={district}
                       onChange={(e) => setDistrict(e.target.value)}
                       placeholder="e.g. Sydney or Victoria"
-                      className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
+                      className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Postal Code (Optional)</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Postal Code (Optional)</label>
                     <input
                       type="text"
                       value={postalCode}
                       onChange={(e) => setPostalCode(e.target.value)}
                       placeholder="e.g. 2000"
-                      className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
+                      className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Detailed Address *</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Detailed Address *</label>
                     <textarea
                       required
                       rows={3}
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="Enter your detailed street address (house/apartment, road, suburb)"
-                      className="w-full p-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200 resize-none"
+                      className="w-full p-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200 resize-none"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Payment Methods */}
-              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs">
-                <div className="flex items-center gap-3 border-b border-gray-100 pb-5 mb-6">
-                  <div className="w-9 h-9 rounded-2xl bg-amber-50 flex items-center justify-center text-[#c5a059]">
-                    <CreditCard className="w-4.5 h-4.5" />
+              <div className="bg-white rounded-3xl border-2 border-gray-250 p-6 md:p-8 shadow-xs">
+                <div className="flex items-center gap-3 border-b border-gray-150 pb-5 mb-6">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
+                    <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-base font-black text-gray-900">Payment Option</h2>
-                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Choose how you want to pay for this order</p>
+                    <h2 className="text-lg font-bold text-gray-950">Payment Option</h2>
+                    <p className="text-xs text-gray-500 mt-1 font-medium">Choose how you want to pay for this order</p>
                   </div>
                 </div>
 
@@ -574,60 +574,60 @@ export default function UnifiedCheckout() {
                   {/* Cash on Delivery */}
                   <label
                     onClick={() => setSelectedPayment("manual")}
-                    className={`flex items-start gap-4 p-4 md:p-5 border rounded-2xl cursor-pointer transition-all select-none ${
+                    className={`flex items-start gap-4 p-4 md:p-5 border-2 rounded-2xl cursor-pointer transition-all select-none ${
                       selectedPayment === "manual"
                         ? "border-[#c5a059] bg-[#c5a059]/5 shadow-xs"
-                        : "border-gray-200 hover:bg-gray-50/50"
+                        : "border-gray-300 hover:border-gray-400 hover:bg-gray-50/20"
                     }`}
                   >
                     <div className="pt-1">
-                      <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${selectedPayment === "manual" ? "border-[#c5a059]" : "border-gray-300"}`}>
+                      <div className={`w-4.5 h-4.5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "manual" ? "border-[#c5a059]" : "border-gray-400"}`}>
                         {selectedPayment === "manual" && <div className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-bold text-gray-900">Cash on Delivery</p>
+                        <p className="text-sm font-extrabold text-gray-950">Cash on Delivery</p>
                         <Banknote className="w-5 h-5 text-amber-500" />
                       </div>
-                      <p className="text-xs text-gray-450 font-bold mt-1.5 leading-relaxed">Pay with cash when you receive your order</p>
+                      <p className="text-xs text-gray-600 font-medium mt-1.5 leading-relaxed">Pay with cash when you receive your order</p>
                     </div>
                   </label>
 
                   {/* Paytree Payment gateway */}
                   <label
                     onClick={() => setSelectedPayment("paytree")}
-                    className={`flex items-start gap-4 p-4 md:p-5 border rounded-2xl cursor-pointer transition-all select-none ${
+                    className={`flex items-start gap-4 p-4 md:p-5 border-2 rounded-2xl cursor-pointer transition-all select-none ${
                       selectedPayment === "paytree"
                         ? "border-[#c5a059] bg-[#c5a059]/5 shadow-xs"
-                        : "border-gray-200 hover:bg-gray-50/50"
+                        : "border-gray-300 hover:border-gray-400 hover:bg-gray-50/20"
                     }`}
                   >
                     <div className="pt-1">
-                      <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${selectedPayment === "paytree" ? "border-[#c5a059]" : "border-gray-300"}`}>
+                      <div className={`w-4.5 h-4.5 rounded-full border-2 flex items-center justify-center ${selectedPayment === "paytree" ? "border-[#c5a059]" : "border-gray-400"}`}>
                         {selectedPayment === "paytree" && <div className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-bold text-gray-900">Paytree Payment gateway</p>
+                        <p className="text-sm font-extrabold text-gray-950">Paytree Payment gateway</p>
                         <ShieldCheck className="w-5 h-5 text-sky-600" />
                       </div>
-                      <p className="text-xs text-gray-450 font-bold mt-1.5 leading-relaxed">Pay securely with bKash, Nagad, cards, and more via Paytree</p>
+                      <p className="text-xs text-gray-600 font-medium mt-1.5 leading-relaxed">Pay securely with bKash, Nagad, cards, and more via Paytree</p>
                     </div>
                   </label>
                 </div>
               </div>
 
               {/* Billing Address Card */}
-              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs space-y-6">
-                <div className="flex items-center gap-3 border-b border-gray-100 pb-5">
-                  <div className="w-9 h-9 rounded-2xl bg-amber-50 flex items-center justify-center text-[#c5a059]">
-                    <MapPin className="w-4.5 h-4.5" />
+              <div className="bg-white rounded-3xl border-2 border-gray-250 p-6 md:p-8 shadow-xs space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-150 pb-5">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
+                    <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-base font-black text-gray-900">Billing Address</h2>
-                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Specify your billing information if different</p>
+                    <h2 className="text-lg font-bold text-gray-955">Billing Address</h2>
+                    <p className="text-xs text-gray-500 mt-1 font-medium">Specify your billing information if different</p>
                   </div>
                 </div>
 
@@ -635,42 +635,42 @@ export default function UnifiedCheckout() {
                   {/* Same as shipping address */}
                   <label
                     onClick={() => setSameAsShipping(true)}
-                    className={`flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition-all select-none ${
+                    className={`flex items-center gap-4 p-4 border-2 rounded-2xl cursor-pointer transition-all select-none ${
                       sameAsShipping
                         ? "border-[#c5a059] bg-[#c5a059]/5 shadow-xs"
-                        : "border-gray-200 hover:bg-gray-50/50"
+                        : "border-gray-300 hover:border-gray-400 hover:bg-gray-50/20"
                     }`}
                   >
-                    <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${sameAsShipping ? "border-[#c5a059]" : "border-gray-300"}`}>
+                    <div className={`w-4.5 h-4.5 rounded-full border-2 flex items-center justify-center ${sameAsShipping ? "border-[#c5a059]" : "border-gray-400"}`}>
                       {sameAsShipping && <div className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />}
                     </div>
-                    <span className="text-sm font-bold text-gray-900">Same as shipping address</span>
+                    <span className="text-sm font-extrabold text-gray-950">Same as shipping address</span>
                   </label>
 
                   {/* Use a different billing address */}
                   <label
                     onClick={() => setSameAsShipping(false)}
-                    className={`flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition-all select-none ${
+                    className={`flex items-center gap-4 p-4 border-2 rounded-2xl cursor-pointer transition-all select-none ${
                       !sameAsShipping
                         ? "border-[#c5a059] bg-[#c5a059]/5 shadow-xs"
-                        : "border-gray-200 hover:bg-gray-50/50"
+                        : "border-gray-300 hover:border-gray-400 hover:bg-gray-50/20"
                     }`}
                   >
-                    <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${!sameAsShipping ? "border-[#c5a059]" : "border-gray-300"}`}>
+                    <div className={`w-4.5 h-4.5 rounded-full border-2 flex items-center justify-center ${!sameAsShipping ? "border-[#c5a059]" : "border-gray-400"}`}>
                       {!sameAsShipping && <div className="w-2.5 h-2.5 rounded-full bg-[#c5a059]" />}
                     </div>
-                    <span className="text-sm font-bold text-gray-900">Use a different billing address</span>
+                    <span className="text-sm font-extrabold text-gray-950">Use a different billing address</span>
                   </label>
 
                   {/* Expanded Billing Fields */}
                   {!sameAsShipping && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-gray-100 animate-fade-in-top">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-gray-150 animate-fade-in-top">
                       <div className="sm:col-span-2">
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Country / Region</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Country / Region</label>
                         <select
                           value={billingCountry}
                           onChange={(e) => setBillingCountry(e.target.value)}
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-205"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         >
                           <option value="au">Australia</option>
                           <option value="us">United States</option>
@@ -678,89 +678,89 @@ export default function UnifiedCheckout() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">First Name *</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">First Name *</label>
                         <input
                           type="text"
                           required={!sameAsShipping}
                           value={billingFirstName}
                           onChange={(e) => setBillingFirstName(e.target.value)}
                           placeholder="First name"
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Last Name *</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Last Name *</label>
                         <input
                           type="text"
                           required={!sameAsShipping}
                           value={billingLastName}
                           onChange={(e) => setBillingLastName(e.target.value)}
                           placeholder="Last name"
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Address *</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Address *</label>
                         <input
                           type="text"
                           required={!sameAsShipping}
                           value={billingAddress1}
                           onChange={(e) => setBillingAddress1(e.target.value)}
                           placeholder="Address (street address, P.O. box)"
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Apartment, suite, etc. (Optional)</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Apartment, suite, etc. (Optional)</label>
                         <input
                           type="text"
                           value={billingAddress2}
                           onChange={(e) => setBillingAddress2(e.target.value)}
                           placeholder="Apartment, suite, unit, etc."
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">City *</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">City *</label>
                         <input
                           type="text"
                           required={!sameAsShipping}
                           value={billingCity}
                           onChange={(e) => setBillingCity(e.target.value)}
                           placeholder="City"
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">State *</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">State *</label>
                         <input
                           type="text"
                           required={!sameAsShipping}
                           value={billingState}
                           onChange={(e) => setBillingState(e.target.value)}
                           placeholder="State / Province"
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">PIN code / Postal code *</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">PIN code / Postal code *</label>
                         <input
                           type="text"
                           required={!sameAsShipping}
                           value={billingPostalCode}
                           onChange={(e) => setBillingPostalCode(e.target.value)}
                           placeholder="PIN code"
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">Phone (Optional)</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Phone (Optional)</label>
                         <input
                           type="text"
                           value={billingPhone}
                           onChange={(e) => setBillingPhone(e.target.value)}
                           placeholder="Phone"
-                          className="w-full h-12 px-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-[#c5a059]/10 focus:border-[#c5a059] transition-all duration-200"
+                          className="w-full h-12 px-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200"
                         />
                       </div>
                     </div>
@@ -769,14 +769,14 @@ export default function UnifiedCheckout() {
               </div>
 
               {/* Order Note */}
-              <div className="bg-white rounded-3xl border border-gray-200/60 p-6 md:p-8 shadow-xs">
-                <div className="flex items-center gap-3 border-b border-gray-100 pb-5 mb-6">
-                  <div className="w-9 h-9 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500">
-                    <FileText className="w-4.5 h-4.5" />
+              <div className="bg-white rounded-3xl border-2 border-gray-250 p-6 md:p-8 shadow-xs">
+                <div className="flex items-center gap-3 border-b border-gray-150 pb-5 mb-6">
+                  <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500">
+                    <FileText className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-base font-black text-gray-900">Delivery Notes (Optional)</h2>
-                    <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Add any instructions for the courier</p>
+                    <h2 className="text-lg font-bold text-gray-955">Delivery Notes (Optional)</h2>
+                    <p className="text-xs text-gray-500 mt-1 font-medium">Add any instructions for the courier</p>
                   </div>
                 </div>
                 <textarea
@@ -784,7 +784,7 @@ export default function UnifiedCheckout() {
                   value={orderNote}
                   onChange={(e) => setOrderNote(e.target.value)}
                   placeholder="e.g. Leave package by the door if not home..."
-                  className="w-full p-4 border border-gray-200 bg-gray-50/50 hover:bg-gray-50 focus:bg-white rounded-2xl text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200 resize-none"
+                  className="w-full p-4 border-2 border-gray-300 bg-white hover:border-gray-400 rounded-xl text-sm font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all duration-200 resize-none"
                 />
               </div>
 
