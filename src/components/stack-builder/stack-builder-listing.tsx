@@ -91,31 +91,31 @@ export default function StackBuilderListing() {
                 <Link
                   key={option.id}
                   href={`/stack-builder/${option.id}`}
-                  className="group flex flex-col items-center justify-between bg-white rounded-3xl border-2 border-[#02a5e9] p-6 shadow-sm hover:shadow-[0_20px_45px_rgba(2,165,233,0.15)] hover:-translate-y-1.5 transition-all duration-300 text-center min-h-[220px] relative overflow-hidden"
+                  className="group flex flex-col items-center justify-between bg-white rounded-3xl border-2 border-[#02a5e9] p-6 shadow-sm hover:shadow-[0_20px_45px_rgba(2,165,233,0.15)] hover:-translate-y-1.5 transition-all duration-300 text-center min-h-[250px] relative"
                 >
                   {/* Subtle hover background glow */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-sky-50/10 via-white to-white group-hover:from-sky-50/30 transition-all duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-sky-50/10 via-white to-white group-hover:from-sky-50/30 transition-all duration-300 pointer-events-none rounded-3xl" />
 
                   {/* Icon */}
-                  <div className="relative w-14 h-14 rounded-2xl bg-[#02a5e9] border-2 border-[#02a5e9] flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                  <div className="relative z-10 w-14 h-14 rounded-2xl bg-[#02a5e9] border-2 border-[#02a5e9] flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-all duration-300 shadow-sm">
                     <Icon className="w-6 h-6 text-white stroke-[2]" />
                   </div>
 
                   {/* Text Details */}
-                  <div className="flex-1 flex flex-col items-center justify-center my-2">
-                    <h3 className="relative text-xs sm:text-sm font-black text-[#02a5e9] group-hover:text-sky-700 uppercase tracking-wider leading-tight transition-colors duration-300">
+                  <div className="relative z-10 flex-1 flex flex-col items-center justify-center my-2">
+                    <h3 className="text-xs sm:text-sm font-black text-[#02a5e9] group-hover:text-sky-700 uppercase tracking-wider leading-tight transition-colors duration-300">
                       {option.goal_name}
                     </h3>
 
                     {option.description && (
-                      <p className="relative text-[11px] text-gray-500 mt-2 line-clamp-2 leading-relaxed max-w-[180px]">
+                      <p className="text-[11px] text-gray-500 mt-2 line-clamp-2 leading-relaxed max-w-[180px]">
                         {option.description}
                       </p>
                     )}
                   </div>
 
                   {/* Interactive Button */}
-                  <div className="w-full py-2.5 bg-[#02a5e9] text-white text-[10px] font-bold rounded-xl group-hover:bg-sky-600 flex items-center justify-center gap-1.5 transition-all duration-300 border border-[#02a5e9] uppercase tracking-wider select-none">
+                  <div className="relative z-10 w-full mt-2 py-2.5 bg-[#02a5e9] text-white text-[10px] font-bold rounded-xl group-hover:bg-sky-600 flex items-center justify-center gap-1.5 transition-all duration-300 border border-[#02a5e9] uppercase tracking-wider select-none">
                     Select Stack <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={3} />
                   </div>
                 </Link>
