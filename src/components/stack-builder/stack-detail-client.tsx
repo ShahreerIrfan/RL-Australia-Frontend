@@ -44,14 +44,17 @@ function parseProducts(raw: any[]): StackProduct[] {
   return raw.map((p: any) => {
     const variant = p.variants?.[0]
     const calcAmount = variant?.calculated_price?.calculated_amount
-    const price = calcAmount ? calcAmount / 100 : p.price || 0
+    // Backend stores prices as actual dollars (49.95), NOT cents
+    const price = calcAmount ? Number(calcAmount) : (p.price ? Number(p.price) : 0)
+    const originalAmount = variant?.calculated_price?.original_amount
+    const originalPrice = originalAmount ? Number(originalAmount) : (p.original_price ? Number(p.original_price) : undefined)
 
     return {
       id: p.id,
       name: p.title || p.name,
       dosage: variant?.title || p.dosage || "",
       price,
-      originalPrice: p.originalPrice,
+      originalPrice: originalPrice && originalPrice > price ? originalPrice : undefined,
       image: p.thumbnail || p.image || "/assets/products/asset 6.png",
       variantId: variant?.id,
       handle: p.handle,
@@ -157,17 +160,50 @@ export default function StackDetailClient({ goalId }: { goalId: string }) {
     if (selectedProducts.length === 0) return
     setAddingToCart(true)
 
-    // TODO: Replace with real Medusa cart API call when backend connected:
-    // for (const p of selectedProducts) {
-    //   if (p.variantId) {
-    //     await sdk.store.cart.addLineItem(cartId, { variant_id: p.variantId, quantity: 1 })
-    //   }
-    // }
+    try {
+      // Get or create cart
+      let cartId = typeof window !== "undefined" ? localStorage.getItem("rl_cart_id") : null
 
-    await new Promise((r) => setTimeout(r, 800)) // simulate
-    setAddingToCart(false)
-    setCartAdded(true)
-    setTimeout(() => setCartAdded(false), 3000)
+      if (!cartId) {
+        const createRes = await fetch(`${BACKEND_URL}/store/carts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ region_id: "reg_au" }),
+        })
+        if (createRes.ok) {
+          const createData = await createRes.json()
+          cartId = createData.cart.id
+          if (typeof window !== "undefined") {
+            localStorage.setItem("rl_cart_id", cartId!)
+            document.cookie = `_medusa_cart_id=${cartId}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
+          }
+        } else {
+          throw new Error("Failed to create cart")
+        }
+      }
+
+      // Add each selected product to cart
+      for (const product of selectedProducts) {
+        const variantId = product.variantId || `var_${product.id}`
+        await fetch(`${BACKEND_URL}/store/carts/${cartId}/line-items`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ variant_id: variantId, quantity: 1 }),
+        })
+      }
+
+      // Trigger cart update event so the cart drawer refreshes
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("cart-updated"))
+      }
+
+      setCartAdded(true)
+      setTimeout(() => setCartAdded(false), 3000)
+    } catch (err) {
+      console.error("Failed to add to cart:", err)
+    } finally {
+      setAddingToCart(false)
+    }
   }
 
   if (loading) {

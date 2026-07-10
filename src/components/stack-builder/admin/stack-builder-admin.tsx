@@ -424,8 +424,8 @@ export default function StackBuilderAdmin() {
         </div>
       )}
 
-      {/* Goals List */}
-      {loading ? (
+      {/* Goals List — hide when editing */}
+      {!showForm && (loading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
         </div>
@@ -475,7 +475,7 @@ export default function StackBuilderAdmin() {
             )
           })}
         </div>
-      )}
+      ))}
     </div>
   )
 }
