@@ -82,6 +82,10 @@ const Summary = ({ cart }: SummaryProps) => {
         >
           ← Continue Shopping
         </LocalizedClientLink>
+
+        <div className="flex items-center justify-center pt-2 border-t border-gray-100 select-none">
+          <img src="/paymentIcons.png" alt="Payment Methods" className="h-9 w-auto object-contain" />
+        </div>
       </div>
 
       {/* Trust Badges */}
