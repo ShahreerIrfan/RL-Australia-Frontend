@@ -2,11 +2,11 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, CreditCard, ShieldCheck, Truck, Headphones } from "lucide-react"
 
 export default function HeroSection() {
   return (
-    <section className="relative w-full overflow-hidden min-h-[220px] sm:min-h-[500px] md:min-h-[620px] flex items-center bg-gray-950">
+    <section className="relative w-full overflow-hidden min-h-[220px] sm:min-h-[440px] md:min-h-[520px] flex items-center bg-gray-950">
       {/* Background image overlay */}
       <div className="absolute inset-0 select-none opacity-40">
         <img
@@ -19,14 +19,14 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-r from-gray-950/90 via-gray-950/60 to-transparent" />
 
       {/* Content wrapper */}
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-20 lg:py-24 z-10">
+      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 lg:py-16 z-10">
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left - Content */}
           <div className="lg:col-span-6 text-left">
-            <h1 className="text-xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-3 sm:mb-5">
+            <h1 className="text-xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-3 sm:mb-5">
               Lab Tested Peptides &amp; Stacks
               <br />
-              You Can <span className="bg-gradient-to-r from-sky-400 via-amber-300 to-[#c5a059] bg-clip-text text-transparent underline decoration-[#c5a059] decoration-wavy decoration-3">TRUST</span>
+              in Australia You Can <span className="bg-gradient-to-r from-sky-400 via-amber-300 to-[#c5a059] bg-clip-text text-transparent underline decoration-[#c5a059] decoration-wavy decoration-3">TRUST</span>
             </h1>
 
             <p className="text-xs sm:text-xl text-white/90 leading-relaxed mb-6 sm:mb-10 max-w-lg hidden sm:block">
@@ -52,24 +52,28 @@ export default function HeroSection() {
             </div>
 
             {/* Quick trust signals */}
-            <div className="hidden sm:flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80 mt-12 border-t border-white/10 pt-8">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-6 gap-y-4 text-xs sm:text-sm text-white/90 mt-8 sm:mt-10 border-t border-white/10 pt-6">
               <span className="flex items-center gap-2 font-semibold">
-                <span className="w-2 h-2 rounded-full bg-[#c5a059]" />
-                Third-Party Lab Tested
+                <CreditCard className="w-4.5 h-4.5 text-[#c5a059] flex-shrink-0" />
+                Pay Securely via Card
               </span>
               <span className="flex items-center gap-2 font-semibold">
-                <span className="w-2 h-2 rounded-full bg-[#c5a059]" />
-                Free Shipping Over $200
+                <ShieldCheck className="w-4.5 h-4.5 text-[#c5a059] flex-shrink-0" />
+                Purity Tested &amp; COAs
               </span>
               <span className="flex items-center gap-2 font-semibold">
-                <span className="w-2 h-2 rounded-full bg-[#c5a059]" />
-                COA With Every Product
+                <Truck className="w-4.5 h-4.5 text-[#c5a059] flex-shrink-0" />
+                Same-Day Dispatch (Before 12pm)
+              </span>
+              <span className="flex items-center gap-2 font-semibold">
+                <Headphones className="w-4.5 h-4.5 text-[#c5a059] flex-shrink-0" />
+                24/7 Customer Support
               </span>
             </div>
           </div>
 
           {/* Right - Nootropics Depot Multi-image Grid Collage */}
-          <div className="lg:col-span-6 hidden lg:block relative h-[500px]">
+          <div className="lg:col-span-6 hidden lg:block relative h-[420px]">
             <div className="absolute inset-0 grid grid-cols-12 grid-rows-12 gap-3 p-4">
               {/* Card 1: Vials Shelf (top-left) */}
               <div className="col-span-5 row-span-7 relative group overflow-hidden rounded-2xl shadow-xl border border-white/10 -rotate-2 hover:rotate-0 hover:scale-105 transition-all duration-300">
