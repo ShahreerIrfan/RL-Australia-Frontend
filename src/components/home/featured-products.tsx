@@ -234,13 +234,9 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section className="pt-4 pb-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Section Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-150 text-[#c5a059] text-xs font-bold px-3 py-1 rounded-full mb-3">
-          <Star className="w-3 h-3 fill-amber-400" />
-          Popular Research Compounds
-        </div>
         <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
           Featured Products
         </h2>
