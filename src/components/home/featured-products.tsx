@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { Star, ArrowRight, ShoppingCart } from "lucide-react"
+import { Star, ArrowRight, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 
@@ -176,6 +176,18 @@ const filterTabs = ["All", "Peptides", "Nootropics", "Supplements", "Gummies", "
 export default function FeaturedProducts() {
   const [activeTab, setActiveTab] = useState("All")
   const [allProducts, setAllProducts] = useState<Product[]>(staticProducts)
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+
+  const handleScroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current
+      const scrollAmount = clientWidth * 0.6
+      scrollRef.current.scrollTo({
+        left: direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
+        behavior: "smooth"
+      })
+    }
+  }
 
   // Fetch live products from database
   useEffect(() => {
@@ -236,30 +248,55 @@ export default function FeaturedProducts() {
   return (
     <section className="pt-4 pb-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Section Header */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-5 sm:mb-8">
         <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
           Featured Products
         </h2>
-        <p className="text-sm text-gray-550 mt-2 max-w-md mx-auto font-medium">
+        <p className="text-sm text-gray-550 mt-1 max-w-md mx-auto font-medium">
           Explore our curated selection of premium peptides, nootropics, and supplements
         </p>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
-        {filterTabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
-              activeTab === tab
-                ? "bg-sky-600 text-white shadow-md"
-                : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-150"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+      {/* Filter Tabs Horizontal Slider with Chevron Navigation */}
+      <div className="relative max-w-lg mx-auto mb-5 sm:mb-8 px-9 select-none">
+        {/* Left scroll navigation arrow */}
+        <button
+          onClick={() => handleScroll("left")}
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm active:scale-95 transition-transform z-10 text-gray-650 hover:text-sky-600 hover:border-sky-300"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft className="w-4.5 h-4.5 stroke-[2.5]" />
+        </button>
+
+        {/* Categories slider */}
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto scroll-smooth gap-2 py-1 flex-nowrap justify-start sm:justify-center scrollbar-none"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {filterTabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex-shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
+                activeTab === tab
+                  ? "bg-sky-600 text-white shadow-md"
+                  : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-150"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Right scroll navigation arrow */}
+        <button
+          onClick={() => handleScroll("right")}
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm active:scale-95 transition-transform z-10 text-gray-650 hover:text-sky-600 hover:border-sky-300"
+          aria-label="Scroll right"
+        >
+          <ChevronRight className="w-4.5 h-4.5 stroke-[2.5]" />
+        </button>
       </div>
 
       {/* Products Grid */}
