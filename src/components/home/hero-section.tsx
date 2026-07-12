@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react"
 
 export default function HeroSection() {
   return (
-    <section className="relative w-full overflow-hidden min-h-[440px] sm:min-h-[500px] md:min-h-[620px] flex items-center bg-gray-950">
+    <section className="relative w-full overflow-hidden min-h-[220px] sm:min-h-[500px] md:min-h-[620px] flex items-center bg-gray-950">
       {/* Background image overlay */}
       <div className="absolute inset-0 select-none opacity-40">
         <img
@@ -19,40 +19,40 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-r from-gray-950/90 via-gray-950/60 to-transparent" />
 
       {/* Content wrapper */}
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24 z-10">
+      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-20 lg:py-24 z-10">
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left - Content */}
           <div className="lg:col-span-6 text-left">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-5">
+            <h1 className="text-xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-3 sm:mb-5">
               Lab Tested Peptides &amp; Stacks
               <br />
               You Can <span className="bg-gradient-to-r from-sky-400 via-amber-300 to-[#c5a059] bg-clip-text text-transparent underline decoration-[#c5a059] decoration-wavy decoration-3">TRUST</span>
             </h1>
 
-            <p className="text-base sm:text-xl text-white/90 leading-relaxed mb-10 max-w-lg">
+            <p className="text-xs sm:text-xl text-white/90 leading-relaxed mb-6 sm:mb-10 max-w-lg hidden sm:block">
               Not sure where to start? Let us simplify the process for you, and help you find the perfect products for your goals.
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-2.5 sm:gap-4">
               {/* Primary CTA - Take the Quiz */}
               <Link
                 href="/stack-builder"
-                className="inline-flex items-center gap-2.5 bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white px-8 py-4 rounded-full text-base font-extrabold transition-all shadow-lg shadow-sky-600/25 uppercase tracking-wider"
+                className="inline-flex items-center gap-1.5 sm:gap-2.5 bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white px-5 sm:px-8 py-2.5 sm:py-4 rounded-full text-xs sm:text-base font-extrabold transition-all shadow-lg shadow-sky-600/25 uppercase tracking-wider"
               >
                 Take the Quiz!
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
               </Link>
               {/* Secondary CTA - Browse Catalog */}
               <Link
                 href="/store"
-                className="inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/20 active:scale-[0.98] border border-white/25 text-white px-8 py-4 rounded-full text-base font-bold backdrop-blur-sm transition-all uppercase tracking-wider"
+                className="inline-flex items-center gap-1.5 sm:gap-2.5 bg-white/10 hover:bg-white/20 active:scale-[0.98] border border-white/25 text-white px-5 sm:px-8 py-2.5 sm:py-4 rounded-full text-xs sm:text-base font-bold backdrop-blur-sm transition-all uppercase tracking-wider"
               >
                 Browse Catalog
               </Link>
             </div>
 
             {/* Quick trust signals */}
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80 mt-12 border-t border-white/10 pt-8">
+            <div className="hidden sm:flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80 mt-12 border-t border-white/10 pt-8">
               <span className="flex items-center gap-2 font-semibold">
                 <span className="w-2 h-2 rounded-full bg-[#c5a059]" />
                 Third-Party Lab Tested
