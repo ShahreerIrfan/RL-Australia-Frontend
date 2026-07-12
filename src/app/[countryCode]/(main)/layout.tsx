@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 }
 
 import { retrieveCustomer } from "@lib/data/customer"
+import MobileBottomNav from "@components/layout/templates/mobile-bottom-nav"
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
   const customer = await retrieveCustomer().catch(() => null)
@@ -20,7 +21,10 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
     <>
       <AnnouncementBar />
       <Nav customer={customer} />
-      {props.children}
+      <div className="pb-16 lg:pb-0">
+        {props.children}
+      </div>
+      <MobileBottomNav />
       <Footer />
     </>
   )
