@@ -74,7 +74,7 @@ export default function MobileBottomNav() {
 
   return (
     <div 
-      className="lg:hidden fixed left-4 right-4 md:left-6 md:right-6 max-w-md mx-auto bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-3xl z-50 shadow-[0_12px_36px_rgba(0,0,0,0.14)] transition-all duration-300"
+      className="lg:hidden fixed left-4 right-4 md:left-6 md:right-6 max-w-md mx-auto bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-3xl z-50 shadow-[0_12px_36px_rgba(0,0,0,0.14)] transition-[box-shadow,transform,background-color] duration-300"
       style={{ bottom: "calc(16px + env(safe-area-inset-bottom))" }}
     >
       <div className="flex justify-around items-center h-16">
