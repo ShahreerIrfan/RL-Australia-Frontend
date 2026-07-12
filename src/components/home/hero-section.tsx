@@ -52,21 +52,21 @@ export default function HeroSection() {
             </div>
 
             {/* Quick trust signals */}
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-6 gap-y-4 text-xs sm:text-sm text-white/90 mt-8 sm:mt-10 border-t border-white/10 pt-6">
-              <span className="flex items-center gap-2 font-semibold">
-                <CreditCard className="w-4.5 h-4.5 text-[#c5a059] flex-shrink-0" />
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-3 sm:gap-y-4 text-[10px] sm:text-sm text-white/90 mt-8 sm:mt-10 border-t border-white/10 pt-6">
+              <span className="flex items-center gap-1.5 sm:gap-2 font-semibold min-w-0 break-words leading-tight">
+                <CreditCard className="w-4 h-4 text-[#c5a059] flex-shrink-0" />
                 Pay Securely via Card
               </span>
-              <span className="flex items-center gap-2 font-semibold">
-                <ShieldCheck className="w-4.5 h-4.5 text-[#c5a059] flex-shrink-0" />
+              <span className="flex items-center gap-1.5 sm:gap-2 font-semibold min-w-0 break-words leading-tight">
+                <ShieldCheck className="w-4 h-4 text-[#c5a059] flex-shrink-0" />
                 Purity Tested &amp; COAs
               </span>
-              <span className="flex items-center gap-2 font-semibold">
-                <Truck className="w-4.5 h-4.5 text-[#c5a059] flex-shrink-0" />
+              <span className="flex items-center gap-1.5 sm:gap-2 font-semibold min-w-0 break-words leading-tight">
+                <Truck className="w-4 h-4 text-[#c5a059] flex-shrink-0" />
                 Same-Day Dispatch (Before 12pm)
               </span>
-              <span className="flex items-center gap-2 font-semibold">
-                <Headphones className="w-4.5 h-4.5 text-[#c5a059] flex-shrink-0" />
+              <span className="flex items-center gap-1.5 sm:gap-2 font-semibold min-w-0 break-words leading-tight">
+                <Headphones className="w-4 h-4 text-[#c5a059] flex-shrink-0" />
                 24/7 Customer Support
               </span>
             </div>

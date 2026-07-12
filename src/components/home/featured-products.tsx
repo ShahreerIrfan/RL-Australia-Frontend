@@ -258,11 +258,11 @@ export default function FeaturedProducts() {
       </div>
 
       {/* Filter Tabs Horizontal Slider with Chevron Navigation */}
-      <div className="relative max-w-lg mx-auto mb-5 sm:mb-8 px-9 select-none">
+      <div className="relative w-full max-w-md sm:max-w-xl mx-auto mb-5 sm:mb-8 px-9 select-none">
         {/* Left scroll navigation arrow */}
         <button
           onClick={() => handleScroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm active:scale-95 transition-transform z-10 text-gray-650 hover:text-sky-600 hover:border-sky-300"
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 flex items-center justify-center shadow-md active:scale-90 hover:bg-sky-600 hover:text-white hover:border-sky-600 transition-all duration-200 z-10 text-gray-650"
           aria-label="Scroll left"
         >
           <ChevronLeft className="w-4.5 h-4.5 stroke-[2.5]" />
@@ -271,28 +271,31 @@ export default function FeaturedProducts() {
         {/* Categories slider */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scroll-smooth gap-2 py-1 flex-nowrap justify-start sm:justify-center scrollbar-none"
+          className="flex overflow-x-auto scroll-smooth gap-2.5 py-1.5 flex-nowrap justify-start sm:justify-center scrollbar-none"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {filterTabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
-                activeTab === tab
-                  ? "bg-sky-600 text-white shadow-md"
-                  : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-150"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          {filterTabs.map((tab) => {
+            const active = activeTab === tab
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-shrink-0 whitespace-nowrap transition-all duration-300 ${
+                  active
+                    ? "px-5 py-2.5 rounded-full text-xs sm:text-sm font-black bg-gradient-to-r from-sky-600 to-sky-500 text-white shadow-[0_4px_14px_rgba(2,132,199,0.3)] border-transparent scale-105 active:scale-95"
+                    : "px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white/80 backdrop-blur-sm text-gray-650 hover:text-sky-600 hover:bg-sky-50/50 border border-gray-200/80 hover:border-sky-300/80 active:scale-95 shadow-sm"
+                }`}
+              >
+                {tab}
+              </button>
+            )
+          })}
         </div>
 
         {/* Right scroll navigation arrow */}
         <button
           onClick={() => handleScroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm active:scale-95 transition-transform z-10 text-gray-650 hover:text-sky-600 hover:border-sky-300"
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 flex items-center justify-center shadow-md active:scale-90 hover:bg-sky-600 hover:text-white hover:border-sky-600 transition-all duration-200 z-10 text-gray-650"
           aria-label="Scroll right"
         >
           <ChevronRight className="w-4.5 h-4.5 stroke-[2.5]" />

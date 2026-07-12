@@ -18,14 +18,14 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
   const customer = await retrieveCustomer().catch(() => null)
 
   return (
-    <>
+    <div className="min-h-screen overflow-x-hidden flex flex-col relative w-full">
       <AnnouncementBar />
       <Nav customer={customer} />
-      <div className="pb-24 lg:pb-0">
+      <div className="pb-24 lg:pb-0 flex-grow">
         {props.children}
       </div>
       <MobileBottomNav />
       <Footer />
-    </>
+    </div>
   )
 }
