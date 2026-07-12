@@ -16,14 +16,14 @@ export default function Homepage() {
       {/* Hero — Stack Builder as PRIMARY conversion CTA, with background image */}
       <HeroSection />
 
+      {/* Popular products across all categories with filter tabs (Section 6) */}
+      <FeaturedProducts />
+
       {/* Stack Builder preview — goal-based flow + manual build option (Section 5) */}
       <StackBuilderPreview />
 
       {/* Category navigation — Peptides, Nootropics, Supplements, Gummies, Add-ons (Section 4) */}
       <CategoryShowcase />
-
-      {/* Popular products across all categories with filter tabs (Section 6) */}
-      <FeaturedProducts />
 
       {/* Free shipping threshold banner — $200 threshold, stack-building nudge (Section 7.3) */}
       <ShippingBanner />
