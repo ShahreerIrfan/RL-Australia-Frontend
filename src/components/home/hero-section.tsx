@@ -24,7 +24,7 @@ export default function HeroSection() {
           {/* Left - Content */}
           <div className="lg:col-span-6 text-left">
             <h1 className="text-xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-3 sm:mb-5">
-              Lab Tested Peptides &amp; Stacks
+              Lab Tested Peptides
               <br />
               in Australia You Can <span className="bg-gradient-to-r from-sky-400 via-amber-300 to-[#c5a059] bg-clip-text text-transparent underline decoration-[#c5a059] decoration-wavy decoration-3">TRUST</span>
             </h1>
@@ -34,12 +34,12 @@ export default function HeroSection() {
             </p>
 
             <div className="flex flex-wrap gap-2.5 sm:gap-4">
-              {/* Primary CTA - Take the Quiz */}
+              {/* Primary CTA - Build Your Stack */}
               <Link
                 href="/stack-builder"
                 className="inline-flex items-center gap-1.5 sm:gap-2.5 bg-sky-600 hover:bg-sky-500 active:scale-[0.98] text-white px-5 sm:px-8 py-2.5 sm:py-4 rounded-full text-xs sm:text-base font-extrabold transition-all shadow-lg shadow-sky-600/25 uppercase tracking-wider"
               >
-                Take the Quiz!
+                Build Your Stack
                 <ArrowRight className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
               </Link>
               {/* Secondary CTA - Browse Catalog */}
