@@ -74,8 +74,8 @@ export default function MobileBottomNav() {
 
   return (
     <div 
-      className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-40 shadow-[0_-8px_30px_rgb(0,0,0,0.06)]"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className="lg:hidden fixed left-4 right-4 md:left-6 md:right-6 max-w-md mx-auto bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-3xl z-50 shadow-[0_12px_36px_rgba(0,0,0,0.14)] transition-all duration-300"
+      style={{ bottom: "calc(16px + env(safe-area-inset-bottom))" }}
     >
       <div className="flex justify-around items-center h-16">
         {links.map((link) => {
@@ -119,7 +119,7 @@ export default function MobileBottomNav() {
 
               {/* Micro dot underneath active tab */}
               {active && (
-                <span className="absolute bottom-0 w-1.5 h-1.5 bg-sky-600 rounded-full shadow-sm" />
+                <span className="absolute bottom-1 w-1.5 h-1.5 bg-sky-600 rounded-full shadow-sm" />
               )}
             </Link>
           )

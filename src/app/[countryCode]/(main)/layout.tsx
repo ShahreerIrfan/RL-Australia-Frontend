@@ -21,7 +21,7 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
     <>
       <AnnouncementBar />
       <Nav customer={customer} />
-      <div className="pb-16 lg:pb-0">
+      <div className="pb-24 lg:pb-0">
         {props.children}
       </div>
       <MobileBottomNav />
