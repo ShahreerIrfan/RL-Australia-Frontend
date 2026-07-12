@@ -73,57 +73,59 @@ export default function MobileBottomNav() {
   ]
 
   return (
-    <div 
-      className="lg:hidden fixed left-4 right-4 md:left-6 md:right-6 max-w-md mx-auto bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-3xl z-50 shadow-[0_12px_36px_rgba(0,0,0,0.14)] transition-[box-shadow,transform,background-color] duration-300"
-      style={{ bottom: "calc(16px + env(safe-area-inset-bottom))" }}
-    >
-      <div className="flex justify-around items-center h-16">
-        {links.map((link) => {
-          const Icon = link.icon
-          const active = link.isActive
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none flex justify-center px-4 pb-4">
+      <div 
+        className="w-full max-w-md bg-white/95 backdrop-blur-md border border-gray-200/80 rounded-3xl shadow-[0_12px_36px_rgba(0,0,0,0.14)] pointer-events-auto"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        <div className="flex justify-around items-center h-16">
+          {links.map((link) => {
+            const Icon = link.icon
+            const active = link.isActive
 
-          return (
-            <Link
-              key={link.label}
-              href={link.href}
-              onClick={link.onClick}
-              className="flex flex-col items-center justify-center flex-1 py-1 text-center relative group active:scale-95 transition-transform duration-100"
-            >
-              <div className="relative flex items-center justify-center">
-                <Icon 
-                  className={`w-5.5 h-5.5 transition-all duration-300 ${
-                    active 
-                      ? "text-sky-600 scale-110" 
-                      : "text-gray-500 group-hover:text-sky-600"
-                  }`} 
-                  strokeWidth={active ? 2.5 : 2}
-                />
-                
-                {/* Badge Count Bubble */}
-                {!!link.badge && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-amber-400 text-amber-950 text-[9px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">
-                    {link.badge}
-                  </span>
-                )}
-              </div>
-
-              <span 
-                className={`text-[10px] mt-1.5 font-bold transition-colors duration-300 ${
-                  active 
-                    ? "text-sky-600 font-extrabold" 
-                    : "text-gray-500 group-hover:text-sky-600"
-                }`}
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={link.onClick}
+                className="flex flex-col items-center justify-center flex-1 py-1 text-center relative group active:scale-95 transition-transform duration-100"
               >
-                {link.label}
-              </span>
+                <div className="relative flex items-center justify-center">
+                  <Icon 
+                    className={`w-5.5 h-5.5 transition-all duration-300 ${
+                      active 
+                        ? "text-sky-600 scale-110" 
+                        : "text-gray-500 group-hover:text-sky-600"
+                    }`} 
+                    strokeWidth={active ? 2.5 : 2}
+                  />
+                  
+                  {/* Badge Count Bubble */}
+                  {!!link.badge && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-amber-400 text-amber-950 text-[9px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">
+                      {link.badge}
+                    </span>
+                  )}
+                </div>
 
-              {/* Micro dot underneath active tab */}
-              {active && (
-                <span className="absolute bottom-1 w-1.5 h-1.5 bg-sky-600 rounded-full shadow-sm" />
-              )}
-            </Link>
-          )
-        })}
+                <span 
+                  className={`text-[10px] mt-1.5 font-bold transition-colors duration-300 ${
+                    active 
+                      ? "text-sky-600 font-extrabold" 
+                      : "text-gray-500 group-hover:text-sky-600"
+                  }`}
+                >
+                  {link.label}
+                </span>
+
+                {/* Micro dot underneath active tab */}
+                {active && (
+                  <span className="absolute bottom-1 w-1.5 h-1.5 bg-sky-600 rounded-full shadow-sm" />
+                )}
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
