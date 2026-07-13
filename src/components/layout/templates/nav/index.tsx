@@ -22,6 +22,7 @@ const navLinks = [
       { label: "Stacks & Bundles", href: "/categories/stacks" },
     ],
   },
+  { label: "Track Order", href: "/track-order" },
   { label: "About Us", href: "/about" },
   { label: "Research", href: "/research" },
   { label: "FAQs", href: "/faqs" },

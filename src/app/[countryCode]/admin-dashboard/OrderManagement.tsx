@@ -145,6 +145,57 @@ export default function OrderManagement({
                 </button>
               </div>
             </div>
+ 
+            {/* Tracking Settings Card */}
+            <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs">
+              <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider mb-3">Shipping &amp; Tracking</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Provider</label>
+                  <input
+                    type="text"
+                    id="detail-tracking-provider"
+                    defaultValue={order.tracking_provider || ""}
+                    placeholder="e.g. Australia Post"
+                    className="w-full text-xs font-semibold bg-gray-50/50 border border-gray-200 rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:border-[#047857] transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tracking Number</label>
+                  <input
+                    type="text"
+                    id="detail-tracking-number"
+                    defaultValue={order.tracking_number || ""}
+                    placeholder="e.g. AP123456789"
+                    className="w-full text-xs font-semibold bg-gray-50/50 border border-gray-200 rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:border-[#047857] transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tracking Link</label>
+                  <input
+                    type="text"
+                    id="detail-tracking-link"
+                    defaultValue={order.tracking_link || ""}
+                    placeholder="e.g. https://auspost.com.au/..."
+                    className="w-full text-xs font-semibold bg-gray-50/50 border border-gray-200 rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:border-[#047857] transition-all"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={async () => {
+                    const prov = (document.getElementById("detail-tracking-provider") as HTMLInputElement).value
+                    const num = (document.getElementById("detail-tracking-number") as HTMLInputElement).value
+                    const link = (document.getElementById("detail-tracking-link") as HTMLInputElement).value
+                    await updateOrderTracking(order.id, prov, num, link)
+                    alert("Tracking updated successfully!")
+                  }}
+                  className="px-5 py-2 bg-gray-850 hover:bg-gray-900 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+                >
+                  Save Tracking Info
+                </button>
+              </div>
+            </div>
 
             {/* Customer & Info Card */}
             <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs text-xs space-y-4">
