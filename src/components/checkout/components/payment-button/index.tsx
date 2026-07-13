@@ -39,6 +39,10 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       return (
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
       )
+    case paymentSession?.provider_id === "paytree":
+      return (
+        <PaytreePaymentButton notReady={notReady} data-testid={dataTestId} />
+      )
     default:
       return <Button disabled>Select a payment method</Button>
   }
@@ -185,6 +189,47 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
       <ErrorMessage
         error={errorMessage}
         data-testid="manual-payment-error-message"
+      />
+    </>
+  )
+}
+
+const PaytreePaymentButton = ({ notReady }: { notReady: boolean }) => {
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const handlePayment = async () => {
+    setSubmitting(true)
+    setErrorMessage(null)
+
+    try {
+      const res = await placeOrder()
+      if (res && (res as any).type === "paytree_redirect" && (res as any).checkout_url) {
+        window.location.href = (res as any).checkout_url
+      } else {
+        setErrorMessage("Failed to initiate payment. Please try again.")
+        setSubmitting(false)
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || "An unexpected error occurred.")
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <>
+      <Button
+        disabled={notReady}
+        isLoading={submitting}
+        onClick={handlePayment}
+        size="large"
+        data-testid="submit-order-button"
+      >
+        Place order
+      </Button>
+      <ErrorMessage
+        error={errorMessage}
+        data-testid="paytree-payment-error-message"
       />
     </>
   )

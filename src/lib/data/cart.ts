@@ -422,7 +422,12 @@ export async function placeOrder(cartId?: string) {
     redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`)
   }
 
-  return cartRes.cart
+  if (cartRes?.type === "paytree_redirect") {
+    removeCartId()
+    return cartRes
+  }
+
+  return cartRes?.cart || cartRes
 }
 
 /**
