@@ -12,6 +12,7 @@ import {
 import { convertToLocale } from "@lib/util/money"
 import OrderManagement from "./OrderManagement"
 import StackBuilderAdmin from "@components/stack-builder/admin/stack-builder-admin"
+import QuizBuilderAdmin from "@components/quiz/admin/quiz-builder-admin"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
 
@@ -736,6 +737,18 @@ export default function AdminDashboard() {
             <ChevronRight className="w-3.5 h-3.5 opacity-60" />
           </button>
 
+          {/* Quiz Config */}
+          <button
+            onClick={() => setActiveMenu("Quiz Config")}
+            className={`w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold rounded-xl transition-all select-none cursor-pointer ${activeMenu === "Quiz Config" ? "bg-[#047857] text-white shadow-md shadow-emerald-900/10" : "text-gray-600 hover:bg-gray-50"}`}
+          >
+            <span className="flex items-center gap-3.5">
+              <ClipboardList className="w-4 h-4 flex-shrink-0" />
+              Quiz Config
+            </span>
+            <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+          </button>
+
           {/* Campaign Analytics */}
           <button className="w-full flex items-center gap-3.5 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 rounded-xl">
             <TrendingUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
@@ -1324,6 +1337,10 @@ export default function AdminDashboard() {
 
           {activeMenu === "Stack Builder Config" && (
             <StackBuilderAdmin />
+          )}
+
+          {activeMenu === "Quiz Config" && (
+            <QuizBuilderAdmin />
           )}
 
           {activeMenu === "All Orders" && (
