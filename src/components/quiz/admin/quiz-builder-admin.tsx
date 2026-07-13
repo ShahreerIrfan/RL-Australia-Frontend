@@ -86,7 +86,7 @@ export default function QuizBuilderAdmin() {
   async function fetchQuizQuestions() {
     try {
       setLoading(true)
-      const res = await adminFetch(`${BACKEND_URL}/admin/quiz`)
+      const res = await adminFetch(`${BACKEND_URL}/store/quiz`)
       if (res.ok) {
         const data = await res.json()
         setQuestions(data.questions || [])
@@ -190,8 +190,8 @@ export default function QuizBuilderAdmin() {
       setError(null)
 
       const url = editingQuestion
-        ? `${BACKEND_URL}/admin/quiz/${editingQuestion.id}`
-        : `${BACKEND_URL}/admin/quiz`
+        ? `${BACKEND_URL}/store/quiz/${editingQuestion.id}`
+        : `${BACKEND_URL}/store/quiz`
 
       const res = await adminFetch(url, {
         method: "POST",
@@ -222,7 +222,7 @@ export default function QuizBuilderAdmin() {
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this question?")) return
     try {
-      const res = await adminFetch(`${BACKEND_URL}/admin/quiz/${id}`, {
+      const res = await adminFetch(`${BACKEND_URL}/store/quiz/${id}`, {
         method: "DELETE"
       })
       if (res.ok) {
