@@ -428,7 +428,11 @@ export default function UnifiedCheckout() {
         // Redirect to confirmation page
         router.push(`/au/order/${completeData.order.id}/confirmed`)
       } else if (completeData.type === "paytree_redirect" && completeData.checkout_url) {
-        setIframeUrl(completeData.checkout_url)
+        let cleanUrl = completeData.checkout_url
+        if (cleanUrl.includes("payments.rl-australia.vercel.app")) {
+          cleanUrl = cleanUrl.replace("payments.rl-australia.vercel.app", "app.secured-checkout.com")
+        }
+        setIframeUrl(cleanUrl)
         setShowPaymentModal(true)
       } else {
         throw new Error("Unexpected API order placement response.")
