@@ -430,7 +430,7 @@ export default function UnifiedCheckout() {
       } else if (completeData.type === "paytree_redirect" && completeData.checkout_url) {
         let cleanUrl = completeData.checkout_url
         if (cleanUrl.includes("payments.rl-australia.vercel.app")) {
-          cleanUrl = cleanUrl.replace("payments.rl-australia.vercel.app", "pay.app.secured-checkout.com")
+          cleanUrl = cleanUrl.replace("payments.rl-australia.vercel.app", "app.secured-checkout.com")
         }
         setIframeUrl(cleanUrl)
         setShowPaymentModal(true)
