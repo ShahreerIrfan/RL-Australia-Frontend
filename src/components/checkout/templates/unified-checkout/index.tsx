@@ -34,6 +34,8 @@ export default function UnifiedCheckout() {
   const [error, setError] = useState<string | null>(null)
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(200)
   const [productMap, setProductMap] = useState<Record<string, string>>({})
+  const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false)
+  const [iframeUrl, setIframeUrl] = useState<string>("")
 
   // Fetch free shipping threshold settings
   useEffect(() => {
@@ -426,7 +428,8 @@ export default function UnifiedCheckout() {
         // Redirect to confirmation page
         router.push(`/au/order/${completeData.order.id}/confirmed`)
       } else if (completeData.type === "paytree_redirect" && completeData.checkout_url) {
-        window.location.href = completeData.checkout_url
+        setIframeUrl(completeData.checkout_url)
+        setShowPaymentModal(true)
       } else {
         throw new Error("Unexpected API order placement response.")
       }
@@ -1024,6 +1027,43 @@ export default function UnifiedCheckout() {
           </form>
         )}
       </div>
+
+      {/* Secure Payment Iframe Modal Overlay */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl overflow-hidden w-full max-w-xl relative shadow-2xl flex flex-col border border-gray-100 animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-sky-600" />
+                <span className="text-sm font-bold text-gray-900">Complete Secure Payment</span>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setShowPaymentModal(false)} 
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1.5 hover:bg-gray-100 rounded-full cursor-pointer text-xs font-bold"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Modal Iframe Wrapper */}
+            <div className="relative w-full h-[580px] bg-gray-50 flex items-center justify-center">
+              {/* Spinner inside iframe wrapper */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-50 -z-10">
+                <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+                <p className="text-xs font-semibold text-gray-505">Securing payment connection...</p>
+              </div>
+
+              <iframe 
+                src={iframeUrl} 
+                className="w-full h-full border-none z-10" 
+                title="Secure Checkout Payment Gate"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
